@@ -1,0 +1,22 @@
+{
+  "name": "sfspvtltd",
+  "version": "1.0.0",
+  "description": "A fast, dependency-free static website for **Sobhakrita Fintech Solutions Private Limited**, a loan facilitator based in Chittoor, Andhra Pradesh.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sobhakritafintech/sfspvtltd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sobhakritafintech/sfspvtltd/issues"
+  },
+  "homepage": "https://github.com/sobhakritafintech/sfspvtltd#readme"
+}
