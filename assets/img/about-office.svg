@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 430" width="560" height="430" role="img" aria-label="Illustration of an Indian financial advisor in a modern office in Chittoor">
+  <defs>
+    <linearGradient id="o-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d8ece3"/>
+      <stop offset="0.6" stop-color="#f2e6c9"/>
+      <stop offset="1" stop-color="#f7d9ae"/>
+    </linearGradient>
+    <linearGradient id="o-jacket" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12866a"/>
+      <stop offset="1" stop-color="#0b5a46"/>
+    </linearGradient>
+    <clipPath id="o-window">
+      <path d="M122 340V152a103 103 0 0 1 206 0v188Z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="560" height="430" fill="#f8efdd"/>
+  <rect width="560" height="360" fill="#f6e9d4"/>
+  <path d="M0 360h560" stroke="#dfc9a8" stroke-width="2"/>
+  <rect y="360" width="560" height="70" fill="#e7d3b3"/>
+  <g stroke="#d9c19e" stroke-width="1.5" opacity="0.7">
+    <path d="M0 388h560M0 414h560"/>
+    <path d="M92 360v70M248 360v70M404 360v70"/>
+  </g>
+
+  <!-- window -->
+  <path d="M122 340V152a103 103 0 0 1 206 0v188Z" fill="url(#o-sky)"/>
+  <g clip-path="url(#o-window)">
+    <circle cx="228" cy="205" r="42" fill="#f9cf95" opacity="0.95"/>
+    <circle cx="228" cy="205" r="42" fill="none" stroke="#fff3dc" stroke-width="1.5" opacity="0.8"/>
+    <path d="M122 296c30-22 54-14 74 2 22-18 44-16 62 0 18-12 38-10 70 4v38H122Z" fill="#c7c19a" opacity="0.5"/>
+    <path d="M122 316c34-14 60-4 82 8 22-10 46-8 66 2 16-6 34-4 58 6v8H122Z" fill="#a9a67f" opacity="0.45"/>
+    <!-- palm silhouette -->
+    <g fill="#0e6b54" opacity="0.35">
+      <path d="M300 340v-52" stroke="#0e6b54" stroke-width="4"/>
+      <path d="M300 292c-18-10-28-6-34 4 12-2 22 0 30 6Z"/>
+      <path d="M300 292c18-10 28-6 34 4-12-2-22 0-30 6Z"/>
+      <path d="M300 286c-10-16-6-26 4-32-2 12 0 22 6 30Z"/>
+      <path d="M300 286c10-16 6-26-4-32 2 12 0 22-6 30Z"/>
+    </g>
+    <g stroke="#8c5a33" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.45">
+      <path d="M170 186c4-4 8-4 11 0 3-4 7-4 10 0"/>
+      <path d="M196 166c3-3 6-3 8 0 2-3 5-3 8 0"/>
+    </g>
+  </g>
+  <path d="M122 340V152a103 103 0 0 1 206 0v188" fill="none" stroke="#0c1f33" stroke-width="5" opacity="0.85"/>
+  <path d="M225 55v285M122 238h206" stroke="#0c1f33" stroke-width="3" opacity="0.55"/>
+  <rect x="106" y="340" width="238" height="11" rx="3" fill="#d9c3a1"/>
+
+  <!-- wall art: lotus mandala -->
+  <circle cx="462" cy="152" r="58" fill="#fbf3e4" stroke="#dcc7a4" stroke-width="1.5"/>
+  <g stroke="#c89a4b" stroke-width="1.5" fill="none" opacity="0.85">
+    <circle cx="462" cy="152" r="22"/>
+    <circle cx="462" cy="152" r="42" stroke-dasharray="2 5"/>
+    <g stroke="#dd7517">
+      <path d="M462 110c6 10 6 20 0 28-6-8-6-18 0-28Z"/>
+      <path d="M462 194c-6-10-6-20 0-28 6 8 6 18 0 28Z"/>
+      <path d="M420 152c10-6 20-6 28 0-8 6-18 6-28 0Z"/>
+      <path d="M504 152c-10 6-20 6-28 0 8-6 18-6 28 0Z"/>
+      <path d="M432 122c10 4 16 12 18 22-10-2-18-10-18-22Z"/>
+      <path d="M492 182c-10-4-16-12-18-22 10 2 18 10 18 22Z"/>
+      <path d="M492 122c-10 4-16 12-18 22 10-2 18-10 18-22Z"/>
+      <path d="M432 182c10-4 16-12 18-22-10 2-18 10-18 22Z"/>
+    </g>
+  </g>
+
+  <!-- pendant lamp -->
+  <path d="M500 0v42" stroke="#8b6a45" stroke-width="2"/>
+  <path d="M470 72c0-14 13-26 30-26s30 12 30 26Z" fill="#c89a4b"/>
+  <ellipse cx="500" cy="72" rx="30" ry="4" fill="#a87f36"/>
+  <ellipse cx="500" cy="76" rx="7" ry="4" fill="#f9d29a"/>
+
+  <!-- plant -->
+  <g>
+    <path d="M44 316h72l-9 48H53Z" fill="#c2542f"/>
+    <rect x="39" y="311" width="82" height="11" rx="3" fill="#d96f12"/>
+    <g fill="#0e6b54">
+      <path d="M80 312c-4-30-22-44-38-46 4 22 16 38 34 46Z"/>
+      <path d="M80 312c4-38 22-52 40-54-2 26-16 44-36 54Z" opacity="0.85"/>
+      <path d="M80 312c-2-44 6-66 18-74 6 26 2 54-14 74Z" opacity="0.7"/>
+    </g>
+    <g fill="#12866a">
+      <path d="M80 312c-22-22-28-44-24-60 16 16 24 36 24 60Z"/>
+      <path d="M80 312c22-20 30-42 26-58-16 14-26 34-26 58Z" opacity="0.8"/>
+    </g>
+  </g>
+
+  <!-- businessman -->
+  <g>
+    <ellipse cx="300" cy="378" rx="66" ry="8" fill="#0c1f33" opacity="0.08"/>
+    <rect x="281" y="298" width="20" height="70" rx="6" fill="#1b3a56"/>
+    <rect x="305" y="298" width="20" height="70" rx="6" fill="#1b3a56"/>
+    <ellipse cx="290" cy="372" rx="16" ry="7" fill="#0c1f33"/>
+    <ellipse cx="316" cy="372" rx="16" ry="7" fill="#0c1f33"/>
+
+    <path d="M258 172c0-12 17-18 42-18s42 6 42 18l6 142H252Z" fill="#f7ecd8"/>
+    <path d="M258 172c0-10 11-16 24-17v148h-30Z" fill="url(#o-jacket)"/>
+    <path d="M342 172c0-10-11-16-24-17v148h30Z" fill="url(#o-jacket)"/>
+    <path d="M282 156c4-3 10-5 18-5s14 2 18 5l-4 10c-4-2-9-3-14-3s-10 1-14 3Z" fill="#0b5a46"/>
+    <circle cx="300" cy="196" r="2.6" fill="#c89a4b"/>
+    <circle cx="300" cy="222" r="2.6" fill="#c89a4b"/>
+    <circle cx="300" cy="248" r="2.6" fill="#c89a4b"/>
+
+    <path d="M291 138h18v22h-18Z" fill="#c78a63"/>
+    <circle cx="300" cy="116" r="35" fill="#c78a63"/>
+    <path d="M265 116c0-24 15-38 35-38s35 14 35 38c-5-16-16-23-35-23s-30 7-35 23Z" fill="#241a14"/>
+    <path d="M267 108c2 12 3 20 2 30M333 108c-2 12-3 20-2 30" stroke="#241a14" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M285 119c3-3 7-3 10 0M305 119c3-3 7-3 10 0" stroke="#4a3226" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M289 138c7 4 15 4 22 0" stroke="#241a14" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M331 116c2 3 4 4 6 3" stroke="#241a14" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="265" cy="120" r="5" fill="#c78a63"/>
+    <circle cx="335" cy="120" r="5" fill="#c78a63"/>
+
+    <!-- folder arm -->
+    <path d="M260 192c-12 24-16 50-12 72" stroke="#c78a63" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <g transform="rotate(-7 250 272)">
+      <rect x="226" y="258" width="52" height="38" rx="4" fill="#fbf3e4" stroke="#d8c3a2" stroke-width="1.5"/>
+      <path d="M236 270h30M236 279h34M236 288h20" stroke="#c9a97c" stroke-width="2.4" stroke-linecap="round"/>
+    </g>
+    <circle cx="248" cy="264" r="8" fill="#c78a63"/>
+
+    <!-- phone arm -->
+    <path d="M340 192c16 0 24-18 20-34" stroke="#c78a63" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <g transform="rotate(-10 340 128)">
+      <rect x="332" y="104" width="16" height="34" rx="4" fill="#0c1f33"/>
+      <rect x="335" y="109" width="10" height="24" rx="2" fill="#12866a" opacity="0.75"/>
+    </g>
+    <circle cx="352" cy="150" r="8" fill="#c78a63"/>
+  </g>
+
+  <!-- desk -->
+  <g>
+    <rect x="360" y="304" width="200" height="13" rx="3" fill="#b9825a"/>
+    <rect x="378" y="317" width="10" height="56" fill="#a06f4a"/>
+    <rect x="532" y="317" width="10" height="56" fill="#a06f4a"/>
+    <rect x="400" y="294" width="76" height="9" rx="3" fill="#cfd6dd"/>
+    <rect x="410" y="254" width="64" height="40" rx="3" fill="#0c1f33"/>
+    <rect x="414" y="258" width="56" height="32" rx="2" fill="#12866a" opacity="0.55"/>
+    <path d="M420 280c8-8 14-4 20 2 6-8 12-10 20-4" stroke="#d8ece3" stroke-width="2" fill="none" opacity="0.8"/>
+    <g transform="rotate(4 500 292)">
+      <rect x="486" y="282" width="34" height="22" rx="2" fill="#fbf3e4" stroke="#d8c3a2" stroke-width="1"/>
+      <path d="M492 290h20M492 296h14" stroke="#c9a97c" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+    <rect x="536" y="288" width="16" height="16" rx="3" fill="#c2542f"/>
+    <path d="M552 292c6 0 6 10 0 10" stroke="#c2542f" stroke-width="3" fill="none"/>
+  </g>
+</svg>

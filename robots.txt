@@ -1,0 +1,9 @@
+# Sobhakrita Fintech Solutions Private Limited
+# https://www.sobhakritafintech.com/
+
+User-agent: *
+Allow: /
+Disallow: /thank-you.html
+Disallow: /404.html
+
+Sitemap: https://www.sobhakritafintech.com/sitemap.xml

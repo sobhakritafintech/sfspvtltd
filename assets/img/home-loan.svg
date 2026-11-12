@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Home loan illustration of an Indian house with a key">
+  <defs>
+    <linearGradient id="hm-arch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12866a"/>
+      <stop offset="1" stop-color="#124a5c"/>
+    </linearGradient>
+    <linearGradient id="hm-roof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dd7517"/>
+      <stop offset="1" stop-color="#b8541a"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="#f8efdd"/>
+  <circle cx="200" cy="142" r="128" fill="#f2dfc0"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110Z" fill="url(#hm-arch)"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110" fill="none" stroke="#c89a4b" stroke-width="2" opacity="0.65"/>
+  <circle cx="290" cy="104" r="20" fill="#f9cf95" opacity="0.9"/>
+  <path d="M86 246h228v16H86Z" fill="#0b3e33" opacity="0.25"/>
+
+  <!-- tree -->
+  <g>
+    <rect x="112" y="200" width="8" height="42" rx="4" fill="#8b6a45"/>
+    <circle cx="116" cy="192" r="17" fill="#0e6b54"/>
+    <circle cx="103" cy="200" r="13" fill="#12866a"/>
+    <circle cx="129" cy="201" r="12" fill="#12866a"/>
+  </g>
+
+  <!-- house -->
+  <g>
+    <rect x="150" y="166" width="112" height="78" fill="#fbf3e4"/>
+    <rect x="150" y="166" width="112" height="78" fill="none" stroke="#d8c3a2" stroke-width="1.5"/>
+    <path d="M140 170 206 116l66 54Z" fill="url(#hm-roof)"/>
+    <path d="M140 170h132" stroke="#a8530a" stroke-width="2" opacity="0.4"/>
+    <rect x="232" y="128" width="14" height="26" rx="2" fill="#b96b34"/>
+    <rect x="228" y="124" width="22" height="6" rx="2" fill="#c2542f"/>
+
+    <rect x="200" y="204" width="28" height="40" rx="2" fill="#0e6b54"/>
+    <circle cx="222" cy="225" r="2.2" fill="#c89a4b"/>
+    <path d="M200 216h28" stroke="#0b5a46" stroke-width="1.2" opacity="0.6"/>
+
+    <g fill="#cfe6dd" stroke="#0c1f33" stroke-width="1.4">
+      <rect x="160" y="188" width="24" height="22" rx="1.5"/>
+      <rect x="228" y="188" width="24" height="22" rx="1.5"/>
+    </g>
+    <g stroke="#0c1f33" stroke-width="1" opacity="0.55">
+      <path d="M172 188v22M160 199h24M240 188v22M228 199h24"/>
+    </g>
+    <rect x="150" y="240" width="112" height="6" fill="#dcc7a4"/>
+  </g>
+
+  <!-- key -->
+  <g transform="rotate(-18 300 214)">
+    <circle cx="292" cy="214" r="10" fill="none" stroke="#f2c14e" stroke-width="6"/>
+    <rect x="304" y="211" width="30" height="6" rx="3" fill="#f2c14e"/>
+    <rect x="322" y="217" width="6" height="9" rx="2" fill="#f2c14e"/>
+    <rect x="332" y="217" width="6" height="9" rx="2" fill="#f2c14e"/>
+  </g>
+
+  <circle cx="106" cy="130" r="10" fill="#f6d183" stroke="#c89a4b" stroke-width="1.2"/>
+  <g stroke="#f2a03d" stroke-width="2" stroke-linecap="round" opacity="0.75">
+    <path d="M282 148l8 8M282 156l8-8M320 158l-6-6"/>
+  </g>
+</svg>

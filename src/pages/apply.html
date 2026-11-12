@@ -1,0 +1,299 @@
+<!--@title: Apply for a Loan | Sobhakrita Fintech Solutions, Chittoor-->
+<!--@desc: Apply online for a personal, business, home, mortgage, car, education or industrial loan with Sobhakrita Fintech Solutions Private Limited, Chittoor. Fees quoted in writing. Response within one working day.-->
+<!--@slug: apply.html-->
+<!--@page: apply-->
+
+<main id="main">
+
+  <section class="page-hero">
+    <div class="container">
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumb">
+          <li><a href="index.html">Home</a></li>
+          <li class="sep" aria-hidden="true">/</li>
+          <li aria-current="page">Apply for a loan</li>
+        </ol>
+      </nav>
+      <span class="eyebrow">Start your application</span>
+      <h1 class="display-xl">One application. The right lender.</h1>
+      <p class="lead">Tell us what you need and a Sobhakrita advisor will call you within one working day. We will check your eligibility, explain the real cost, and only then take your file to a lender whose policy actually fits your profile.</p>
+      <ul class="hero-points">
+        <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg> Fees quoted in writing</li>
+        <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg> One advisor, start to finish</li>
+        <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg> Available in Telugu, Hindi &amp; English</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split" style="align-items:start">
+
+      <div class="reveal">
+        <span class="eyebrow">Your requirement</span>
+        <h2 class="display-lg">A few details to get started</h2>
+        <p class="lead">This takes about three minutes. Nothing is submitted to a lender until we have spoken to you and you have agreed to the terms.</p>
+
+        <div class="form-card mt-3">
+          <form data-lead-form novalidate>
+            <div class="form-grid">
+
+              <div class="field">
+                <label for="loanType">Loan type <span class="req">*</span></label>
+                <select id="loanType" name="loan_type" required>
+                  <option value="">Select a loan</option>
+                  <option value="Personal Loan">Personal Loan</option>
+                  <option value="Business Loan">Business Loan</option>
+                  <option value="Home Loan">Home Loan</option>
+                  <option value="Mortgage / Loan Against Property">Mortgage / Loan Against Property</option>
+                  <option value="Car Loan">Car Loan</option>
+                  <option value="Education Loan">Education Loan</option>
+                  <option value="Industrial / MSME Loan">Industrial / MSME Loan</option>
+                  <option value="Not sure — help me choose">Not sure — help me choose</option>
+                </select>
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="loanAmount">Loan amount needed <span class="req">*</span></label>
+                <input id="loanAmount" name="loan_amount" type="number" inputmode="numeric" min="25000" max="100000000" step="5000" placeholder="e.g. 500000" required>
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apName">Full name <span class="req">*</span></label>
+                <input id="apName" name="name" type="text" autocomplete="name" placeholder="As printed on your PAN card" required>
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apPhone">Mobile number <span class="req">*</span></label>
+                <input id="apPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="10-digit mobile number" required>
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apEmail">Email address</label>
+                <input id="apEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com">
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apCity">City / district <span class="req">*</span></label>
+                <input id="apCity" name="city" type="text" autocomplete="address-level2" placeholder="Chittoor" required>
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apEmployment">Employment type <span class="req">*</span></label>
+                <select id="apEmployment" name="employment" required>
+                  <option value="">Select an option</option>
+                  <option>Salaried — private company</option>
+                  <option>Salaried — government / PSU</option>
+                  <option>Self-employed professional</option>
+                  <option>Self-employed business owner</option>
+                  <option>Student or co-applicant</option>
+                  <option>Other</option>
+                </select>
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apIncome">Net monthly income (₹)</label>
+                <input id="apIncome" name="monthly_income" type="number" inputmode="numeric" min="0" max="100000000" step="1000" placeholder="e.g. 45000">
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apEmi">Existing monthly EMIs (₹)</label>
+                <input id="apEmi" name="existing_emi" type="number" inputmode="numeric" min="0" max="100000000" step="500" placeholder="0 if none">
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field">
+                <label for="apPan">PAN available?</label>
+                <select id="apPan" name="pan_available">
+                  <option value="">Prefer not to say</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                  <option>Applied for a new PAN</option>
+                </select>
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field field-full">
+                <label for="apMessage">Anything we should know?</label>
+                <textarea id="apMessage" name="message" placeholder="Property value, vehicle on-road price, course fees, business turnover, or a question about your profile…"></textarea>
+                <span class="field-error"></span>
+              </div>
+            </div>
+
+            <div class="field check-field field-full mt-2">
+              <label class="check-line" for="apConsent">
+                <input id="apConsent" name="consent" type="checkbox" required>
+                <span>I authorise <strong>Sobhakrita Fintech Solutions Private Limited</strong> and its authorised representatives to contact me by call, SMS, WhatsApp or email about this enquiry, and to share the details I submit with partner banks and RBI-regulated NBFCs for eligibility assessment. I understand a credit bureau enquiry may be made and that this is not a loan offer. I have read the <a href="privacy-policy.html">Privacy Policy</a> and agree to the <a href="terms-conditions.html">Terms &amp; Conditions</a>.</span>
+              </label>
+              <span class="field-error"></span>
+            </div>
+
+            <button class="btn btn-primary btn-block btn-lg" type="submit">Submit application <svg width="16" height="16" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <p class="form-note">By submitting you agree to be contacted about this enquiry. We do not sell your data. If you are under 18, please do not submit this form.</p>
+
+            <div class="hp-field" aria-hidden="true">
+              <label for="apWebsite">Company website</label>
+              <input id="apWebsite" name="company_website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+          </form>
+
+          <div class="form-success" role="status" aria-live="polite">
+            <span class="ico" aria-hidden="true"><svg width="28" height="28"><use href="#i-check"/></svg></span>
+            <h3>Application received.</h3>
+            <p>Thank you. A Sobhakrita advisor will call you within one working day on the number you shared. Keep your PAN, Aadhaar and latest bank statement handy. For anything urgent, call <a href="tel:+918886633119">+91 88866 33119</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-d1">
+        <div class="form-aside">
+          <h3>What happens next</h3>
+          <p>No pressure, and every charge in writing. Here is the exact sequence.</p>
+          <ul class="aside-contact">
+            <li>
+              <span class="ico" aria-hidden="true"><svg width="18" height="18"><use href="#i-phone"/></svg></span>
+              <div><strong>1. We call you</strong><span style="color:rgba(255,255,255,.75)">Within one working day, usually much sooner. We confirm your requirement and answer questions.</span></div>
+            </li>
+            <li>
+              <span class="ico" aria-hidden="true"><svg width="18" height="18"><use href="#i-calc"/></svg></span>
+              <div><strong>2. We assess eligibility</strong><span style="color:rgba(255,255,255,.75)">A soft check of income, FOIR and credit profile — before any hard enquiry is made.</span></div>
+            </li>
+            <li>
+              <span class="ico" aria-hidden="true"><svg width="18" height="18"><use href="#i-file"/></svg></span>
+              <div><strong>3. You get a shortlist</strong><span style="color:rgba(255,255,255,.75)">Two or three lenders with the real rate, fee and tenure in writing, not a sales pitch.</span></div>
+            </li>
+            <li>
+              <span class="ico" aria-hidden="true"><svg width="18" height="18"><use href="#i-badge"/></svg></span>
+              <div><strong>4. Sanction and disbursal</strong><span style="color:rgba(255,255,255,.75)">We coordinate documents and follow up with the lender until the money reaches your account.</span></div>
+            </li>
+            <li>
+              <span class="ico" aria-hidden="true"><svg width="18" height="18"><use href="#i-rupee"/></svg></span>
+              <div><strong>5. Our fee, in writing</strong><span style="color:rgba(255,255,255,.75)">No application or consultation fee. Our minimal service fee applies only after disbursal, with your written consent — quoted before documentation begins, with a GST invoice.</span></div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="value-card mt-3" style="padding:24px">
+          <h3 style="font-size:1.05rem">Keep these ready</h3>
+          <ul class="check-list" style="margin-top:10px">
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-file"/></svg> PAN and Aadhaar</li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-file"/></svg> Last 3 months' salary slips or 2 years' ITR</li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-file"/></svg> 6 months' bank statement</li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-file"/></svg> Address proof and a passport photo</li>
+          </ul>
+          <p class="form-note" style="margin-top:14px">Exact documents vary by lender and loan type. We will send you a precise checklist after the first call.</p>
+        </div>
+
+        <div class="notice mt-3">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-shield"/></svg>
+          <span><strong>Fraud warning:</strong> pay our fees only to the company's official account, against a GST invoice. We never ask for cash or a transfer to an individual's personal account. If anyone claiming to represent us does, call us on <a href="tel:+918886633119">+91 88866 33119</a> before paying anything.</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section section-cream">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Document checklist</span>
+        <h2 class="display-lg">What you need depends on how you earn</h2>
+        <p class="lead">These are the usual requirements. A lender may ask for less, or for one extra document, depending on your profile and the product.</p>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="value-card reveal">
+          <span class="ico tint-saffron" aria-hidden="true"><svg width="21" height="21"><use href="#i-briefcase"/></svg></span>
+          <h3>Salaried applicants</h3>
+          <ul class="check-list" style="margin-top:12px">
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> PAN + Aadhaar (KYC)</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Last 3 months' salary slips</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> 6 months' salary-account statement</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Form 16 or latest ITR</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Employee ID / offer letter</li>
+          </ul>
+        </div>
+        <div class="value-card reveal reveal-d1">
+          <span class="ico tint-green" aria-hidden="true"><svg width="21" height="21"><use href="#i-building"/></svg></span>
+          <h3>Self-employed &amp; business</h3>
+          <ul class="check-list" style="margin-top:12px">
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> PAN + Aadhaar (KYC)</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> 2 years' ITR + computation</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> 12 months' current-account statement</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> GST returns, if registered</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Business proof / Udyam certificate</li>
+          </ul>
+        </div>
+        <div class="value-card reveal reveal-d2">
+          <span class="ico tint-navy" aria-hidden="true"><svg width="21" height="21"><use href="#i-grad"/></svg></span>
+          <h3>Students &amp; co-applicants</h3>
+          <ul class="check-list" style="margin-top:12px">
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Admission letter + fee structure</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Academic marksheets</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Co-applicant PAN, Aadhaar and income proof</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Collateral papers, if secured</li>
+            <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg> Passport / visa, for overseas study</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3">
+        <div class="trust-item reveal">
+          <span class="trust-ico tint-green" aria-hidden="true"><svg width="21" height="21"><use href="#i-lock"/></svg></span>
+          <div><h3>Consent-first data handling</h3><p>We collect only what the application needs, under the Digital Personal Data Protection Act, 2023. You can withdraw consent or ask for correction at any time.</p></div>
+        </div>
+        <div class="trust-item reveal reveal-d1">
+          <span class="trust-ico tint-saffron" aria-hidden="true"><svg width="21" height="21"><use href="#i-shield"/></svg></span>
+          <div><h3>No unauthorised enquiries</h3><p>We do not run a hard credit-bureau enquiry until you have agreed to a specific lender and understand the impact on your CIBIL report.</p></div>
+        </div>
+        <div class="trust-item reveal reveal-d2">
+          <span class="trust-ico tint-navy" aria-hidden="true"><svg width="21" height="21"><use href="#i-headset"/></svg></span>
+          <div><h3>A named human being</h3><p>You will know your advisor's name and direct number. No call centre queue, no rotating agents, no ghosting after disbursal.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-cream">
+    <div class="container container-narrow">
+      <div class="section-head is-center reveal">
+        <span class="eyebrow eyebrow-center">Before you submit</span>
+        <h2 class="display-md">Application questions</h2>
+      </div>
+      <div class="faq reveal">
+        <details class="faq-item" open>
+          <summary>Will applying here affect my CIBIL score?</summary>
+          <div class="faq-body"><p>Not immediately. We start with a soft assessment based on the details you share. A hard enquiry happens only when a specific lender processes a formal application, and we tell you before that step. Applying to five lenders at once is what hurts a score — that is exactly what we help you avoid.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Is there any charge to apply through Sobhakrita?</summary>
+          <div class="faq-body"><p>Sobhakrita does not charge an application fee, consultation fee, file charge, advance fee or security deposit in its own name. We are compensated by the lender when a loan is sanctioned through us. Our own service fee is minimal, charged only after your loan is disbursed and only with your consent — the amount and scope are disclosed to you in writing before we begin processing any documentation. Lenders may separately charge a processing fee, legal or technical verification fee, stamp duty, CERSAI charges, insurance premium or other statutory amounts; these are payable to the lender or authority and shown in the Key Fact Statement (KFS). <a href="fees.html">See fees &amp; charges</a>.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>How long does approval take?</summary>
+          <div class="faq-body"><p>For a clean salaried personal loan file, an indicative decision can come in 48–72 working hours. Home loans, mortgages and industrial loans take longer because they involve legal and technical verification of the property or unit. We give you a realistic timeline after the first call, not a marketing number.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Can I apply if I live outside Chittoor?</summary>
+          <div class="faq-body"><p>Yes. We regularly assist customers across Andhra Pradesh and can coordinate remotely over WhatsApp and email. For property-backed loans and some business loans, a physical verification visit is usually required at the property or business location.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>What if I am not sure which loan I need?</summary>
+          <div class="faq-body"><p>Choose "Not sure — help me choose". That is a perfectly good answer. We will ask a few questions about the purpose, amount and repayment capacity, then recommend the product that costs you least over the full tenure — not the one with the highest commission.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+</main>

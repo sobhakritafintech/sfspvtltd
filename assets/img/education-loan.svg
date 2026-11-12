@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Education loan illustration with books and a graduation cap">
+  <defs>
+    <linearGradient id="e-arch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12866a"/>
+      <stop offset="1" stop-color="#0c3f34"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="#f8efdd"/>
+  <circle cx="200" cy="142" r="128" fill="#f2dfc0"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110Z" fill="url(#e-arch)"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110" fill="none" stroke="#c89a4b" stroke-width="2" opacity="0.65"/>
+
+  <!-- pencil -->
+  <g transform="rotate(-38 300 210)">
+    <rect x="296" y="150" width="13" height="86" rx="2" fill="#f2c14e"/>
+    <rect x="296" y="150" width="13" height="12" fill="#c2542f"/>
+    <path d="M296 236h13l-6.5 14Z" fill="#f7ecd8"/>
+    <path d="M302 244l2.5 6 2.5-6Z" fill="#0c1f33"/>
+    <path d="M296 162h13" stroke="#c89a4b" stroke-width="1.5"/>
+  </g>
+
+  <!-- books -->
+  <g>
+    <rect x="126" y="214" width="148" height="20" rx="3" fill="#0e6b54"/>
+    <rect x="126" y="214" width="10" height="20" fill="#0b5a46"/>
+    <rect x="134" y="234" width="140" height="20" rx="3" fill="#dd7517"/>
+    <rect x="134" y="234" width="10" height="20" fill="#b8541a"/>
+    <rect x="118" y="254" width="164" height="20" rx="3" fill="#0c1f33"/>
+    <rect x="118" y="254" width="11" height="20" fill="#081a2c"/>
+    <g stroke="#fbf3e4" stroke-width="2" opacity="0.7">
+      <path d="M148 224h110M148 244h100M136 264h124"/>
+    </g>
+  </g>
+
+  <!-- graduation cap -->
+  <g>
+    <path d="M200 120 276 154 200 188 124 154Z" fill="#0c1f33"/>
+    <path d="M200 120 276 154 200 188 124 154Z" fill="none" stroke="#1b3a56" stroke-width="1.5"/>
+    <path d="M162 172v22c0 10 17 18 38 18s38-8 38-18v-22l-38 17Z" fill="#1b3a56"/>
+    <path d="M268 158v34" stroke="#f2c14e" stroke-width="2.5"/>
+    <circle cx="268" cy="196" r="6" fill="#f2c14e"/>
+    <circle cx="268" cy="196" r="6" fill="none" stroke="#c89a4b" stroke-width="1"/>
+    <path d="M200 122v-6" stroke="#f2c14e" stroke-width="2"/>
+  </g>
+
+  <!-- sparkles + coin -->
+  <g stroke="#f2c14e" stroke-width="2" stroke-linecap="round" opacity="0.9">
+    <path d="M118 112l4 8 8 4-8 4-4 8-4-8-8-4 8-4Z" fill="#f2c14e" stroke="none"/>
+    <path d="M286 106v10M281 111h10"/>
+    <path d="M104 178v8M100 182h8"/>
+  </g>
+  <circle cx="306" cy="238" r="16" fill="#f2c14e" stroke="#c89a4b" stroke-width="1.5"/>
+  <text x="306" y="244" text-anchor="middle" font-family="'Plus Jakarta Sans','Segoe UI',Arial,sans-serif" font-size="14" font-weight="700" fill="#a8530a">&#8377;</text>
+</svg>

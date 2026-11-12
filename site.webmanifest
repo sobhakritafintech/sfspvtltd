@@ -1,0 +1,45 @@
+{
+  "name": "Sobhakrita Fintech Solutions Private Limited",
+  "short_name": "Sobhakrita",
+  "description": "Loan facilitator in Chittoor, Andhra Pradesh. Compare personal, business, home, mortgage, car, education and industrial loans from banks and RBI-regulated NBFCs.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbf7ef",
+  "theme_color": "#0c1f33",
+  "categories": ["finance", "business"],
+  "icons": [
+    {
+      "src": "resources/brand/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "resources/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Apply for a loan",
+      "short_name": "Apply",
+      "url": "./apply.html"
+    },
+    {
+      "name": "EMI calculator",
+      "short_name": "EMI",
+      "url": "./emi-calculator.html"
+    },
+    {
+      "name": "Book a call",
+      "short_name": "Book",
+      "url": "./book-a-call.html"
+    }
+  ]
+}

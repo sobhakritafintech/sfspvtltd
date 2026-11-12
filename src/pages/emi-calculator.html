@@ -1,0 +1,187 @@
+<!--@title: EMI Calculator | Home, Personal & Car Loan EMI | Sobhakrita Fintech-->
+<!--@desc: Calculate your loan EMI in seconds with Sobhakrita Fintech Solutions. Adjust amount, interest rate and tenure, see total interest and a year-wise repayment schedule.-->
+<!--@slug: emi-calculator.html-->
+<!--@page: emi-->
+
+<main id="main">
+
+  <section class="page-hero">
+    <div class="container">
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumb">
+          <li><a href="index.html">Home</a></li>
+          <li class="sep" aria-hidden="true">/</li>
+          <li aria-current="page">EMI calculator</li>
+        </ol>
+      </nav>
+      <span class="eyebrow">Plan with clarity</span>
+      <h1 class="display-xl">EMI calculator</h1>
+      <p class="lead">See exactly what a loan costs each month — and over its full life. Adjust the amount, rate and tenure below. The numbers update instantly, in rupees and Indian lakh/crore format.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      <div class="loan-tabs no-print" role="group" aria-label="Choose a loan type">
+        <button class="loan-tab is-active" type="button" data-loan-tab aria-pressed="true" data-amount="4000000" data-rate="8.75" data-tenure="20" data-max-amount="20000000" data-max-tenure="30">Home loan</button>
+        <button class="loan-tab" type="button" data-loan-tab aria-pressed="false" data-amount="500000" data-rate="12" data-tenure="5" data-max-amount="5000000" data-max-tenure="7">Personal loan</button>
+        <button class="loan-tab" type="button" data-loan-tab aria-pressed="false" data-amount="800000" data-rate="9.5" data-tenure="5" data-max-amount="5000000" data-max-tenure="7">Car loan</button>
+        <button class="loan-tab" type="button" data-loan-tab aria-pressed="false" data-amount="1500000" data-rate="14" data-tenure="4" data-max-amount="7500000" data-max-tenure="7">Business loan</button>
+        <button class="loan-tab" type="button" data-loan-tab aria-pressed="false" data-amount="1000000" data-rate="11" data-tenure="7" data-max-amount="7500000" data-max-tenure="15">Education loan</button>
+      </div>
+
+      <div class="calc-card" data-calc>
+        <div class="calc-layout">
+          <div>
+            <div class="calc-field">
+              <div class="calc-field-head">
+                <label for="emiAmount">Loan amount</label>
+                <span class="calc-value">₹<input id="emiAmount" type="number" inputmode="numeric" data-emi-amount value="4000000" min="50000" max="20000000" step="10000" aria-label="Loan amount in rupees"><span class="unit">INR</span></span>
+              </div>
+              <input type="range" data-range-amount min="50000" max="20000000" step="10000" value="4000000" aria-label="Loan amount slider">
+              <div class="range-scale"><span>₹50,000</span><span>₹2,00,00,000</span></div>
+            </div>
+
+            <div class="calc-field">
+              <div class="calc-field-head">
+                <label for="emiRate">Interest rate (p.a.)</label>
+                <span class="calc-value"><input id="emiRate" type="number" inputmode="decimal" data-emi-rate value="8.75" min="7" max="24" step="0.05" aria-label="Annual interest rate"><span class="unit">%</span></span>
+              </div>
+              <input type="range" data-range-rate min="7" max="24" step="0.05" value="8.75" aria-label="Interest rate slider">
+              <div class="range-scale"><span>7%</span><span>24%</span></div>
+            </div>
+
+            <div class="calc-field" style="margin-bottom:0">
+              <div class="calc-field-head">
+                <label for="emiTenure">Tenure</label>
+                <span class="calc-value"><input id="emiTenure" type="number" inputmode="numeric" data-emi-tenure value="20" min="1" max="30" step="1" aria-label="Loan tenure in years"><span class="unit">years</span></span>
+              </div>
+              <input type="range" data-range-tenure min="1" max="30" step="1" value="20" aria-label="Loan tenure slider">
+              <div class="range-scale"><span>1 year</span><span>30 years</span></div>
+            </div>
+
+            <div class="notice mt-3 no-print">
+              <svg width="17" height="17" aria-hidden="true"><use href="#i-lock"/></svg>
+              <span>This calculator runs entirely in your browser. Nothing you type is stored or sent to us.</span>
+            </div>
+          </div>
+
+          <div class="calc-result">
+            <span class="label">Your monthly EMI</span>
+            <div class="calc-emi" data-out-emi>₹0 <small>/ month</small></div>
+            <div class="calc-breakdown">
+              <div class="calc-row"><span><i class="legend-dot" style="background:#f2a03d"></i>Principal</span><b data-out-principal>₹0</b></div>
+              <div class="calc-row"><span><i class="legend-dot" style="background:#12866a"></i>Total interest</span><b data-out-interest>₹0</b></div>
+              <div class="calc-row"><span>Total payable</span><b data-out-total>₹0</b></div>
+            </div>
+
+            <div class="donut-wrap">
+              <svg class="donut" viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="42" stroke="#12866a" data-donut-interest stroke-dasharray="132 264" stroke-dashoffset="-132"/>
+                <circle cx="50" cy="50" r="42" stroke="#f2a03d" data-donut-principal stroke-dasharray="132 264" stroke-dashoffset="0"/>
+              </svg>
+              <div class="donut-legend">
+                <span><i class="legend-dot" style="background:#f2a03d"></i>Principal repayment</span>
+                <span><i class="legend-dot" style="background:#12866a"></i>Cost of borrowing</span>
+              </div>
+            </div>
+
+            <p class="calc-note" data-emi-summary>Adjust the sliders to see your EMI.</p>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)">
+          <p style="font-size:.78rem;color:var(--muted-2);margin:0;max-width:56ch">Indicative only. EMI excludes processing fees, insurance, stamp duty and other lender charges. Actual EMI may differ.</p>
+          <div class="btn-row no-print">
+            <button class="btn btn-ghost btn-sm" type="button" data-print>
+              <svg width="15" height="15" aria-hidden="true"><use href="#i-file"/></svg>
+              Print / save as PDF
+            </button>
+            <a class="btn btn-primary btn-sm" href="apply.html">Check eligibility <svg width="15" height="15" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <details class="faq-item mt-4">
+        <summary>Year-wise repayment schedule</summary>
+        <div class="faq-body" style="padding:0 0 8px">
+          <div class="table-wrap">
+            <table class="data" style="min-width:640px">
+              <thead>
+                <tr><th>Year</th><th>Principal repaid</th><th>Interest paid</th><th>Balance outstanding</th></tr>
+              </thead>
+              <tbody data-amort-body>
+                <tr><td colspan="4">Adjust the calculator to generate the schedule.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.74rem;color:var(--muted-2);padding:12px 4px 0">Year-wise figures are indicative and assume a constant interest rate with no prepayment.</p>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="section section-cream">
+    <div class="container split" style="align-items:start">
+      <div class="reveal">
+        <span class="eyebrow">The maths, simply</span>
+        <h2 class="display-lg">How your EMI is calculated</h2>
+        <p>EMI stands for Equated Monthly Instalment — the fixed amount you pay every month until the loan is closed. It contains both interest and principal, in proportions that shift over time.</p>
+        <div class="table-wrap" style="padding:20px;background:#fff">
+          <p style="font-family:Georgia,serif;font-size:1.05rem;margin:0 0 10px;color:var(--ink)">EMI = P × r × (1 + r)<sup>n</sup> ÷ [(1 + r)<sup>n</sup> − 1]</p>
+          <p style="font-size:.82rem;color:var(--muted);margin:0">P = principal · r = monthly interest rate (annual rate ÷ 12 ÷ 100) · n = number of monthly instalments</p>
+        </div>
+        <p class="mt-2">In the early years, most of your EMI goes towards interest. As the balance falls, a larger share goes towards principal. That is why prepaying early saves more than prepaying late.</p>
+      </div>
+
+      <div class="reveal reveal-d1">
+        <div class="value-card" style="padding:26px">
+          <h3 style="font-size:1.05rem">Four ways to reduce your EMI</h3>
+          <ul class="check-list" style="margin-top:12px">
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg> <span><strong>Improve your credit score.</strong> A 750+ CIBIL score can unlock a meaningfully lower rate.</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg> <span><strong>Add a co-applicant.</strong> A second income can raise eligibility and improve pricing.</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg> <span><strong>Choose a longer tenure carefully.</strong> It lowers the EMI but raises total interest — use our schedule to see the trade-off.</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#i-check"/></svg> <span><strong>Make part-prepayments.</strong> Even one extra EMI a year can cut years off a long home loan.</span></li>
+          </ul>
+        </div>
+        <div class="notice mt-3">
+          <svg width="17" height="17" aria-hidden="true"><use href="#i-calc"/></svg>
+          <span><strong>Rule of thumb:</strong> keep all your EMIs together below 40–50% of your net monthly income. If a proposed EMI pushes you past that, a smaller loan is usually the wiser choice.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <div class="section-head is-center reveal">
+        <span class="eyebrow eyebrow-center">Calculator questions</span>
+        <h2 class="display-md">EMI FAQs</h2>
+      </div>
+      <div class="faq reveal">
+        <details class="faq-item" open>
+          <summary>Is this EMI calculator accurate?</summary>
+          <div class="faq-body"><p>It uses the standard reducing-balance formula that banks and NBFCs use for most retail loans. Your actual EMI may differ slightly due to the lender's rounding, processing fee capitalisation, insurance bundling or a different day-count convention.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Does the EMI change during the loan?</summary>
+          <div class="faq-body"><p>On a fixed-rate loan, the EMI stays constant. On a floating-rate loan, the EMI or the tenure can change when the benchmark rate moves. Your lender must communicate any reset in advance.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>Should I choose a longer tenure to lower the EMI?</summary>
+          <div class="faq-body"><p>A longer tenure improves monthly affordability but increases total interest. Choose the shortest tenure whose EMI you can comfortably service in a bad month — not the longest one you can technically qualify for.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary>What is a good EMI-to-income ratio?</summary>
+          <div class="faq-body"><p>Most lenders prefer total EMIs below 40–50% of net monthly income. Staying under 40% leaves room for emergencies and protects your credit profile.</p></div>
+        </details>
+      </div>
+      <div class="text-center mt-4">
+        <a class="btn btn-primary btn-lg" href="apply.html">Get a personalised EMI quote <svg width="16" height="16" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+</main>

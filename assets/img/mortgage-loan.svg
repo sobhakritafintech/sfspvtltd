@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Loan against property illustration with property papers, seal and keys">
+  <defs>
+    <linearGradient id="m-arch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c89a4b"/>
+      <stop offset="1" stop-color="#8a5a1f"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="#f8efdd"/>
+  <circle cx="200" cy="142" r="128" fill="#f2dfc0"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110Z" fill="url(#m-arch)"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110" fill="none" stroke="#f2c14e" stroke-width="2" opacity="0.55"/>
+
+  <!-- document -->
+  <g transform="rotate(-5 200 170)">
+    <rect x="136" y="86" width="128" height="170" rx="4" fill="#0c1f33" opacity="0.18"/>
+    <rect x="132" y="82" width="128" height="170" rx="4" fill="#fbf3e4" stroke="#d8c3a2" stroke-width="1.5"/>
+    <path d="M236 82h24v24Z" fill="#e8dccb"/>
+    <path d="M236 82h24v24" fill="none" stroke="#d8c3a2" stroke-width="1.5"/>
+
+    <!-- small house -->
+    <path d="M174 128l26-20 26 20v22h-52Z" fill="#0e6b54"/>
+    <path d="M166 130l34-28 34 28" fill="none" stroke="#12866a" stroke-width="3" stroke-linecap="round"/>
+    <rect x="192" y="136" width="16" height="14" fill="#fbf3e4"/>
+
+    <g stroke="#c9a97c" stroke-width="3" stroke-linecap="round">
+      <path d="M150 164h80M150 176h92M150 188h70"/>
+      <path d="M150 206h40M222 206h22"/>
+    </g>
+    <path d="M150 228c10-8 18 6 28-2s16 4 24-2" stroke="#1b3a56" stroke-width="1.6" fill="none"/>
+    <path d="M150 234h72" stroke="#d8c3a2" stroke-width="1"/>
+
+    <!-- seal -->
+    <g transform="rotate(8 238 226)">
+      <path d="M228 240l-6 18 10-6 6 10 4-18Z" fill="#b4321f"/>
+      <path d="M250 240l8 18-10-6-6 10-2-18Z" fill="#b4321f" opacity="0.85"/>
+      <circle cx="240" cy="224" r="19" fill="#dd7517" stroke="#a8530a" stroke-width="1.5"/>
+      <circle cx="240" cy="224" r="14" fill="none" stroke="#fbe3bc" stroke-width="1.2" stroke-dasharray="2 3"/>
+      <path d="M234 224l4 4 8-9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- keys -->
+  <g transform="rotate(-14 122 240)">
+    <circle cx="110" cy="240" r="11" fill="none" stroke="#f2c14e" stroke-width="6"/>
+    <rect x="122" y="237" width="36" height="6" rx="3" fill="#f2c14e"/>
+    <rect x="142" y="243" width="6" height="10" rx="2" fill="#f2c14e"/>
+    <rect x="152" y="243" width="6" height="10" rx="2" fill="#f2c14e"/>
+  </g>
+
+  <circle cx="312" cy="130" r="13" fill="#f6d183" stroke="#c89a4b" stroke-width="1.4"/>
+  <text x="312" y="135" text-anchor="middle" font-family="'Plus Jakarta Sans','Segoe UI',Arial,sans-serif" font-size="11" font-weight="700" fill="#a8530a">&#8377;</text>
+  <circle cx="96" cy="150" r="8" fill="#f6d183" stroke="#c89a4b" stroke-width="1.2" opacity="0.9"/>
+</svg>

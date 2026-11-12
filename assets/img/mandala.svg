@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" fill="none" aria-hidden="true">
+  <g stroke="#c89a4b" stroke-width="1.4" opacity="0.9">
+    <circle cx="200" cy="200" r="36"/>
+    <circle cx="200" cy="200" r="52" stroke-dasharray="2 6"/>
+    <circle cx="200" cy="200" r="96"/>
+    <circle cx="200" cy="200" r="132" stroke-dasharray="4 8"/>
+    <circle cx="200" cy="200" r="176"/>
+  </g>
+  <g stroke="#dd7517" stroke-width="1.6" opacity="0.75">
+    <g id="petal">
+      <path d="M200 68c14 22 14 44 0 62-14-18-14-40 0-62Z"/>
+      <path d="M200 148c9 9 9 18 0 27-9-9-9-18 0-27Z" opacity="0.5"/>
+    </g>
+    <use href="#petal" transform="rotate(30 200 200)"/>
+    <use href="#petal" transform="rotate(60 200 200)"/>
+    <use href="#petal" transform="rotate(90 200 200)"/>
+    <use href="#petal" transform="rotate(120 200 200)"/>
+    <use href="#petal" transform="rotate(150 200 200)"/>
+    <use href="#petal" transform="rotate(180 200 200)"/>
+    <use href="#petal" transform="rotate(210 200 200)"/>
+    <use href="#petal" transform="rotate(240 200 200)"/>
+    <use href="#petal" transform="rotate(270 200 200)"/>
+    <use href="#petal" transform="rotate(300 200 200)"/>
+    <use href="#petal" transform="rotate(330 200 200)"/>
+  </g>
+  <g stroke="#0e6b54" stroke-width="1.2" opacity="0.5">
+    <circle cx="200" cy="200" r="16"/>
+    <path d="M200 184v32M184 200h32M189 189l22 22M211 189l-22 22"/>
+  </g>
+</svg>
