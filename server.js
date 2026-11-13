@@ -170,6 +170,85 @@ async function sendLeadEmail(lead) {
   return { ok: true, via: "formsubmit" };
 }
 
+async function sendWhatsAppNotification(lead) {
+  const message = [
+    "New Sobhakrita chat query",
+    "Name: " + lead.name,
+    "Phone: " + lead.phone,
+    "Email: " + (lead.email || "Not provided"),
+    "Language: " + lead.language,
+    "Page: " + (lead.page || "Homepage chatbot"),
+    "Question: " + lead.question
+  ].join("\n");
+
+  const webhook = process.env.WHATSAPP_WEBHOOK_URL;
+  const recipients = (process.env.WHATSAPP_TO || "")
+    .split(",")
+    .map((phone) => phone.trim().replace(/\D/g, ""))
+    .filter(Boolean);
+
+  if (webhook) {
+    const response = await fetch(webhook, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to: recipients, message, lead })
+    });
+    if (!response.ok) throw new Error("WhatsApp webhook returned " + response.status);
+    return { ok: true, via: "webhook" };
+  }
+
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+  if (!phoneNumberId || !accessToken || !recipients.length) {
+    throw new Error("WhatsApp Cloud API is not configured");
+  }
+
+  const apiVersion = process.env.WHATSAPP_API_VERSION || "v23.0";
+  const templateName = process.env.WHATSAPP_TEMPLATE_NAME;
+  const languageCode = process.env.WHATSAPP_TEMPLATE_LANGUAGE || "en_US";
+  const results = await Promise.allSettled(recipients.map(async (to) => {
+    const payload = templateName
+      ? {
+          messaging_product: "whatsapp",
+          to,
+          type: "template",
+          template: {
+            name: templateName,
+            language: { code: languageCode },
+            components: [{
+              type: "body",
+              parameters: [lead.name, lead.phone, lead.email || "Not provided", lead.language, lead.question]
+                .map((text) => ({ type: "text", text }))
+            }]
+          }
+        }
+      : {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to,
+          type: "text",
+          text: { preview_url: false, body: message }
+        };
+
+    const response = await fetch(
+      "https://graph.facebook.com/" + apiVersion + "/" + encodeURIComponent(phoneNumberId) + "/messages",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+    if (!response.ok) throw new Error("WhatsApp Cloud API returned " + response.status);
+  }));
+
+  const sent = results.filter((result) => result.status === "fulfilled").length;
+  if (!sent) throw new Error("WhatsApp message could not be delivered");
+  return { ok: true, via: "cloud-api", recipientsSent: sent };
+}
+
 async function sendSms(to, message) {
   if (process.env.SMS_WEBHOOK_URL) {
     const response = await fetch(process.env.SMS_WEBHOOK_URL, {
@@ -209,14 +288,30 @@ async function notifyTeam(lead) {
   const summary =
     "New sobhi query from " + lead.name + " (" + lead.phone + "): " + lead.question;
   const safeSummary = summary.length > 300 ? summary.slice(0, 297) + "..." : summary;
+  const smsConfigured = Boolean(
+    process.env.SMS_WEBHOOK_URL ||
+    (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_FROM)
+  );
+  const whatsappConfigured = Boolean(
+    process.env.WHATSAPP_WEBHOOK_URL ||
+    (process.env.WHATSAPP_PHONE_NUMBER_ID && process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_TO)
+  );
 
-  const [email, sms] = await Promise.allSettled([
+  const [email, sms, whatsapp] = await Promise.allSettled([
     sendLeadEmail(lead),
-    Promise.allSettled(NOTIFY_PHONES.map((phone) => sendSms(phone, safeSummary)))
+    smsConfigured
+      ? Promise.allSettled(NOTIFY_PHONES.map((phone) => sendSms(phone, safeSummary)))
+      : Promise.resolve([]),
+    whatsappConfigured ? sendWhatsAppNotification(lead) : Promise.resolve({ ok: false, skipped: true })
   ]);
 
   return {
     email: email.status === "fulfilled" ? email.value : { ok: false, error: email.reason.message },
+    smsConfigured,
+    whatsappConfigured,
+    whatsapp: whatsapp.status === "fulfilled"
+      ? whatsapp.value
+      : { ok: false, error: whatsapp.reason.message },
     sms:
       sms.status === "fulfilled"
         ? sms.value.map((result) =>
@@ -258,8 +353,18 @@ async function handleChatLead(req, res) {
   notifications.sms.forEach((result) => {
     if (!result.ok) console.error("Chat lead SMS failed:", result.error);
   });
+  if (notifications.whatsappConfigured && !notifications.whatsapp.ok) {
+    console.error("Chat lead WhatsApp failed:", notifications.whatsapp.error);
+  }
 
-  return sendJson(res, 200, { ok: true, emailSent: notifications.email.ok });
+  return sendJson(res, 200, {
+    ok: true,
+    emailSent: notifications.email.ok,
+    smsConfigured: notifications.smsConfigured,
+    smsSent: notifications.sms.some((result) => result.ok),
+    whatsappConfigured: notifications.whatsappConfigured,
+    whatsappSent: notifications.whatsapp.ok
+  });
 }
 
 async function handleChatAsk(req, res) {

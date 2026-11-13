@@ -58,11 +58,22 @@ All settings are optional environment variables for `server.js`:
 | `CONTACT_EMAIL` | Mailbox that receives chat queries | `services@sobhakrita.com` |
 | `CHAT_NOTIFY_PHONES` | Comma-separated mobile numbers for SMS alerts | `+918886633118,+918886633119` |
 | `LEAD_EMAIL_WEBHOOK` | POST endpoint that delivers email (for example a transactional email service) | — |
+| `WHATSAPP_WEBHOOK_URL` | POST endpoint that sends a WhatsApp notification | — |
+| `WHATSAPP_TO` | Comma-separated WhatsApp recipient numbers in international format | — |
+| `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN` | Meta WhatsApp Cloud API sender ID and access token | — |
+| `WHATSAPP_API_VERSION` | Meta Graph API version | `v23.0` |
+| `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_TEMPLATE_LANGUAGE` | Optional approved template and language (template body expects name, phone, email, language, question) | — |
 | `SMS_WEBHOOK_URL` | POST endpoint that accepts `{ "to", "message" }` | — |
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | Twilio SMS credentials | — |
 | `PORT` | HTTP port | `3000` |
 
 Without an email webhook the server uses FormSubmit's keyless relay. The first
 delivery to a new inbox requires clicking FormSubmit's activation link once.
-Without an SMS provider, SMS notifications are skipped and the failure is
-logged; the lead is still saved and emailed. Never commit `data/`.
+Open the site through HTTP(S), not as a local `file://` page, to submit chat
+leads. Without an SMS provider, SMS alerts are skipped; the lead is still saved
+to `data/chat-leads.jsonl`, while email delivery depends on the configured relay.
+Configure either `WHATSAPP_WEBHOOK_URL` or the Meta Cloud API variables to send
+chat queries to WhatsApp in the background. Meta credentials and all other
+secrets belong in the hosting environment, not in source control. The form
+reports success when at least one configured notification channel delivers the
+query. Never commit `data/`.

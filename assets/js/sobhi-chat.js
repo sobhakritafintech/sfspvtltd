@@ -20,18 +20,28 @@
   var closeBtn = root.querySelector("[data-sobhi-close]");
   var langBtn = root.querySelector("[data-sobhi-lang]");
   var langLabel = root.querySelector("[data-sobhi-lang-label]");
+  var greetingPill = document.getElementById("sfsGreetingPill");
+
+  if (greetingPill) {
+    setTimeout(function () {
+      greetingPill.classList.add("is-hidden");
+    }, 5000);
+  }
 
   var state = {
     booted: false,
     busy: false,
-    stage: "language",
+    stage: "chat",
     lang: "en",
     langName: "English",
     history: [],
     pendingQuestion: "",
     awaitingEscalation: false,
+    awaitingFeedback: false,
+    awaitingClarification: false,
     knowledge: [],
-    knowledgePromise: null
+    knowledgePromise: null,
+    lastQuestion: ""
   };
 
   var LANGUAGES = [
@@ -52,20 +62,22 @@
 
   var OPTIONS = [
     { key: "loans", page: "loans", query: "What loan products does Sobhakrita offer? Please list them with amounts and interest rates." },
-    { key: "eligibility", page: "eligibility", query: "What are the eligibility criteria and documents required for loans?" },
+    { key: "eligibility", page: "eligibility", query: "What are the basic eligibility criteria for a loan?" },
+    { key: "documents", page: "apply", query: "What documents do I need to apply?" },
     { key: "fees", page: "fees", query: "What fees and charges does Sobhakrita charge? Are there any hidden charges?" },
     { key: "emi", page: "emi calculator", query: "How do EMI, tenure, repayment and prepayment work?" },
-    { key: "apply", page: "apply", query: "How do I apply for a loan or book a call with Sobhakrita?" },
-    { key: "advisor", query: "I want to talk to an advisor." },
+    { key: "apply", page: "apply", query: "How do I apply online?" },
+    { key: "book", page: "book-a-call", query: "How do I book a free call?" },
+    { key: "advisor", query: "Can I talk to a real person?" },
     { key: "other", query: "" }
   ];
 
   var UI = {
     en: {
       langPrompt: "Please choose your language.",
-      welcome: "Welcome to Sobhakrita Fintech. I'm sobhi. How can I help you today?",
+      welcome: "Hi there! 👋 I'm Sobhi, your virtual assistant from Sobhakrita Fintech Solutions. I'm here to help you explore our loan services, understand application requirements, and find answers to your questions. How can I help you today?",
       choose: "Choose an option below or type your question.",
-      opts: ["Loan information", "Eligibility & documents", "Fees & charges", "EMI & repayment", "Apply or book a call", "Talk to a human"],
+      opts: ["Loan information", "Eligibility", "Documents", "Fees & charges", "EMI & repayment", "Apply for a loan", "Book a call"],
       noContext: "I'm sorry, I don't have that information in the website content.",
       askSubmit: "Would you like to submit your question to our team? Reply Yes or No.",
       yes: "Yes",
@@ -77,8 +89,8 @@
       question: "Your question",
       submit: "Send to Sobhakrita",
       sending: "Sending...",
-      success: "Thank you! Your query has been sent to our team. We will contact you soon.",
-      failure: "I could not send it automatically. Please email services@sobhakrita.com or call +91 88866 33119.",
+      success: "Thanks! We’ve received your query. Our team will acknowledge it within one working day (Mon–Sat, 9 AM–6 PM IST).",
+      failure: "Sorry, a technical issue stopped us from submitting your query. Please try again, or email services@sobhakrita.com or call +91 88866 33119.",
       invalid: "Please check the highlighted details.",
       otherPrompt: "Please type the name of your language. I will reply in that language.",
       humanIntro: "Sure. Please share your details below and our advisor will call you."
@@ -87,7 +99,7 @@
       langPrompt: "దయచేసి మీ భాషను ఎంచుకోండి.",
       welcome: "సోభకృత ఫిన్‌టెక్‌కు స్వాగతం. నేను షోబీ. ఈరోజు మీకు ఎలా సహాయం చేయగలను?",
       choose: "క్రింద ఒక ఎంపికను ఎంచుకోండి లేదా మీ ప్రశ్నను టైప్ చేయండి.",
-      opts: ["రుణ సమాచారం", "అర్హత & పత్రాలు", "రుసుములు & ఛార్జీలు", "EMI & తిరిగి చెల్లింపు", "దరఖాస్తు లేదా కాల్ బుక్ చేయండి", "మనిషితో మాట్లాడండి"],
+      opts: ["రుణ సమాచారం", "అర్హత", "పత్రాలు", "రుసుములు & ఛార్జీలు", "EMI & తిరిగి చెల్లింపు", "రుణానికి దరఖాస్తు", "కాల్ బుక్ చేయండి"],
       noContext: "క్షమించండి, వెబ్‌సైట్ సమాచారంలో ఆ వివరాలు నాకు లేవు.",
       askSubmit: "మీ ప్రశ్నను మా బృందానికి పంపాలా? అవును లేదా కాదు అని సమాధానం ఇవ్వండి.",
       yes: "అవును",
@@ -99,8 +111,8 @@
       question: "మీ ప్రశ్న",
       submit: "సోభకృతకు పంపండి",
       sending: "పంపుతోంది...",
-      success: "ధన్యవాదాలు! మీ ప్రశ్న మా బృందానికి పంపబడింది. మేము త్వరలో సంప్రదిస్తాము.",
-      failure: "స్వయంచాలకంగా పంపలేకపోయాను. దయచేసి services@sobhakrita.com కు ఇమెయిల్ చేయండి లేదా +91 88866 33119 కు కాల్ చేయండి.",
+      success: "ధన్యవాదాలు! మీ ప్రశ్న మాకు అందింది. మా బృందం ఒక పని దినంలో (సోమ–శని, ఉదయం 9–సాయంత్రం 6 IST) అందినట్లు తెలియజేస్తుంది.",
+      failure: "క్షమించండి, సాంకేతిక సమస్య వల్ల మీ ప్రశ్నను పంపలేకపోయాము. మళ్లీ ప్రయత్నించండి లేదా services@sobhakrita.com కు ఇమెయిల్ చేయండి, లేక +91 88866 33119 కు కాల్ చేయండి.",
       invalid: "దయచేసి హైలైట్ చేసిన వివరాలను తనిఖీ చేయండి.",
       otherPrompt: "దయచేసి మీ భాష పేరును టైప్ చేయండి. నేను ఆ భాషలో సమాధానం ఇస్తాను.",
       humanIntro: "సరే. దయచేసి క్రింద మీ వివరాలను ఇవ్వండి, మా బృందం మీకు కాల్ చేస్తుంది."
@@ -109,7 +121,7 @@
       langPrompt: "कृपया अपनी भाषा चुनें।",
       welcome: "सोभकृता फिनटेक में आपका स्वागत है। मैं शोबी हूँ। आज मैं आपकी कैसे मदद कर सकती हूँ?",
       choose: "नीचे एक विकल्प चुनें या अपना सवाल लिखें।",
-      opts: ["ऋण की जानकारी", "पात्रता और दस्तावेज़", "शुल्क और चार्ज", "EMI और पुनर्भुगतान", "आवेदन करें या कॉल बुक करें", "किसी व्यक्ति से बात करें"],
+      opts: ["ऋण की जानकारी", "पात्रता", "दस्तावेज़", "शुल्क और चार्ज", "EMI और पुनर्भुगतान", "ऋण के लिए आवेदन करें", "कॉल बुक करें"],
       noContext: "क्षमा करें, वेबसाइट की जानकारी में मुझे यह जानकारी नहीं मिली।",
       askSubmit: "क्या आप अपना सवाल हमारी टीम को भेजना चाहते हैं? हाँ या नहीं लिखें।",
       yes: "हाँ",
@@ -121,8 +133,8 @@
       question: "आपका सवाल",
       submit: "सोभकृता को भेजें",
       sending: "भेज रहे हैं...",
-      success: "धन्यवाद! आपका सवाल हमारी टीम को भेज दिया गया है। हम जल्द संपर्क करेंगे।",
-      failure: "मैं इसे अपने आप नहीं भेज सकी। कृपया services@sobhakrita.com पर ईमेल करें या +91 88866 33119 पर कॉल करें।",
+      success: "धन्यवाद! आपका सवाल हमें मिल गया है। हमारी टीम एक कार्यदिवस के भीतर (सोम–शनि, सुबह 9–शाम 6 IST) प्राप्ति की पुष्टि करेगी।",
+      failure: "क्षमा करें, तकनीकी समस्या के कारण आपका सवाल भेजा नहीं जा सका। कृपया फिर से कोशिश करें या services@sobhakrita.com पर ईमेल करें अथवा +91 88866 33119 पर कॉल करें।",
       invalid: "कृपया चिह्नित जानकारी जाँचें।",
       otherPrompt: "कृपया अपनी भाषा का नाम लिखें। मैं उसी भाषा में जवाब दूँगी।",
       humanIntro: "ठीक है। कृपया नीचे अपनी जानकारी दें, हमारी टीम आपको कॉल करेगी।"
@@ -131,7 +143,7 @@
       langPrompt: "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்.",
       welcome: "சோபகிருத ஃபின்டெக்கிற்கு வருக. நான் ஷோபி. இன்று நான் எப்படி உதவலாம்?",
       choose: "கீழே ஒரு விருப்பத்தைத் தேர்ந்தெடுக்கவும் அல்லது உங்கள் கேள்வியைத் தட்டச்சு செய்யவும்.",
-      opts: ["கடன் தகவல்", "தகுதி & ஆவணங்கள்", "கட்டணங்கள் & கட்டண விவரங்கள்", "EMI & திருப்பிச் செலுத்துதல்", "விண்ணப்பிக்க அல்லது அழைப்பு பதிவு", "மனிதரிடம் பேசுங்கள்"],
+      opts: ["கடன் தகவல்", "தகுதி", "ஆவணங்கள்", "கட்டணங்கள் & கட்டண விவரங்கள்", "EMI & திருப்பிச் செலுத்துதல்", "கடனுக்கு விண்ணப்பிக்கவும்", "அழைப்பை பதிவு செய்யவும்"],
       noContext: "மன்னிக்கவும், வலைத்தளத் தகவலில் அந்த விவரம் என்னிடம் இல்லை.",
       askSubmit: "உங்கள் கேள்வியை எங்கள் குழுவுக்கு அனுப்ப விரும்புகிறீர்களா? ஆம் அல்லது இல்லை என்று பதிலளிக்கவும்.",
       yes: "ஆம்",
@@ -143,8 +155,8 @@
       question: "உங்கள் கேள்வி",
       submit: "சோபகிருதாவுக்கு அனுப்பு",
       sending: "அனுப்பப்படுகிறது...",
-      success: "நன்றி! உங்கள் கேள்வி எங்கள் குழுவுக்கு அனுப்பப்பட்டது. விரைவில் தொடர்பு கொள்வோம்.",
-      failure: "தானாக அனுப்ப முடியவில்லை. services@sobhakrita.com க்கு மின்னஞ்சல் செய்யவும் அல்லது +91 88866 33119 க்கு அழைக்கவும்.",
+      success: "நன்றி! உங்கள் கேள்வி எங்களுக்கு கிடைத்தது. எங்கள் குழு ஒரு வேலை நாளுக்குள் (திங்கள்–சனி, காலை 9–மாலை 6 IST) பெற்றதை உறுதிப்படுத்தும்.",
+      failure: "மன்னிக்கவும், தொழில்நுட்பக் கோளாறால் உங்கள் கேள்வியை அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும் அல்லது services@sobhakrita.com க்கு மின்னஞ்சல் செய்யவும், அல்லது +91 88866 33119 க்கு அழைக்கவும்.",
       invalid: "குறிக்கப்பட்ட விவரங்களைச் சரிபார்க்கவும்.",
       otherPrompt: "உங்கள் மொழியின் பெயரைத் தட்டச்சு செய்யவும். அந்த மொழியில் பதிலளிப்பேன்.",
       humanIntro: "சரி. கீழே உங்கள் விவரங்களைப் பகிரவும், எங்கள் குழு உங்களை அழைக்கும்."
@@ -153,7 +165,7 @@
       langPrompt: "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
       welcome: "ಸೋಭಕೃತ ಫಿನ್‌ಟೆಕ್‌ಗೆ ಸ್ವಾಗತ. ನಾನು ಶೋಬಿ. ಇಂದು ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?",
       choose: "ಕೆಳಗಿನ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ.",
-      opts: ["ಸಾಲದ ಮಾಹಿತಿ", "ಅರ್ಹತೆ ಮತ್ತು ದಾಖಲೆಗಳು", "ಶುಲ್ಕ ಮತ್ತು ಶುಲ್ಕಗಳು", "EMI ಮತ್ತು ಮರುಪಾವತಿ", "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ ಅಥವಾ ಕರೆ ಬುಕ್ ಮಾಡಿ", "ಮನುಷ್ಯರೊಂದಿಗೆ ಮಾತನಾಡಿ"],
+      opts: ["ಸಾಲದ ಮಾಹಿತಿ", "ಅರ್ಹತೆ", "ದಾಖಲೆಗಳು", "ಶುಲ್ಕ ಮತ್ತು ಶುಲ್ಕಗಳು", "EMI ಮತ್ತು ಮರುಪಾವತಿ", "ಸಾಲಕ್ಕೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ", "ಕರೆ ಬುಕ್ ಮಾಡಿ"],
       noContext: "ಕ್ಷಮಿಸಿ, ವೆಬ್‌ಸೈಟ್ ಮಾಹಿತಿಯಲ್ಲಿ ಆ ವಿವರ ನನಗೆ ಇಲ್ಲ.",
       askSubmit: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಬೇಕೇ? ಹೌದು ಅಥವಾ ಇಲ್ಲ ಎಂದು ಉತ್ತರಿಸಿ.",
       yes: "ಹೌದು",
@@ -165,8 +177,8 @@
       question: "ನಿಮ್ಮ ಪ್ರಶ್ನೆ",
       submit: "ಸೋಭಕೃತಕ್ಕೆ ಕಳುಹಿಸಿ",
       sending: "ಕಳುಹಿಸುತ್ತಿದೆ...",
-      success: "ಧನ್ಯವಾದಗಳು! ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಲಾಗಿದೆ. ನಾವು ಶೀಘ್ರದಲ್ಲೇ ಸಂಪರ್ಕಿಸುತ್ತೇವೆ.",
-      failure: "ನಾನು ಅದನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು services@sobhakrita.com ಗೆ ಇಮೇಲ್ ಮಾಡಿ ಅಥವಾ +91 88866 33119 ಗೆ ಕರೆ ಮಾಡಿ.",
+      success: "ಧನ್ಯವಾದಗಳು! ನಿಮ್ಮ ಪ್ರಶ್ನೆ ನಮಗೆ ತಲುಪಿದೆ. ನಮ್ಮ ತಂಡ ಒಂದು ಕೆಲಸದ ದಿನದೊಳಗೆ (ಸೋಮ–ಶನಿ, ಬೆಳಿಗ್ಗೆ 9–ಸಂಜೆ 6 IST) ಸ್ವೀಕೃತಿಯನ್ನು ದೃಢೀಕರಿಸುತ್ತದೆ.",
+      failure: "ಕ್ಷಮಿಸಿ, ತಾಂತ್ರಿಕ ಸಮಸ್ಯೆಯಿಂದ ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಸಲ್ಲಿಸಲಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ services@sobhakrita.com ಗೆ ಇಮೇಲ್ ಮಾಡಿ, ಇಲ್ಲವೇ +91 88866 33119 ಗೆ ಕರೆ ಮಾಡಿ.",
       invalid: "ದಯವಿಟ್ಟು ಗುರುತಿಸಿದ ವಿವರಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
       otherPrompt: "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಭಾಷೆಯ ಹೆಸರನ್ನು ಟೈಪ್ ಮಾಡಿ. ನಾನು ಆ ಭಾಷೆಯಲ್ಲಿ ಉತ್ತರಿಸುತ್ತೇನೆ.",
       humanIntro: "ಸರಿ. ದಯವಿಟ್ಟು ಕೆಳಗೆ ನಿಮ್ಮ ವಿವರಗಳನ್ನು ನೀಡಿ, ನಮ್ಮ ತಂಡ ನಿಮಗೆ ಕರೆ ಮಾಡುತ್ತದೆ."
@@ -175,7 +187,7 @@
       langPrompt: "ദയവായി നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക.",
       welcome: "സോഭകൃത ഫിൻടെക്കിലേക്ക് സ്വാഗതം. ഞാൻ ഷോബി. ഇന്ന് ഞാൻ നിങ്ങളെ എങ്ങനെ സഹായിക്കാം?",
       choose: "ചുവടെയുള്ള ഒരു ഓപ്ഷൻ തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ ചോദ്യം ടൈപ്പ് ചെയ്യുക.",
-      opts: ["വായ്പ വിവരങ്ങൾ", "യോഗ്യതയും രേഖകളും", "ഫീസുകളും ചാർജുകളും", "EMIയും തിരിച്ചടവും", "അപേക്ഷിക്കുക അല്ലെങ്കിൽ കോൾ ബുക്ക് ചെയ്യുക", "ഒരു വ്യക്തിയോട് സംസാരിക്കുക"],
+      opts: ["വായ്പ വിവരങ്ങൾ", "യോഗ്യത", "രേഖകൾ", "ഫീസുകളും ചാർജുകളും", "EMIയും തിരിച്ചടവും", "വായ്പയ്ക്ക് അപേക്ഷിക്കുക", "കോൾ ബുക്ക് ചെയ്യുക"],
       noContext: "ക്ഷമിക്കണം, വെബ്സൈറ്റ് വിവരങ്ങളിൽ ആ വിവരം എനിക്കില്ല.",
       askSubmit: "നിങ്ങളുടെ ചോദ്യം ഞങ്ങളുടെ ടീമിന് അയയ്ക്കണോ? അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് മറുപടി നൽകുക.",
       yes: "അതെ",
@@ -187,8 +199,8 @@
       question: "നിങ്ങളുടെ ചോദ്യം",
       submit: "സോഭകൃതയ്ക്ക് അയയ്ക്കുക",
       sending: "അയയ്ക്കുന്നു...",
-      success: "നന്ദി! നിങ്ങളുടെ ചോദ്യം ഞങ്ങളുടെ ടീമിന് അയച്ചു. ഞങ്ങൾ ഉടൻ ബന്ധപ്പെടും.",
-      failure: "എനിക്ക് അത് യാന്ത്രികമായി അയയ്ക്കാൻ കഴിഞ്ഞില്ല. ദയവായി services@sobhakrita.com ഇമെയിൽ ചെയ്യുക അല്ലെങ്കിൽ +91 88866 33119 വിളിക്കുക.",
+      success: "നന്ദി! നിങ്ങളുടെ ചോദ്യം ഞങ്ങൾക്ക് ലഭിച്ചു. ഒരു പ്രവൃത്തി ദിവസത്തിനുള്ളിൽ (തിങ്കൾ–ശനി, രാവിലെ 9–വൈകിട്ട് 6 IST) ഞങ്ങളുടെ ടീം ലഭിച്ചതായി അറിയിക്കും.",
+      failure: "ക്ഷമിക്കണം, സാങ്കേതിക പ്രശ്നം കാരണം നിങ്ങളുടെ ചോദ്യം സമർപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക, അല്ലെങ്കിൽ services@sobhakrita.com-ലേക്ക് ഇമെയിൽ ചെയ്യുക അല്ലെങ്കിൽ +91 88866 33119-ൽ വിളിക്കുക.",
       invalid: "ദയവായി അടയാളപ്പെടുത്തിയ വിവരങ്ങൾ പരിശോധിക്കുക.",
       otherPrompt: "ദയവായി നിങ്ങളുടെ ഭാഷയുടെ പേര് ടൈപ്പ് ചെയ്യുക. ഞാൻ ആ ഭാഷയിൽ മറുപടി നൽകും.",
       humanIntro: "ശരി. ദയവായി താഴെ നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക, ഞങ്ങളുടെ ടീം നിങ്ങളെ വിളിക്കും."
@@ -197,7 +209,7 @@
       langPrompt: "कृपया तुमची भाषा निवडा.",
       welcome: "सोभकृता फिनटेकमध्ये आपले स्वागत आहे. मी शोबी आहे. आज मी आपली कशी मदत करू शकते?",
       choose: "खालील पर्याय निवडा किंवा तुमचा प्रश्न टाइप करा.",
-      opts: ["कर्जाची माहिती", "पात्रता आणि कागदपत्रे", "शुल्क आणि शुल्के", "EMI आणि परतफेड", "अर्ज करा किंवा कॉल बुक करा", "माणसाशी बोला"],
+      opts: ["कर्जाची माहिती", "पात्रता", "कागदपत्रे", "शुल्क आणि शुल्के", "EMI आणि परतफेड", "कर्जासाठी अर्ज करा", "कॉल बुक करा"],
       noContext: "क्षमस्व, वेबसाइटच्या माहितीत मला ही माहिती मिळाली नाही.",
       askSubmit: "तुमचा प्रश्न आमच्या टीमला पाठवायचा आहे का? होय किंवा नाही असे उत्तर द्या.",
       yes: "होय",
@@ -209,8 +221,8 @@
       question: "तुमचा प्रश्न",
       submit: "सोभकृताला पाठवा",
       sending: "पाठवत आहे...",
-      success: "धन्यवाद! तुमचा प्रश्न आमच्या टीमला पाठवला आहे. आम्ही लवकरच संपर्क करू.",
-      failure: "मी तो स्वयंचलितपणे पाठवू शकले नाही. कृपया services@sobhakrita.com वर ईमेल करा किंवा +91 88866 33119 वर कॉल करा.",
+      success: "धन्यवाद! तुमचा प्रश्न आम्हाला मिळाला आहे. आमची टीम एका कामकाजाच्या दिवसात (सोम–शनि, सकाळी 9–संध्याकाळी 6 IST) पोहोचल्याची पुष्टी करेल.",
+      failure: "क्षमस्व, तांत्रिक समस्येमुळे तुमचा प्रश्न पाठवता आला नाही. पुन्हा प्रयत्न करा किंवा services@sobhakrita.com वर ईमेल करा अथवा +91 88866 33119 वर कॉल करा.",
       invalid: "कृपया चिन्हांकित माहिती तपासा.",
       otherPrompt: "कृपया तुमच्या भाषेचे नाव टाइप करा. मी त्या भाषेत उत्तर देईन.",
       humanIntro: "ठीक आहे. कृपया खाली तुमची माहिती द्या, आमची टीम तुम्हाला कॉल करेल."
@@ -219,7 +231,7 @@
       langPrompt: "অনুগ্রহ করে আপনার ভাষা বেছে নিন।",
       welcome: "সোভাকৃতা ফিনটেকে স্বাগতম। আমি শোভী। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?",
       choose: "নিচে একটি বিকল্প বেছে নিন বা আপনার প্রশ্ন টাইপ করুন।",
-      opts: ["ঋণের তথ্য", "যোগ্যতা ও নথি", "ফি ও চার্জ", "EMI ও পরিশোধ", "আবেদন করুন বা কল বুক করুন", "একজন মানুষের সাথে কথা বলুন"],
+      opts: ["ঋণের তথ্য", "যোগ্যতা", "নথিপত্র", "ফি ও চার্জ", "EMI ও পরিশোধ", "ঋণের জন্য আবেদন করুন", "কল বুক করুন"],
       noContext: "দুঃখিত, ওয়েবসাইটের তথ্যে আমার কাছে সেই তথ্য নেই।",
       askSubmit: "আপনার প্রশ্ন আমাদের টিমে পাঠাতে চান? হ্যাঁ বা না লিখুন।",
       yes: "হ্যাঁ",
@@ -231,8 +243,8 @@
       question: "আপনার প্রশ্ন",
       submit: "সোভাকৃতাকে পাঠান",
       sending: "পাঠানো হচ্ছে...",
-      success: "ধন্যবাদ! আপনার প্রশ্ন আমাদের টিমে পাঠানো হয়েছে। আমরা শীঘ্রই যোগাযোগ করব।",
-      failure: "আমি এটি স্বয়ংক্রিয়ভাবে পাঠাতে পারিনি। অনুগ্রহ করে services@sobhakrita.com এ ইমেল করুন বা +91 88866 33119 এ কল করুন।",
+      success: "ধন্যবাদ! আপনার প্রশ্ন আমরা পেয়েছি। আমাদের টিম এক কর্মদিবসের মধ্যে (সোম–শনি, সকাল ৯টা–সন্ধ্যা ৬টা IST) প্রাপ্তি নিশ্চিত করবে।",
+      failure: "দুঃখিত, প্রযুক্তিগত সমস্যার কারণে আপনার প্রশ্নটি জমা দেওয়া যায়নি। আবার চেষ্টা করুন, অথবা services@sobhakrita.com এ ইমেল করুন বা +91 88866 33119 এ কল করুন।",
       invalid: "অনুগ্রহ করে চিহ্নিত তথ্য পরীক্ষা করুন।",
       otherPrompt: "অনুগ্রহ করে আপনার ভাষার নাম টাইপ করুন। আমি সেই ভাষায় উত্তর দেব।",
       humanIntro: "ঠিক আছে। অনুগ্রহ করে নিচে আপনার তথ্য দিন, আমাদের টিম আপনাকে কল করবে।"
@@ -241,7 +253,7 @@
       langPrompt: "કૃપા કરીને તમારી ભાષા પસંદ કરો.",
       welcome: "સોભકૃતા ફિનટેકમાં આપનું સ્વાગત છે. હું શોબી છું. આજે હું તમને કેવી રીતે મદદ કરી શકું?",
       choose: "નીચેનો વિકલ્પ પસંદ કરો અથવા તમારો પ્રશ્ન લખો.",
-      opts: ["લોન માહિતી", "પાત્રતા અને દસ્તાવેજો", "ફી અને ચાર્જ", "EMI અને ચુકવણી", "અરજી કરો અથવા કૉલ બુક કરો", "વ્યક્તિ સાથે વાત કરો"],
+      opts: ["લોન માહિતી", "પાત્રતા", "દસ્તાવેજો", "ફી અને ચાર્જ", "EMI અને ચુકવણી", "લોન માટે અરજી કરો", "કૉલ બુક કરો"],
       noContext: "માફ કરશો, વેબસાઇટની માહિતીમાં મને આ માહિતી મળી નથી.",
       askSubmit: "તમારો પ્રશ્ન અમારી ટીમને મોકલવો છે? હા અથવા ના લખો.",
       yes: "હા",
@@ -253,8 +265,8 @@
       question: "તમારો પ્રશ્ન",
       submit: "સોભકૃતાને મોકલો",
       sending: "મોકલી રહ્યું છે...",
-      success: "આભાર! તમારો પ્રશ્ન અમારી ટીમને મોકલવામાં આવ્યો છે. અમે ટૂંક સમયમાં સંપર્ક કરીશું.",
-      failure: "હું તેને આપમેળે મોકલી શકી નથી. કૃપા કરીને services@sobhakrita.com પર ઇમેઇલ કરો અથવા +91 88866 33119 પર કૉલ કરો.",
+      success: "આભાર! અમને તમારો પ્રશ્ન મળી ગયો છે. અમારી ટીમ એક કામકાજના દિવસમાં (સોમ–શનિ, સવારે 9થી સાંજે 6 IST) મળ્યાની પુષ્ટિ કરશે.",
+      failure: "માફ કરશો, તકનીકી સમસ્યાને કારણે તમારો પ્રશ્ન મોકલી શકાયો નથી. ફરી પ્રયાસ કરો અથવા services@sobhakrita.com પર ઇમેઇલ કરો, અથવા +91 88866 33119 પર કૉલ કરો.",
       invalid: "કૃપા કરીને ચિહ્નિત માહિતી તપાસો.",
       otherPrompt: "કૃપા કરીને તમારી ભાષાનું નામ લખો. હું તે ભાષામાં જવાબ આપીશ.",
       humanIntro: "ઠીક છે. કૃપા કરીને નીચે તમારી માહિતી આપો, અમારી ટીમ તમને કૉલ કરશે."
@@ -263,7 +275,7 @@
       langPrompt: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ।",
       welcome: "ਸੋਭਕ੍ਰਿਤਾ ਫਿਨਟੈਕ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ। ਮੈਂ ਸ਼ੋਬੀ ਹਾਂ। ਅੱਜ ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦੀ ਹਾਂ?",
       choose: "ਹੇਠਾਂ ਇੱਕ ਵਿਕਲਪ ਚੁਣੋ ਜਾਂ ਆਪਣਾ ਸਵਾਲ ਲਿਖੋ।",
-      opts: ["ਕਰਜ਼ੇ ਦੀ ਜਾਣਕਾਰੀ", "ਯੋਗਤਾ ਅਤੇ ਦਸਤਾਵੇਜ਼", "ਫੀਸ ਅਤੇ ਚਾਰਜ", "EMI ਅਤੇ ਭੁਗਤਾਨ", "ਅਰਜ਼ੀ ਦਿਓ ਜਾਂ ਕਾਲ ਬੁੱਕ ਕਰੋ", "ਕਿਸੇ ਵਿਅਕਤੀ ਨਾਲ ਗੱਲ ਕਰੋ"],
+      opts: ["ਕਰਜ਼ੇ ਦੀ ਜਾਣਕਾਰੀ", "ਯੋਗਤਾ", "ਦਸਤਾਵੇਜ਼", "ਫੀਸ ਅਤੇ ਚਾਰਜ", "EMI ਅਤੇ ਭੁਗਤਾਨ", "ਕਰਜ਼ੇ ਲਈ ਅਰਜ਼ੀ ਦਿਓ", "ਕਾਲ ਬੁੱਕ ਕਰੋ"],
       noContext: "ਮਾਫ਼ ਕਰਨਾ, ਵੈੱਬਸਾਈਟ ਦੀ ਜਾਣਕਾਰੀ ਵਿੱਚ ਮੈਨੂੰ ਇਹ ਜਾਣਕਾਰੀ ਨਹੀਂ ਮਿਲੀ।",
       askSubmit: "ਕੀ ਤੁਸੀਂ ਆਪਣਾ ਸਵਾਲ ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜਣਾ ਚਾਹੁੰਦੇ ਹੋ? ਹਾਂ ਜਾਂ ਨਹੀਂ ਲਿਖੋ।",
       yes: "ਹਾਂ",
@@ -275,8 +287,8 @@
       question: "ਤੁਹਾਡਾ ਸਵਾਲ",
       submit: "ਸੋਭਕ੍ਰਿਤਾ ਨੂੰ ਭੇਜੋ",
       sending: "ਭੇਜ ਰਿਹਾ ਹੈ...",
-      success: "ਧੰਨਵਾਦ! ਤੁਹਾਡਾ ਸਵਾਲ ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਅਸੀਂ ਜਲਦੀ ਸੰਪਰਕ ਕਰਾਂਗੇ।",
-      failure: "ਮੈਂ ਇਸਨੂੰ ਆਪਣੇ ਆਪ ਭੇਜ ਨਹੀਂ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ services@sobhakrita.com 'ਤੇ ਈਮੇਲ ਕਰੋ ਜਾਂ +91 88866 33119 'ਤੇ ਕਾਲ ਕਰੋ।",
+      success: "ਧੰਨਵਾਦ! ਸਾਨੂੰ ਤੁਹਾਡਾ ਸਵਾਲ ਮਿਲ ਗਿਆ ਹੈ। ਸਾਡੀ ਟੀਮ ਇੱਕ ਕੰਮਕਾਜੀ ਦਿਨ ਦੇ ਅੰਦਰ (ਸੋਮ–ਸ਼ਨੀ, ਸਵੇਰੇ 9–ਸ਼ਾਮ 6 IST) ਪ੍ਰਾਪਤੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੇਗੀ।",
+      failure: "ਮਾਫ਼ ਕਰਨਾ, ਤਕਨੀਕੀ ਸਮੱਸਿਆ ਕਰਕੇ ਤੁਹਾਡਾ ਸਵਾਲ ਜਮ੍ਹਾਂ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ services@sobhakrita.com 'ਤੇ ਈਮੇਲ ਕਰੋ, ਜਾਂ +91 88866 33119 'ਤੇ ਕਾਲ ਕਰੋ।",
       invalid: "ਕਿਰਪਾ ਕਰਕੇ ਨਿਸ਼ਾਨ ਲੱਗੀ ਜਾਣਕਾਰੀ ਦੀ ਜਾਂਚ ਕਰੋ।",
       otherPrompt: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਭਾਸ਼ਾ ਦਾ ਨਾਮ ਲਿਖੋ। ਮੈਂ ਉਸ ਭਾਸ਼ਾ ਵਿੱਚ ਜਵਾਬ ਦਿਆਂਗੀ।",
       humanIntro: "ਠੀਕ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੇਠਾਂ ਆਪਣੀ ਜਾਣਕਾਰੀ ਦਿਓ, ਸਾਡੀ ਟੀਮ ਤੁਹਾਨੂੰ ਕਾਲ ਕਰੇਗੀ।"
@@ -285,7 +297,7 @@
       langPrompt: "ଦୟାକରି ଆପଣଙ୍କ ଭାଷା ବାଛନ୍ତୁ।",
       welcome: "ସୋଭକୃତା ଫିନଟେକକୁ ସ୍ୱାଗତ। ମୁଁ ଶୋବୀ। ଆଜି ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?",
       choose: "ତଳେ ଏକ ବିକଳ୍ପ ବାଛନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଲେଖନ୍ତୁ।",
-      opts: ["ଋଣ ସୂଚନା", "ଯୋଗ୍ୟତା ଓ ଦଲିଲ", "ଫି ଓ ଚାର୍ଜ", "EMI ଓ ପରିଶୋଧ", "ଆବେଦନ କରନ୍ତୁ କିମ୍ବା କଲ ବୁକ କରନ୍ତୁ", "ଜଣେ ବ୍ୟକ୍ତିଙ୍କ ସହ କଥା ହୁଅନ୍ତୁ"],
+      opts: ["ଋଣ ସୂଚନା", "ଯୋଗ୍ୟତା", "ଦଲିଲ", "ଫି ଓ ଚାର୍ଜ", "EMI ଓ ପରିଶୋଧ", "ଋଣ ପାଇଁ ଆବେଦନ", "କଲ ବୁକ କରନ୍ତୁ"],
       noContext: "କ୍ଷମା କରନ୍ତୁ, ୱେବସାଇଟ ସୂଚନାରେ ମୋତେ ଏହି ତଥ୍ୟ ମିଳିଲା ନାହିଁ।",
       askSubmit: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଆମ ଦଳକୁ ପଠାଇବାକୁ ଚାହାଁନ୍ତି କି? ହଁ କିମ୍ବା ନା ଲେଖନ୍ତୁ।",
       yes: "ହଁ",
@@ -297,8 +309,8 @@
       question: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ",
       submit: "ସୋଭକୃତାକୁ ପଠାନ୍ତୁ",
       sending: "ପଠାଉଛି...",
-      success: "ଧନ୍ୟବାଦ! ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଆମ ଦଳକୁ ପଠାଯାଇଛି। ଆମେ ଶୀଘ୍ର ଯୋଗାଯୋଗ କରିବୁ।",
-      failure: "ମୁଁ ଏହାକୁ ସ୍ୱୟଂଚାଳିତଭାବେ ପଠାଇ ପାରିଲି ନାହିଁ। ଦୟାକରି services@sobhakrita.com କୁ ଇମେଲ କରନ୍ତୁ କିମ୍ବା +91 88866 33119 କୁ କଲ କରନ୍ତୁ।",
+      success: "ଧନ୍ୟବାଦ! ଆମେ ଆପଣଙ୍କ ପ୍ରଶ୍ନ ପାଇଛୁ। ଆମ ଦଳ ଗୋଟିଏ କାର୍ଯ୍ୟଦିବସ ମଧ୍ୟରେ (ସୋମ–ଶନି, ସକାଳ 9–ସନ୍ଧ୍ୟା 6 IST) ପ୍ରାପ୍ତି ନିଶ୍ଚିତ କରିବ।",
+      failure: "ଦୁଃଖିତ, ବୈଷୟିକ ସମସ୍ୟା ଯୋଗୁଁ ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଦାଖଲ ହୋଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା services@sobhakrita.com କୁ ଇମେଲ କରନ୍ତୁ, ନଚେତ +91 88866 33119 କୁ କଲ କରନ୍ତୁ।",
       invalid: "ଦୟାକରି ଚିହ୍ନିତ ସୂଚନା ଯାଞ୍ଚ କରନ୍ତୁ।",
       otherPrompt: "ଦୟାକରି ଆପଣଙ୍କ ଭାଷାର ନାମ ଲେଖନ୍ତୁ। ମୁଁ ସେହି ଭାଷାରେ ଉତ୍ତର ଦେବି।",
       humanIntro: "ଠିକ୍ ଅଛି। ଦୟାକରି ତଳେ ଆପଣଙ୍କ ସୂଚନା ଦିଅନ୍ତୁ, ଆମ ଦଳ ଆପଣଙ୍କୁ କଲ କରିବ।"
@@ -307,7 +319,7 @@
       langPrompt: "براہ کرم اپنی زبان منتخب کریں۔",
       welcome: "سوبھکریتا فنٹیک میں آپ کا خیر مقدم ہے۔ میں شوبی ہوں۔ آج میں آپ کی کیسے مدد کر سکتی ہوں؟",
       choose: "نیچے کوئی آپشن منتخب کریں یا اپنا سوال لکھیں۔",
-      opts: ["قرض کی معلومات", "اہلیت اور دستاویزات", "فیس اور چارجز", "EMI اور ادائیگی", "درخواست دیں یا کال بک کریں", "کسی شخص سے بات کریں"],
+      opts: ["قرض کی معلومات", "اہلیت", "دستاویزات", "فیس اور چارجز", "EMI اور ادائیگی", "قرض کے لیے درخواست دیں", "کال بک کریں"],
       noContext: "معاف کریں، ویب سائٹ کی معلومات میں مجھے یہ معلومات نہیں ملیں۔",
       askSubmit: "کیا آپ اپنا سوال ہماری ٹیم کو بھیجنا چاہتے ہیں؟ ہاں یا نہیں لکھیں۔",
       yes: "ہاں",
@@ -319,13 +331,33 @@
       question: "آپ کا سوال",
       submit: "سوبھکریتا کو بھیجیں",
       sending: "بھیجا جا رہا ہے...",
-      success: "شکریہ! آپ کا سوال ہماری ٹیم کو بھیج دیا گیا ہے۔ ہم جلد رابطہ کریں گے۔",
-      failure: "میں اسے خودکار طور پر نہیں بھیج سکی۔ براہ کرم services@sobhakrita.com پر ای میل کریں یا +91 88866 33119 پر کال کریں۔",
+      success: "شکریہ! ہمیں آپ کا سوال موصول ہو گیا ہے۔ ہماری ٹیم ایک کاروباری دن کے اندر (پیر تا ہفتہ، صبح 9 سے شام 6 بجے IST) وصولی کی تصدیق کرے گی۔",
+      failure: "معذرت، تکنیکی مسئلے کی وجہ سے آپ کا سوال جمع نہیں ہو سکا۔ دوبارہ کوشش کریں، یا services@sobhakrita.com پر ای میل کریں یا +91 88866 33119 پر کال کریں۔",
       invalid: "براہ کرم نشان زدہ معلومات چیک کریں۔",
       otherPrompt: "براہ کرم اپنی زبان کا نام لکھیں۔ میں اسی زبان میں جواب دوں گی۔",
       humanIntro: "ٹھیک ہے۔ براہ کرم نیچے اپنی معلومات دیں، ہماری ٹیم آپ کو کال کرے گی۔"
     }
   };
+
+  var FEEDBACK_COPY = {
+    en: { prompt: "Did this answer your question?", thanks: "Thanks for letting me know.", clarify: "Tell me what I should clarify, or submit your question to our team.", addDetails: "Add more details", submitQuery: "Submit a query", sendOptions: "Thanks for sharing your query. Choose WhatsApp or email below to send it to our team." },
+    te: { prompt: "ఈ సమాధానం మీ ప్రశ్నకు సమాధానమిచ్చిందా?", thanks: "తెలియజేసినందుకు ధన్యవాదాలు.", clarify: "ఏమి వివరించాలో చెప్పండి లేదా మీ ప్రశ్నను మా బృందానికి పంపండి.", addDetails: "మరిన్ని వివరాలు జోడించండి", submitQuery: "ప్రశ్నను పంపండి", sendOptions: "మీ ప్రశ్నను పంచుకున్నందుకు ధన్యవాదాలు. మా బృందానికి పంపడానికి క్రింద WhatsApp లేదా ఇమెయిల్ ఎంచుకోండి." },
+    hi: { prompt: "क्या इस जवाब से आपका सवाल हल हुआ?", thanks: "बताने के लिए धन्यवाद।", clarify: "बताएँ कि किस बात को स्पष्ट करना है, या अपना सवाल हमारी टीम को भेजें।", addDetails: "और जानकारी दें", submitQuery: "सवाल भेजें", sendOptions: "अपना सवाल साझा करने के लिए धन्यवाद। इसे हमारी टीम को भेजने के लिए नीचे WhatsApp या ईमेल चुनें।" },
+    ta: { prompt: "இந்தப் பதில் உங்கள் கேள்விக்கு உதவியதா?", thanks: "தெரிவித்ததற்கு நன்றி.", clarify: "எதைத் தெளிவுபடுத்த வேண்டும் என்று கூறுங்கள் அல்லது உங்கள் கேள்வியை எங்கள் குழுவுக்கு அனுப்புங்கள்.", addDetails: "மேலும் விவரங்களைச் சேர்க்கவும்", submitQuery: "கேள்வியை அனுப்பவும்", sendOptions: "உங்கள் கேள்வியைப் பகிர்ந்ததற்கு நன்றி. எங்கள் குழுவுக்கு அனுப்ப கீழே WhatsApp அல்லது மின்னஞ்சலைத் தேர்ந்தெடுக்கவும்." },
+    kn: { prompt: "ಈ ಉತ್ತರ ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಉತ್ತರಿಸಿತೇ?", thanks: "ತಿಳಿಸಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು.", clarify: "ಏನನ್ನು ಸ್ಪಷ್ಟಪಡಿಸಬೇಕೆಂದು ತಿಳಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಿ.", addDetails: "ಇನ್ನಷ್ಟು ವಿವರ ಸೇರಿಸಿ", submitQuery: "ಪ್ರಶ್ನೆ ಕಳುಹಿಸಿ", sendOptions: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಹಂಚಿಕೊಂಡಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಲು ಕೆಳಗೆ WhatsApp ಅಥವಾ ಇಮೇಲ್ ಆಯ್ಕೆಮಾಡಿ." },
+    ml: { prompt: "ഈ മറുപടി നിങ്ങളുടെ ചോദ്യത്തിന് ഉത്തരം നൽകിയോ?", thanks: "അറിയിച്ചതിന് നന്ദി.", clarify: "എന്താണ് വ്യക്തമാക്കേണ്ടതെന്ന് പറയുക, അല്ലെങ്കിൽ നിങ്ങളുടെ ചോദ്യം ഞങ്ങളുടെ ടീമിന് അയയ്ക്കുക.", addDetails: "കൂടുതൽ വിവരങ്ങൾ ചേർക്കുക", submitQuery: "ചോദ്യം അയയ്ക്കുക", sendOptions: "നിങ്ങളുടെ ചോദ്യം പങ്കുവെച്ചതിന് നന്ദി. ടീമിന് അയയ്ക്കാൻ താഴെ WhatsApp അല്ലെങ്കിൽ ഇമെയിൽ തിരഞ്ഞെടുക്കുക." },
+    mr: { prompt: "या उत्तराने तुमच्या प्रश्नाचे समाधान झाले का?", thanks: "कळवल्याबद्दल धन्यवाद.", clarify: "काय स्पष्ट करायचे ते सांगा किंवा तुमचा प्रश्न आमच्या टीमला पाठवा.", addDetails: "अधिक माहिती जोडा", submitQuery: "प्रश्न पाठवा", sendOptions: "तुमचा प्रश्न शेअर केल्याबद्दल धन्यवाद. टीमला पाठवण्यासाठी खाली WhatsApp किंवा ईमेल निवडा." },
+    bn: { prompt: "এই উত্তরটি কি আপনার প্রশ্নের সমাধান করেছে?", thanks: "জানানোর জন্য ধন্যবাদ।", clarify: "কোন বিষয়টি পরিষ্কার করা দরকার বলুন, অথবা আপনার প্রশ্নটি আমাদের টিমে পাঠান।", addDetails: "আরও তথ্য যোগ করুন", submitQuery: "প্রশ্ন পাঠান", sendOptions: "আপনার প্রশ্নটি শেয়ার করার জন্য ধন্যবাদ। টিমে পাঠাতে নিচে WhatsApp বা ইমেল বেছে নিন।" },
+    gu: { prompt: "શું આ જવાબથી તમારા પ્રશ્નનો ઉકેલ આવ્યો?", thanks: "જણાવવા બદલ આભાર.", clarify: "શું સ્પષ્ટ કરવું તે જણાવો અથવા તમારો પ્રશ્ન અમારી ટીમને મોકલો.", addDetails: "વધુ વિગતો ઉમેરો", submitQuery: "પ્રશ્ન મોકલો", sendOptions: "તમારો પ્રશ્ન શેર કરવા બદલ આભાર. અમારી ટીમને મોકલવા માટે નીચે WhatsApp અથવા ઇમેઇલ પસંદ કરો." },
+    pa: { prompt: "ਕੀ ਇਸ ਜਵਾਬ ਨਾਲ ਤੁਹਾਡਾ ਸਵਾਲ ਹੱਲ ਹੋਇਆ?", thanks: "ਦੱਸਣ ਲਈ ਧੰਨਵਾਦ।", clarify: "ਦੱਸੋ ਕਿ ਕੀ ਸਪੱਸ਼ਟ ਕਰਨਾ ਹੈ ਜਾਂ ਆਪਣਾ ਸਵਾਲ ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜੋ।", addDetails: "ਹੋਰ ਜਾਣਕਾਰੀ ਦਿਓ", submitQuery: "ਸਵਾਲ ਭੇਜੋ", sendOptions: "ਆਪਣਾ ਸਵਾਲ ਸਾਂਝਾ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜਣ ਲਈ ਹੇਠਾਂ WhatsApp ਜਾਂ ਈਮੇਲ ਚੁਣੋ।" },
+    or: { prompt: "ଏହି ଉତ୍ତର ଆପଣଙ୍କ ପ୍ରଶ୍ନର ସମାଧାନ କଲା କି?", thanks: "ଜଣାଇଥିବାରୁ ଧନ୍ୟବାଦ।", clarify: "କ’ଣ ସ୍ପଷ୍ଟ କରିବାକୁ ହେବ କୁହନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଆମ ଦଳକୁ ପଠାନ୍ତୁ।", addDetails: "ଅଧିକ ବିବରଣୀ ଯୋଡ଼ନ୍ତୁ", submitQuery: "ପ୍ରଶ୍ନ ପଠାନ୍ତୁ", sendOptions: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସେୟାର କରିଥିବାରୁ ଧନ୍ୟବାଦ। ଆମ ଦଳକୁ ପଠାଇବା ପାଇଁ ତଳେ WhatsApp କିମ୍ବା ଇମେଲ୍ ବାଛନ୍ତୁ।" },
+    ur: { prompt: "کیا اس جواب سے آپ کا سوال حل ہوا؟", thanks: "بتانے کا شکریہ۔", clarify: "بتائیں کہ کیا واضح کرنا ہے، یا اپنا سوال ہماری ٹیم کو بھیجیں۔", addDetails: "مزید تفصیل شامل کریں", submitQuery: "سوال بھیجیں", sendOptions: "اپنا سوال شیئر کرنے کا شکریہ۔ ہماری ٹیم کو بھیجنے کے لیے نیچے WhatsApp یا ای میل منتخب کریں۔" }
+  };
+
+  function feedbackText(key) {
+    var copy = FEEDBACK_COPY[state.lang] || FEEDBACK_COPY.en;
+    return copy[key] || FEEDBACK_COPY.en[key];
+  }
 
   var LOCAL_INTRO = {
     en: "Here's what our website says:",
@@ -414,7 +446,7 @@
     { page: "Eligibility", text: "Indicative personal loan eligibility: age 21 to 60 years at application; salaried with at least 6 months in the current job, or self-employed with at least 2 years in business; minimum net monthly income of ₹15,000, which varies by lender and city; CIBIL score of 700+ preferred, with 650+ considered by select NBFCs; and existing EMIs within 40 to 50 percent of net income. Each partner lender sets its own final policy, and Sobhakrita matches your file to the lender most likely to approve it." },
     { page: "Documents", text: "Documents usually needed for a loan: PAN card and Aadhaar card; recent address proof such as a utility bill, rent agreement or Aadhaar; for salaried applicants, the last 3 months' salary slips and 6 months' bank statement; for self-employed applicants, 2 years' ITR, computation and 6 to 12 months' bank statement; and a passport-size photograph plus employment or office ID. KYC and income documents are submitted once and routed securely to the lender." },
     { page: "EMI", text: "The EMI calculator estimates monthly EMI, total interest and total repayment for home, personal, car, business, education and agriculture loans. EMI depends on the loan amount, interest rate and tenure." },
-    { page: "Apply", text: "Customers can apply online at https://www.sobhakritafintech.com/apply.html, book a free call at https://www.sobhakritafintech.com/book-a-call.html, call +91 88866 33119 or email services@sobhakrita.com." },
+    { page: "Apply", text: "You can apply online for a loan, book a free consultation call, speak with our team on +91 88866 33119, or email services@sobhakrita.com for personalised assistance." },
     { page: "Service area", text: "Our office is in Chittoor, Andhra Pradesh. We regularly serve Chittoor, Tirupati, Madanapalle, Punganur, Palamaner, Kuppam, Nellore and nearby towns. Several partner lenders can process applications across India." }
   ];
 
@@ -434,6 +466,68 @@
     an: 1, a: 1, be: 1, will: 1, would: 1, should: 1, could: 1, help: 1
   };
 
+  var FAQ_FILE = "data/chat-faqs.txt";
+
+  var TOKEN_SYNONYMS = {
+    "apply": "apply",
+    "application": "apply",
+    "applying": "apply",
+    "book": "call",
+    "booking": "call",
+    "call": "call",
+    "consultation": "call",
+    "appointment": "call",
+    "loan": "loan",
+    "loans": "loan",
+    "borrow": "loan",
+    "finance": "loan",
+    "credit": "credit",
+    "score": "score",
+    "cibil": "cibil",
+    "eligibility": "eligibility",
+    "eligible": "eligibility",
+    "documents": "documents",
+    "doc": "documents",
+    "fee": "fees",
+    "fees": "fees",
+    "charges": "fees",
+    "cost": "fees",
+    "emi": "emi",
+    "emis": "emi",
+    "repayment": "emi",
+    "repay": "emi",
+    "rate": "interest",
+    "rates": "interest",
+    "interest": "interest",
+    "contact": "contact",
+    "phone": "contact",
+    "email": "contact",
+    "office": "contact",
+    "address": "contact",
+    "support": "support",
+    "help": "support",
+    "human": "advisor",
+    "person": "advisor",
+    "advisor": "advisor",
+    "talk": "advisor",
+    "grievance": "grievance",
+    "complaint": "grievance",
+    "home": "home",
+    "mortgage": "mortgage",
+    "property": "mortgage",
+    "business": "business",
+    "car": "car",
+    "vehicle": "car",
+    "education": "education",
+    "agriculture": "agriculture",
+    "farm": "agriculture",
+    "msme": "msme",
+    "industrial": "msme",
+    "sobhakrita": "sobhakrita",
+    "sobhakritafintech": "sobhakrita",
+    "company": "sobhakrita"
+  };
+
   function t(key) {
     var pack = UI[state.lang] || UI.en;
     return Object.prototype.hasOwnProperty.call(pack, key) ? pack[key] : UI.en[key];
@@ -442,7 +536,7 @@
   function optionLabels() {
     var pack = UI[state.lang] || UI.en;
     var labels = (pack.opts || UI.en.opts).slice();
-    if (labels.length) labels[labels.length - 1] = advisorLabel();
+    labels.push(advisorLabel());
     labels.push(moreLabel());
     return labels;
   }
@@ -621,8 +715,7 @@
         force: true,
         onClick: function () {
           if (option.key === "advisor") {
-            addMessage("user", labels[index]);
-            startEscalation(t("humanIntro"));
+            sendQuery(option.query, labels[index]);
             return;
           }
           if (option.key === "other") {
@@ -635,6 +728,49 @@
         }
       };
     }));
+  }
+
+  function resolveAnswerFeedback(isHelpful, userReply) {
+    state.awaitingFeedback = false;
+    addMessage("user", userReply);
+    if (isHelpful) {
+      addMessage("assistant", feedbackText("thanks"));
+      showOptions();
+      return;
+    }
+
+    state.awaitingClarification = true;
+    addMessage("assistant", feedbackText("clarify"));
+    showChips([
+      {
+        label: feedbackText("addDetails"),
+        force: true,
+        onClick: function () { input.focus(); }
+      },
+      {
+        label: feedbackText("submitQuery"),
+        force: true,
+        onClick: function () { startEscalation(t("formIntro")); }
+      }
+    ]);
+  }
+
+  function showAnswerFeedback() {
+    state.awaitingFeedback = true;
+    state.awaitingClarification = false;
+    addMessage("assistant", feedbackText("prompt"));
+    showChips([
+      {
+        label: t("yes"),
+        force: true,
+        onClick: function () { resolveAnswerFeedback(true, t("yes")); }
+      },
+      {
+        label: t("no"),
+        force: true,
+        onClick: function () { resolveAnswerFeedback(false, t("no")); }
+      }
+    ]);
   }
 
   function isYes(text) {
@@ -651,6 +787,10 @@
     return /^(hi|hello|hey|namaste|namaskar|vanakkam|namaskara|namaskaram|salaam|assalam|good morning|good evening|నమస్తే|नमस्ते|வணக்கம்|ನಮಸ್ಕಾರ|നമസ്കാരം)/i.test(text.trim());
   }
 
+  function isFollowUpQuestion(text) {
+    return /^(and|what about|how about|what if|for me|in my case|also|does that|will that|can i still)\b/i.test(normalizeText(text));
+  }
+
   function normalizeText(text) {
     return String(text || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\s+/g, " ").trim();
   }
@@ -663,42 +803,160 @@
       });
   }
 
+  function parseFaqKnowledge(text) {
+    if (!text) return [];
+    var blocks = text.split(/\n\s*---\s*\n/);
+    return blocks
+      .map(function (block) {
+        var lines = block.split(/\r?\n/);
+        var entry = { question: "", answer: "", page: "General", tags: "" };
+        var current = "question";
+
+        lines.forEach(function (line) {
+          var trimmed = line.trim();
+          if (!trimmed || /^#/.test(trimmed)) return;
+          if (/^Q:/i.test(trimmed)) {
+            entry.question = trimmed.replace(/^Q:\s*/i, "");
+            current = "question";
+            return;
+          }
+          if (/^A:/i.test(trimmed)) {
+            entry.answer = trimmed.replace(/^A:\s*/i, "");
+            current = "answer";
+            return;
+          }
+          if (/^PAGE:/i.test(trimmed)) {
+            entry.page = trimmed.replace(/^PAGE:\s*/i, "").trim() || "General";
+            return;
+          }
+          if (/^TAGS:/i.test(trimmed)) {
+            entry.tags = trimmed.replace(/^TAGS:\s*/i, "").trim();
+            return;
+          }
+          if (current === "question") {
+            entry.question += (entry.question ? " " : "") + trimmed;
+          } else {
+            entry.answer += (entry.answer ? " " : "") + trimmed;
+          }
+        });
+
+        if (!entry.question || !entry.answer) return null;
+        return {
+          page: entry.page || "General",
+          question: entry.question.trim(),
+          answer: entry.answer.trim(),
+          tags: entry.tags,
+          text: entry.question.trim() + " " + entry.answer.trim()
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function expandTokens(tokens) {
+    var expanded = [];
+    tokens.forEach(function (token) {
+      expanded.push(token);
+      if (TOKEN_SYNONYMS[token]) expanded.push(TOKEN_SYNONYMS[token]);
+    });
+    return expanded;
+  }
+
+  function similarityScore(question, entry) {
+    var normalizedQuestion = normalizeText(question);
+    var combinedText = normalizeText((entry.question || "") + " " + (entry.answer || "") + " " + (entry.page || "") + " " + (entry.tags || ""));
+    var preferred = normalizeText(entry.page || "");
+    var score = 0;
+
+    if (!normalizedQuestion) return 0;
+
+    if (combinedText.indexOf(normalizedQuestion) !== -1) score += 55;
+    if ((entry.question || "").toLowerCase().indexOf(question.toLowerCase()) !== -1) score += 18;
+
+    var queryTokens = expandTokens(tokenize(question));
+    var answerTokens = expandTokens(tokenize(combinedText));
+    var entryQuestionTokens = expandTokens(tokenize(entry.question || ""));
+    var seen = {};
+    queryTokens.forEach(function (token) {
+      if (!token || seen[token]) return;
+      seen[token] = true;
+      if (answerTokens.indexOf(token) !== -1) {
+        score += token.length > 5 ? 8 : 4;
+      }
+      if (entryQuestionTokens.indexOf(token) !== -1) score += 12;
+    });
+
+    if (/\bcibil\b|credit score|credit history/i.test(normalizedQuestion)) {
+      if (/\bcibil\b|credit score|credit history/i.test(combinedText)) score += 42;
+      else score -= 20;
+    }
+
+    var phrasePatterns = [
+      /personal loan|personal loan application/i,
+      /business loan|business lending/i,
+      /home loan|housing loan/i,
+      /mortgage|loan against property/i,
+      /car loan|vehicle loan|auto loan/i,
+      /education loan|study loan/i,
+      /agriculture loan|farm loan/i,
+      /industrial loan|msme loan|msme/i,
+      /emi|equated monthly installment/i,
+      /eligibility|documents|required documents/i,
+      /fees|charges|processing fee|service fee/i,
+      /apply|application|book a call|appointment/i,
+      /contact|phone|email|whatsapp|office/i,
+      /human|advisor|real person|talk to a person/i,
+      /grievance|complaint|redressal/i,
+      /cibil|credit score|credit history/i
+    ];
+
+    phrasePatterns.forEach(function (pattern) {
+      if (pattern.test(normalizedQuestion) && pattern.test(combinedText)) {
+        score += 18;
+      }
+    });
+
+    var pageTokens = tokenize(preferred);
+    var pageHit = 0;
+    pageTokens.forEach(function (token) {
+      if (normalizedQuestion.indexOf(token) !== -1) pageHit += 1;
+    });
+    score += pageHit * 10;
+
+    if (entry.page && String(entry.page).toLowerCase() === normalizeText(question).split(" ")[0]) {
+      score += 12;
+    }
+
+    return score;
+  }
+
   function loadKnowledge() {
     if (state.knowledgePromise) return state.knowledgePromise;
 
     state.knowledge = FALLBACK_KB.slice();
 
-    state.knowledgePromise = Promise.all(SITE_PAGES.map(function (page) {
-      return fetch(page, { credentials: "same-origin" })
-        .then(function (response) { return response.ok ? response.text() : ""; })
-        .then(function (html) {
-          if (!html) return null;
-          var doc = new DOMParser().parseFromString(html, "text/html");
-          var junk = doc.querySelectorAll("script, style, noscript, svg, header, footer, .topbar, .site-footer, .float-actions, .drawer, .cta-band, .partners-band, .no-print");
-          Array.prototype.forEach.call(junk, function (node) { node.parentNode.removeChild(node); });
-          var main = doc.querySelector("main") || doc.body;
-          var label = page.replace(".html", "").replace(/-/g, " ");
-          var seen = {};
-          var items = [];
-          var nodes = main.querySelectorAll("h1, h2, h3, h4, p, li, td, th");
-          Array.prototype.forEach.call(nodes, function (node) {
-            if (node.querySelector("p, li, td, th")) return;
-            var text = node.textContent.replace(/\s+/g, " ").trim();
-            if (text.length < 25 || text.length > 1200) return;
-            var key = normalizeText(text);
-            if (seen[key]) return;
-            seen[key] = true;
-            items.push({ page: label, text: text });
+    state.knowledgePromise = fetch(FAQ_FILE, { credentials: "same-origin" })
+      .then(function (response) {
+        if (!response.ok) return [];
+        return response.text();
+      })
+      .then(function (text) {
+        var faqEntries = parseFaqKnowledge(text);
+        if (faqEntries && faqEntries.length) {
+          state.knowledge = faqEntries.map(function (entry) {
+            return {
+              page: entry.page,
+              question: entry.question,
+              answer: entry.answer,
+              tags: entry.tags,
+              text: entry.text
+            };
           });
-          return items;
-        })
-        .catch(function () { return null; });
-    })).then(function (pageSets) {
-      pageSets.forEach(function (items) {
-        if (items) state.knowledge = state.knowledge.concat(items);
+        }
+        return state.knowledge;
+      })
+      .catch(function () {
+        return state.knowledge;
       });
-      return state.knowledge;
-    });
 
     return state.knowledgePromise;
   }
@@ -755,43 +1013,48 @@
 
   var LEGAL_PAGES = { disclaimer: 1, "terms conditions": 1, "privacy policy": 1 };
 
-  function retrieve(question, preferredPage) {
+  function retrieve(question, preferredPage, previousQuestion) {
     return loadKnowledge()
       .then(function () { return translateToEnglish(question); })
       .then(function (englishQuestion) {
-        var queryTokens = tokenize(question + " " + englishQuestion + " " + state.pendingQuestion);
-        if (!queryTokens.length) return { items: [], score: 0, query: englishQuestion };
+        var followUpContext = isFollowUpQuestion(question) ? previousQuestion || "" : "";
+        var queryText = (question || "") + " " + (englishQuestion || "");
+        if (followUpContext && tokenize(queryText).length < 2) {
+          queryText += " " + followUpContext;
+        }
+        var queryTokens = tokenize(queryText);
         var preferred = normalizeText(preferredPage || "");
 
+        if (!queryTokens.length) {
+          return { items: state.knowledge.slice(0, 3), score: 0, query: englishQuestion };
+        }
+
         var scored = state.knowledge.map(function (item) {
-          var pageText = normalizeText(item.page);
-          var haystack = normalizeText(item.page + " " + item.text);
-          var score = 0;
+          var pageText = normalizeText(item.page || "");
+          var score = similarityScore(queryText, item);
+
           var pageHits = 0;
           var unique = {};
           queryTokens.forEach(function (token) {
             if (unique[token]) return;
             unique[token] = true;
-            if (haystack.indexOf(token) !== -1) {
-              score += token.length > 5 ? 2 : 1;
+            if (normalizeText(item.page + " " + item.text).indexOf(token) !== -1) {
+              pageHits += 1;
             }
-            if (pageText.indexOf(token) !== -1) pageHits += 1;
           });
 
-          // Pages whose own name matches the question are usually the best source.
-          score += pageHits * 5;
+          if (preferred && pageText === preferred) score += 45;
+          score += pageHits * 4;
 
-          // An option chip knows which page is authoritative for that topic.
-          if (preferred && pageText === preferred) score += 40;
-
-          // Legal pages should only surface when the question is actually about them.
-          if (LEGAL_PAGES[item.page] && pageHits === 0) score = 0;
+          if (LEGAL_PAGES[item.page] && pageHits === 0 && !/disclaimer|privacy|terms|grievance|complaint/i.test(queryText)) {
+            score = 0;
+          }
 
           return { item: item, score: score };
         }).filter(function (row) { return row.score > 0; })
           .sort(function (a, b) { return b.score - a.score; });
 
-        var top = scored.slice(0, 7);
+        var top = scored.slice(0, 6);
         return {
           items: top.map(function (row) { return row.item; }),
           score: top.length ? top[0].score : 0,
@@ -814,32 +1077,7 @@
   }
 
   function loadPuter() {
-    if (window.puter && window.puter.ai) return Promise.resolve(window.puter);
-
-    return new Promise(function (resolve, reject) {
-      var existing = document.querySelector('script[data-puter-js]');
-      var script = existing || document.createElement("script");
-      var timer = setTimeout(function () { reject(new Error("Puter.js timed out")); }, 7000);
-
-      function done() {
-        clearTimeout(timer);
-        if (window.puter && window.puter.ai) resolve(window.puter);
-        else reject(new Error("Puter.js unavailable"));
-      }
-
-      script.addEventListener("load", done, { once: true });
-      script.addEventListener("error", function () {
-        clearTimeout(timer);
-        reject(new Error("Puter.js failed to load"));
-      }, { once: true });
-
-      if (!existing) {
-        script.src = "https://js.puter.com/v2/";
-        script.async = true;
-        script.setAttribute("data-puter-js", "true");
-        document.head.appendChild(script);
-      }
-    });
+    return Promise.reject(new Error("Puter AI fallback disabled"));
   }
 
   function extractModelText(result) {
@@ -901,9 +1139,10 @@
 
   function askModel(question, context) {
     return askServer(question, context).catch(function () {
-      // Server down, rate-limited or timed out: try the keyless browser model
-      // before falling back to the curated site content.
-      return askPuter(question, context);
+      // Browser-side AI is intentionally disabled on the public site to avoid
+      // forcing any visitor into a Puter login flow. Fall back to the curated
+      // website content instead.
+      return Promise.reject(new Error("Browser AI disabled"));
     });
   }
 
@@ -915,48 +1154,41 @@
     return cut.replace(/\s+\S*$/, "") + "…";
   }
 
-  var DOCS_PAGE = /document|kyc|paper/i;
-
   function localAnswer(retrieval) {
-    var items = [];
-    var seenPages = {};
-    retrieval.items.forEach(function (item) {
-      if (items.length >= 2 || seenPages[item.page]) return;
-      seenPages[item.page] = true;
-      items.push(item);
-    });
-    if (!items.length) return "";
-
-    // If the question is about documents, make sure the documents summary is included.
-    if (DOCS_PAGE.test(retrieval.query || "")) {
-      var hasDocs = items.some(function (item) { return DOCS_PAGE.test(item.page); });
-      if (!hasDocs) {
-        var docs = retrieval.items.find(function (item) {
-          return DOCS_PAGE.test(item.page) && !seenPages[item.page];
-        });
-        if (docs) items.push(docs);
-      }
-    }
-
-    return items.map(function (item) {
-      return shorten(item.text, 600);
-    }).join("\n\n");
+    var item = retrieval.items[0];
+    if (!item) return "";
+    var answer = String(item.answer || item.text || "").replace(/\s+/g, " ").trim();
+    return answer ? shorten(answer, 480) : "";
   }
 
   function sendQuery(question, displayText, preferredPage) {
     if (state.busy) return;
 
+    var previousQuestion = state.lastQuestion;
     state.busy = true;
     state.awaitingEscalation = false;
+    state.awaitingFeedback = false;
+    state.awaitingClarification = false;
     state.pendingQuestion = question;
+    state.lastQuestion = question;
     state.stage = "chat";
     addMessage("user", displayText || question);
     var typing = showTyping();
 
-    retrieve(question, preferredPage).then(function (retrieval) {
+    retrieve(question, preferredPage, previousQuestion).then(function (retrieval) {
+      var directAnswer = retrieval.score >= 18 ? localAnswer(retrieval) : "";
+      if (directAnswer) {
+        return translateToLang(directAnswer).then(function (translated) {
+          typing.remove();
+          state.busy = false;
+          addMessage("assistant", translated || directAnswer);
+          showAnswerFeedback();
+        });
+      }
+
       var context;
       if (retrieval.items.length && retrieval.score >= 2) {
-        context = retrieval.items.map(function (item) {
+        context = retrieval.items.slice(0, 3).map(function (item) {
           return "[" + item.page + "] " + item.text;
         }).join("\n\n");
       } else {
@@ -978,7 +1210,7 @@
             return;
           }
           addMessage("assistant", answer);
-          showOptions();
+          showAnswerFeedback();
         })
         .catch(function () {
           var fallback = localAnswer(retrieval);
@@ -992,8 +1224,8 @@
           translateToLang(fallback).then(function (translated) {
             typing.remove();
             state.busy = false;
-            addMessage("assistant", translated || (localIntro() + "\n" + fallback));
-            showOptions();
+            addMessage("assistant", translated || fallback);
+            showAnswerFeedback();
           });
         });
     }).catch(function () {
@@ -1005,8 +1237,10 @@
 
   function noContext(question) {
     state.awaitingEscalation = true;
+    state.awaitingFeedback = false;
+    state.awaitingClarification = false;
     state.pendingQuestion = question || state.pendingQuestion;
-    addMessage("assistant", t("noContext") + "\n" + t("askSubmit"));
+    addMessage("assistant", t("noContext") + " You can call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or book a call at https://www.sobhakritafintech.com/book-a-call.html.\n\n" + t("askSubmit"));
     showChips([
       {
         label: t("yes"),
@@ -1029,6 +1263,8 @@
     if (state.busy) return;
     state.stage = "form";
     state.awaitingEscalation = false;
+    state.awaitingFeedback = false;
+    state.awaitingClarification = false;
     clearChips();
     addMessage("assistant", intro || t("formIntro"));
     showLeadForm();
@@ -1108,7 +1344,14 @@
       submit.disabled = true;
       submit.textContent = t("sending");
 
-      postLead(data).then(function () {
+      postLead(data).then(function (result) {
+        if (!result || (!result.emailSent && !result.whatsappSent)) {
+          submit.disabled = false;
+          submit.textContent = t("submit");
+          error.textContent = t("failure");
+          return;
+        }
+
         leadForm.remove();
         addMessage("assistant", t("success"));
         state.stage = "chat";
@@ -1128,35 +1371,11 @@
     if (first) first.focus({ preventScroll: true });
   }
 
-  function sendViaFormSubmit(payload) {
-    return fetch("https://formsubmit.co/ajax/services@sobhakrita.com", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        _subject: "sobhi chat query from " + payload.name,
-        _template: "table",
-        _captcha: "false",
-        Name: payload.name,
-        Phone: payload.phone,
-        Email: payload.email || "Not provided",
-        Language: payload.language,
-        Page: payload.page,
-        Question: payload.question,
-        Transcript: payload.transcript.map(function (item) {
-          return item.role + ": " + item.text;
-        }).join("\n")
-      })
-    }).then(function (response) {
-      return response.json().catch(function () { return {}; }).then(function (body) {
-        if (!response.ok || body.success === "false" || body.success === false) {
-          throw new Error("Email delivery is not configured yet.");
-        }
-        return body;
-      });
-    });
-  }
-
   function postLead(payload) {
+    if (window.location.protocol === "file:") {
+      return Promise.reject(new Error(t("failure")));
+    }
+
     return fetch("/api/chat/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1166,25 +1385,22 @@
         if (!response.ok || !body.ok) {
           throw new Error(body.error || "Server could not accept the query.");
         }
-        if (body.emailSent === false) {
-          // The query is saved on the server but the email relay failed.
-          return sendViaFormSubmit(payload).catch(function () { return body; });
-        }
         return body;
       });
-    }).catch(function () {
-      // Static hosting fallback: FormSubmit delivers the same details by email.
-      return sendViaFormSubmit(payload);
     });
   }
 
   function boot() {
     if (state.booted) return;
     state.booted = true;
+    state.stage = "chat";
+    root.setAttribute("lang", "en");
+    root.setAttribute("dir", "ltr");
+    if (langLabel) langLabel.textContent = "EN";
     loadKnowledge();
-    addMessage("assistant", "Namaste! 🙏 I'm sobhi, Sobhakrita's virtual assistant.");
-    addMessage("assistant", UI.en.langPrompt);
-    renderLanguageChips();
+    addMessage("assistant", t("welcome"));
+    addMessage("assistant", t("choose"));
+    showOptions();
   }
 
   function openChat() {
@@ -1209,8 +1425,9 @@
   }
 
   function toggleChat() {
-    if (panel.hidden) openChat();
-    else closeChat();
+    if (panel.hidden) {
+      openChat();
+    }
   }
 
   if (launcher) {
@@ -1247,14 +1464,8 @@
       if (match) {
         selectLanguage(match);
       } else {
-        state.lang = "other";
-        state.langName = value;
         state.stage = "chat";
-        root.setAttribute("lang", "other");
-        addMessage("user", value);
-        addMessage("assistant", UI.en.welcome.replace("English", value));
-        addMessage("assistant", UI.en.choose);
-        showOptions();
+        sendQuery(value, value);
       }
       return;
     }
@@ -1268,6 +1479,30 @@
       addMessage("assistant", UI.en.welcome);
       addMessage("assistant", UI.en.choose);
       showOptions();
+      return;
+    }
+
+    if (state.awaitingFeedback) {
+      if (isYes(value)) {
+        resolveAnswerFeedback(true, value);
+        return;
+      }
+      if (isNo(value)) {
+        resolveAnswerFeedback(false, value);
+        return;
+      }
+      state.awaitingFeedback = false;
+      sendQuery(value, value);
+      return;
+    }
+
+    if (state.awaitingClarification) {
+      state.awaitingClarification = false;
+      var originalQuestion = state.pendingQuestion;
+      sendQuery(value, value);
+      if (originalQuestion) {
+        state.pendingQuestion = originalQuestion + "\nAdditional details: " + value;
+      }
       return;
     }
 
