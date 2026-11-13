@@ -88,7 +88,6 @@
         <div class="footer-social">
           <a class="social-btn" href="https://www.facebook.com/sobhakritafintech" aria-label="Facebook" rel="noopener" target="_blank"><svg width="16" height="16" aria-hidden="true"><use href="#i-facebook"/></svg></a>
           <a class="social-btn" href="https://www.instagram.com/sfs_pvt_ltd" aria-label="Instagram" rel="noopener" target="_blank"><svg width="16" height="16" aria-hidden="true"><use href="#i-instagram"/></svg></a>
-          <a class="social-btn" href="https://www.linkedin.com/company/sobhakritafintech" aria-label="LinkedIn" rel="noopener" target="_blank"><svg width="16" height="16" aria-hidden="true"><use href="#i-linkedin"/></svg></a>
           <a class="social-btn" href="https://wa.me/918886633119" aria-label="WhatsApp" rel="noopener" target="_blank"><svg width="16" height="16" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
         </div>
       </div>
@@ -116,6 +115,7 @@
           <li><a href="mortgage-loan.html">Loan against property</a></li>
           <li><a href="car-loan.html">Car loan</a></li>
           <li><a href="education-loan.html">Education loan</a></li>
+          <li><a href="agriculture-loan.html">Agriculture loan</a></li>
           <li><a href="industrial-loan.html">Industrial / MSME loan</a></li>
         </ul>
       </div>
@@ -167,11 +167,44 @@
   <a class="fab fab-call" href="tel:+918886633119" aria-label="Call Sobhakrita Fintech">
     <svg width="21" height="21" aria-hidden="true"><use href="#i-phone"/></svg>
   </a>
+  <button class="fab fab-chat" type="button" data-sobhi-toggle aria-controls="sobhi-panel" aria-expanded="false" aria-label="Chat with sobhi, our virtual assistant">
+    <svg width="23" height="23" aria-hidden="true"><use href="#i-chat"/></svg>
+  </button>
   <button class="fab fab-top" type="button" aria-label="Back to top">
     <svg width="20" height="20" aria-hidden="true"><use href="#i-arrow-up"/></svg>
   </button>
 </div>
 
+<div class="sobhi" data-sobhi-chat>
+  <section class="sobhi-panel" id="sobhi-panel" data-sobhi-panel role="dialog" aria-modal="false" aria-labelledby="sobhi-title" hidden>
+    <header class="sobhi-head">
+      <span class="sobhi-avatar" aria-hidden="true">S</span>
+      <span class="sobhi-head-copy">
+        <strong id="sobhi-title">sobhi</strong>
+        <small>Virtual assistant · Online</small>
+      </span>
+      <button class="sobhi-icon-btn" type="button" data-sobhi-lang aria-label="Change language">
+        <svg width="16" height="16" aria-hidden="true"><use href="#i-globe"/></svg>
+        <span data-sobhi-lang-label>EN</span>
+      </button>
+      <button class="sobhi-icon-btn" type="button" data-sobhi-close aria-label="Close chat">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </header>
+    <div class="sobhi-messages" data-sobhi-messages role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="sobhi-chips" data-sobhi-chips hidden></div>
+    <form class="sobhi-compose" data-sobhi-form novalidate>
+      <label class="sr-only" for="sobhi-input">Type your message</label>
+      <input id="sobhi-input" data-sobhi-input type="text" placeholder="Type your message…" autocomplete="off" maxlength="500">
+      <button class="sobhi-send" type="submit" aria-label="Send message">
+        <svg width="18" height="18" aria-hidden="true"><use href="#i-send"/></svg>
+      </button>
+    </form>
+    <p class="sobhi-note">Answers are indicative. Please confirm final terms with the lender.</p>
+  </section>
+</div>
+
 <script src="assets/js/main.js" defer></script>
+<script src="assets/js/sobhi-chat.js" defer></script>
 </body>
 </html>

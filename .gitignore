@@ -13,6 +13,9 @@ build/
 *.log
 npm-debug.log*
 
+# Chat leads (personal data)
+data/
+
 # OS files
 .DS_Store
 Thumbs.db

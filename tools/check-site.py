@@ -124,7 +124,7 @@ def main() -> int:
     expected = {
         "index.html", "about.html", "loans.html", "personal-loan.html", "business-loan.html",
         "home-loan.html", "mortgage-loan.html", "car-loan.html", "education-loan.html",
-        "industrial-loan.html", "emi-calculator.html", "contact.html", "apply.html",
+        "industrial-loan.html", "agriculture-loan.html", "emi-calculator.html", "contact.html", "apply.html",
         "careers.html", "book-a-call.html", "privacy-policy.html", "terms-conditions.html",
         "disclaimer.html", "fees.html", "thank-you.html", "404.html",
     }

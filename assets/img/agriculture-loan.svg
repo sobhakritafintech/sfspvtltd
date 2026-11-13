@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Agriculture loan illustration of a farm field with a tractor and young crops">
+  <defs>
+    <linearGradient id="a-arch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b3a56"/>
+      <stop offset="1" stop-color="#0c1f33"/>
+    </linearGradient>
+    <linearGradient id="a-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbe3b8"/>
+      <stop offset="1" stop-color="#f6d79c"/>
+    </linearGradient>
+    <linearGradient id="a-field" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c7a5b"/>
+      <stop offset="1" stop-color="#0e4f3d"/>
+    </linearGradient>
+    <clipPath id="a-clip">
+      <path d="M86 262V152a114 114 0 0 1 228 0v110Z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="400" height="300" fill="#f8efdd"/>
+  <circle cx="200" cy="142" r="128" fill="#f2dfc0"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110Z" fill="url(#a-arch)"/>
+  <path d="M86 262V152a114 114 0 0 1 228 0v110" fill="none" stroke="#c89a4b" stroke-width="2" opacity="0.6"/>
+  <circle cx="296" cy="96" r="17" fill="#f9cf95" opacity="0.75"/>
+
+  <g clip-path="url(#a-clip)">
+    <!-- horizon sky -->
+    <rect x="86" y="140" width="228" height="62" fill="url(#a-sky)" opacity="0.92"/>
+
+    <!-- distant hills -->
+    <path d="M86 196c34-18 56-12 78-2 24-18 52-20 76-4 26-14 50-12 74 2v70H86Z" fill="#3f7d5c"/>
+    <path d="M86 208c40-14 62-8 86 2 26-12 54-14 78 0 22-8 42-6 64 2v50H86Z" fill="url(#a-field)"/>
+
+    <!-- crop rows converging to the horizon -->
+    <g stroke="#7fbf94" stroke-width="1.6" opacity="0.55" fill="none">
+      <path d="M96 262 191 198"/>
+      <path d="M132 262 197 198"/>
+      <path d="M168 262 203 198"/>
+      <path d="M204 262 207 198"/>
+      <path d="M240 262 213 198"/>
+      <path d="M276 262 219 198"/>
+      <path d="M312 262 225 198"/>
+    </g>
+
+    <!-- young crop sprouts -->
+    <g stroke="#8fd6a4" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M121 250v-14m0 8-7-6m7 4 6-7"/>
+      <path d="M154 242v-12m0 7-6-5m6 3 6-6"/>
+      <path d="M187 235v-11m0 6-5-4m5 3 5-5"/>
+      <path d="M222 236v-11m0 6 5-4m-5 3-5-5"/>
+      <path d="M256 244v-12m0 7 6-5m-6 3-6-6"/>
+      <path d="M290 252v-14m0 8 7-6m-7 4-6-7"/>
+    </g>
+
+    <!-- tractor -->
+    <g transform="translate(118 206)">
+      <rect x="6" y="14" width="46" height="18" rx="4" fill="#c2542f"/>
+      <rect x="36" y="2" width="18" height="20" rx="3" fill="#e08a4a"/>
+      <rect x="39" y="6" width="12" height="9" rx="1.5" fill="#cfe6dd"/>
+      <rect x="8" y="8" width="20" height="8" rx="2" fill="#a8530a"/>
+      <circle cx="16" cy="34" r="12" fill="#0c1f33" stroke="#f2c14e" stroke-width="2"/>
+      <circle cx="16" cy="34" r="4" fill="#f2c14e"/>
+      <circle cx="49" cy="36" r="8" fill="#0c1f33" stroke="#f2c14e" stroke-width="1.6"/>
+      <circle cx="49" cy="36" r="2.5" fill="#f2c14e"/>
+      <path d="M6 16h-4v6h4" fill="#c2542f"/>
+    </g>
+  </g>
+
+  <!-- rupee coin -->
+  <circle cx="88" cy="204" r="12" fill="#f2c14e" stroke="#c89a4b" stroke-width="1.4"/>
+  <text x="88" y="209" text-anchor="middle" font-family="'Plus Jakarta Sans','Segoe UI',Arial,sans-serif" font-size="10" font-weight="700" fill="#a8530a">&#8377;</text>
+  <circle cx="324" cy="216" r="8" fill="#f6d183" stroke="#c89a4b" stroke-width="1.2" opacity="0.9"/>
+</svg>

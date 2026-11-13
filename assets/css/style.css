@@ -1945,9 +1945,261 @@ table.data b { color: var(--ink); }
   .kf-row b { text-align: left; }
 }
 
-/* ---------- 28. Print (EMI calculator) ---------- */
+/* ---------- 28. sobhi chat assistant ---------- */
+.fab-chat { background: var(--ink-3); position: relative; }
+.fab-chat::after {
+  content: "";
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--saffron-2);
+  border: 2px solid var(--cream);
+}
+.fab-chat.is-active::after { background: var(--green-2); }
+
+.sobhi-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 70;
+  width: min(380px, calc(100vw - 36px));
+  max-height: min(600px, calc(100vh - 36px));
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 30px 70px -22px rgba(12, 31, 51, 0.5);
+  overflow: hidden;
+  animation: sobhiIn 0.22s ease-out;
+}
+.sobhi-panel[hidden] { display: none; }
+@keyframes sobhiIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.sobhi-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, var(--ink), var(--ink-3));
+  color: #fff;
+}
+.sobhi-avatar {
+  width: 34px; height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--saffron);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.sobhi-head-copy { display: flex; flex-direction: column; line-height: 1.25; margin-right: auto; min-width: 0; }
+.sobhi-head-copy strong { font-size: 0.92rem; }
+.sobhi-head-copy small { font-size: 0.66rem; color: rgba(255, 255, 255, 0.62); white-space: nowrap; }
+.sobhi-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 0.66rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sobhi-icon-btn:hover { background: rgba(255, 255, 255, 0.2); }
+.sobhi-icon-btn:focus-visible { outline: 2px solid var(--saffron-2); outline-offset: 2px; }
+
+.sobhi-messages {
+  flex: 1 1 auto;
+  min-height: 120px;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--cream);
+  scrollbar-width: thin;
+}
+.sobhi-msg { display: flex; align-items: flex-end; gap: 8px; }
+.sobhi-msg--user { justify-content: flex-end; }
+.sobhi-msg-avatar {
+  width: 24px; height: 24px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ink-3);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.sobhi-bubble {
+  max-width: 80%;
+  padding: 9px 12px;
+  border-radius: 14px 14px 14px 4px;
+  background: #fff;
+  border: 1px solid var(--line);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+.sobhi-bubble a { color: var(--saffron-ink); text-decoration: underline; }
+.sobhi-msg--user .sobhi-bubble {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+  border-radius: 14px 14px 4px 14px;
+}
+.sobhi-typing .sobhi-bubble { padding: 12px 14px; }
+.sobhi-dots { display: inline-flex; gap: 4px; }
+.sobhi-dots i {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted-2);
+  animation: sobhiDot 1s infinite ease-in-out;
+}
+.sobhi-dots i:nth-child(2) { animation-delay: 0.15s; }
+.sobhi-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes sobhiDot {
+  0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+.sobhi-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  max-height: 150px;
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+.sobhi-chips[hidden] { display: none; }
+.sobhi-chip {
+  padding: 6px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.sobhi-chip:hover { border-color: var(--saffron); color: var(--saffron-ink); background: #fff; }
+.sobhi-chip:focus-visible { outline: 2px solid var(--saffron); outline-offset: 1px; }
+
+.sobhi-compose {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+.sobhi-compose input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.82rem;
+}
+.sobhi-compose input:focus { outline: 2px solid var(--saffron); outline-offset: 1px; }
+.sobhi-send {
+  width: 38px; height: 38px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: var(--saffron);
+  color: #fff;
+  cursor: pointer;
+}
+.sobhi-send:hover { background: var(--saffron-ink); }
+.sobhi-send:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.sobhi-note {
+  margin: 0;
+  flex: 0 0 auto;
+  padding: 0 14px 10px;
+  background: #fff;
+  color: var(--muted-2);
+  font-size: 0.61rem;
+  line-height: 1.4;
+}
+
+.sobhi-lead {
+  display: grid;
+  gap: 8px;
+  margin-left: 32px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.sobhi-field { display: grid; gap: 3px; font-size: 0.7rem; font-weight: 600; color: var(--muted); }
+.sobhi-field input,
+.sobhi-field textarea {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--cream);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 400;
+  resize: vertical;
+}
+.sobhi-field input:focus,
+.sobhi-field textarea:focus { outline: 2px solid var(--saffron); outline-offset: 1px; }
+.sobhi-honeypot { position: absolute; left: -9999px; width: 0; height: 0; opacity: 0; }
+.sobhi-form-error { margin: 0; color: var(--danger); font-size: 0.7rem; }
+.sobhi-submit { padding: 0.6rem 0.8rem; font-size: 0.78rem; }
+
+@media (max-width: 640px) {
+  .sobhi-panel {
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+    width: auto;
+    max-height: calc(100vh - 24px);
+    border-radius: 16px;
+  }
+  .sobhi-bubble { max-width: 86%; }
+  .sobhi-lead { margin-left: 0; }
+}
+
+@media (max-height: 560px) {
+  .sobhi-panel { bottom: 12px; max-height: calc(100vh - 24px); }
+}
+
+@media (max-height: 560px) {
+  .sobhi-panel { bottom: 12px; max-height: calc(100vh - 24px); }
+}
+
+/* ---------- 29. Print (EMI calculator) ---------- */
 @media print {
-  .topbar, .site-header, .site-footer, .float-actions, .cta-band, .no-print, .hero-mandala { display: none !important; }
+  .topbar, .site-header, .site-footer, .float-actions, .sobhi-panel, .fab-chat, .cta-band, .no-print, .hero-mandala { display: none !important; }
   body { background: #fff; color: #000; }
   .section { padding: 10px 0; }
   .reveal { opacity: 1 !important; transform: none !important; }
