@@ -58,6 +58,7 @@ All settings are optional environment variables for `server.js`:
 | `CONTACT_EMAIL` | Mailbox that receives chat queries | `services@sobhakrita.com` |
 | `CHAT_NOTIFY_PHONES` | Comma-separated mobile numbers for SMS alerts | `+918886633118,+918886633119` |
 | `LEAD_EMAIL_WEBHOOK` | POST endpoint that delivers email (for example a transactional email service) | — |
+| `SMTP_PASSWORD` | SMTP mailbox password/app password; keep only in the server environment | — |
 | `WHATSAPP_WEBHOOK_URL` | POST endpoint that sends a WhatsApp notification | — |
 | `WHATSAPP_TO` | Comma-separated WhatsApp recipient numbers in international format | — |
 | `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN` | Meta WhatsApp Cloud API sender ID and access token | — |
@@ -67,8 +68,12 @@ All settings are optional environment variables for `server.js`:
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | Twilio SMS credentials | — |
 | `PORT` | HTTP port | `3000` |
 
-Without an email webhook the server uses FormSubmit's keyless relay. The first
-delivery to a new inbox requires clicking FormSubmit's activation link once.
+Email delivery priority is `LEAD_EMAIL_WEBHOOK`, then SMTP, then FormSubmit's
+keyless relay. The first delivery through FormSubmit to a new inbox requires
+clicking its activation link once. SMTP host, port, TLS mode, username, sender,
+and recipient are configured in `config.js`; only `SMTP_PASSWORD` belongs in
+the server environment. Update `config.js` if your mailbox provider gives you
+different SMTP settings.
 Open the site through HTTP(S), not as a local `file://` page, to submit chat
 leads. Without an SMS provider, SMS alerts are skipped; the lead is still saved
 to `data/chat-leads.jsonl`, while email delivery depends on the configured relay.
@@ -77,3 +82,30 @@ chat queries to WhatsApp in the background. Meta credentials and all other
 secrets belong in the hosting environment, not in source control. The form
 reports success when at least one configured notification channel delivers the
 query. Never commit `data/`.
+
+### Website enquiry forms
+
+The callback, loan application, call booking, contact, and careers forms submit
+to `/api/forms/submit`. Their recipients, required fields, parameterized email
+subjects, and body templates are defined in `config.js` under `formEmails`;
+`formFieldLabels` controls the labels for the complete submitted field list.
+The server validates the form and only shows the success panel after the email
+provider accepts the message. Careers submissions are sent to `hr@sobhakrita.com`.
+Careers applicants can attach one PDF, DOC, or DOCX CV up to 5 MB; file
+attachments require SMTP or an email webhook because the FormSubmit fallback
+does not support them.
+
+For local PowerShell testing, enter the mailbox password at the hidden prompt
+and start the server in the same terminal:
+
+```powershell
+$secret = Read-Host "SMTP mailbox password" -AsSecureString
+$pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secret)
+try {
+   $env:SMTP_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)
+} finally {
+   [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer)
+   $secret.Dispose()
+}
+node server.js
+```

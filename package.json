@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/sobhakritafintech/sfspvtltd/issues"
   },
-  "homepage": "https://github.com/sobhakritafintech/sfspvtltd#readme"
+  "homepage": "https://github.com/sobhakritafintech/sfspvtltd#readme",
+  "dependencies": {
+    "nodemailer": "^10.5.0"
+  }
 }

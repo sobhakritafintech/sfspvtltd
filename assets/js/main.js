@@ -452,6 +452,69 @@
     return ok;
   }
 
+  function resumeFilePayload(file) {
+    return file.arrayBuffer().then(function (buffer) {
+      var bytes = new Uint8Array(buffer);
+      var binary = "";
+      for (var offset = 0; offset < bytes.length; offset += 0x8000) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(offset, offset + 0x8000));
+      }
+      return { filename: file.name, size: file.size, content: btoa(binary) };
+    });
+  }
+
+  function initializeResumeDrop(zone) {
+    var input = zone.querySelector("[data-resume-file]");
+    var field = zone.closest(".field");
+    var error = field && field.querySelector(".field-error");
+    var filename = zone.querySelector("[data-resume-file-name]");
+    if (!input) return;
+
+    function validateFile(file) {
+      var extension = file && /\.([^.]+)$/.exec(file.name);
+      var allowed = extension && /^(pdf|doc|docx)$/i.test(extension[1]);
+      if (!file || !allowed || file.size > 5 * 1024 * 1024) {
+        if (input) input.value = "";
+        if (field) field.classList.add("has-error");
+        if (error) error.textContent = !allowed ? "Choose a PDF, DOC, or DOCX file." : "The CV must be 5 MB or smaller.";
+        if (filename) filename.textContent = "";
+        return false;
+      }
+      if (field) field.classList.remove("has-error");
+      if (error) error.textContent = "";
+      if (filename) filename.textContent = file.name + " (" + (file.size / (1024 * 1024)).toFixed(2) + " MB)";
+      return true;
+    }
+
+    input.addEventListener("change", function () {
+      if (input.files && input.files[0]) validateFile(input.files[0]);
+    });
+    ["dragenter", "dragover"].forEach(function (eventName) {
+      zone.addEventListener(eventName, function (event) {
+        event.preventDefault();
+        zone.classList.add("is-dragover");
+      });
+    });
+    ["dragleave", "dragend"].forEach(function (eventName) {
+      zone.addEventListener(eventName, function () { zone.classList.remove("is-dragover"); });
+    });
+    zone.addEventListener("drop", function (event) {
+      event.preventDefault();
+      zone.classList.remove("is-dragover");
+      var files = event.dataTransfer && event.dataTransfer.files;
+      if (!files || files.length !== 1 || !validateFile(files[0])) {
+        if (files && files.length > 1 && error) error.textContent = "Attach one CV file at a time.";
+        return;
+      }
+      var transfer = new DataTransfer();
+      transfer.items.add(files[0]);
+      input.files = transfer.files;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+
+  $$ ("[data-resume-drop]").forEach(initializeResumeDrop);
+
   $$("[data-lead-form]").forEach(function (form) {
     var fields = $$(".field, .check-field", form);
     fields.forEach(function (field) {
@@ -489,32 +552,58 @@
 
       var btn = form.querySelector("[type='submit']");
       if (btn) { btn.disabled = true; btn.dataset.label = btn.innerHTML; btn.innerHTML = "Sending…"; }
+      var submitError = form.querySelector("[data-submit-error]");
+      if (!submitError) {
+        submitError = document.createElement("p");
+        submitError.className = "form-note form-submit-error";
+        submitError.setAttribute("data-submit-error", "");
+        submitError.setAttribute("role", "alert");
+        if (btn) form.insertBefore(submitError, btn);
+        else form.appendChild(submitError);
+      }
+      submitError.textContent = "";
 
-      /* ------------------------------------------------------------------
-         INTEGRATION POINT
-         This static build shows a local success message. To receive leads,
-         POST the form to your CRM / Google Apps Script / Formspree endpoint:
+      var formFields = {};
+      new FormData(form).forEach(function (value, name) {
+        if (typeof value === "string") formFields[name] = value;
+      });
+      var fileInput = form.querySelector("[data-resume-file]");
+      var selectedFile = fileInput && fileInput.files && fileInput.files[0];
+      var attachmentPromise = selectedFile ? resumeFilePayload(selectedFile) : Promise.resolve(null);
 
-         fetch("https://your-endpoint.example", {
-           method: "POST",
-           body: new FormData(form)
-         }).finally(showSuccess);
+      attachmentPromise.then(function (attachment) {
+        return fetch("/api/forms/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            formType: form.dataset.leadForm,
+            page: window.location.pathname,
+            fields: formFields,
+            attachment: attachment
+          })
+        });
+      }).then(function (response) {
+        return response.json().catch(function () { return {}; }).then(function (body) {
+          if (!response.ok || !body.ok || !body.emailSent) {
+            throw new Error(body.error || "We could not submit your request. Please try again or contact us by phone or email.");
+          }
 
-         See README.md → "Connecting the forms".
-      ------------------------------------------------------------------ */
-      setTimeout(function () {
-        var card = form.closest(".form-card") || form.parentElement;
-        var success = card.querySelector(".form-success");
-        form.style.display = "none";
-        if (success) {
-          success.classList.add("is-visible");
-          success.setAttribute("tabindex", "-1");
-          success.focus({ preventScroll: true });
-          success.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
-        }
+          var card = form.closest(".form-card") || form.parentElement;
+          var success = card.querySelector(".form-success");
+          form.style.display = "none";
+          if (success) {
+            success.classList.add("is-visible");
+            success.setAttribute("tabindex", "-1");
+            success.focus({ preventScroll: true });
+            success.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+          }
+          form.reset();
+        });
+      }).catch(function (error) {
+        submitError.textContent = error.message || "We could not submit your request. Please try again or contact us by phone or email.";
+      }).finally(function () {
         if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.label; }
-        form.reset();
-      }, 750);
+      });
     });
   });
 

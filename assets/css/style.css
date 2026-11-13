@@ -349,7 +349,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
 
 .brand { display: inline-flex; align-items: center; gap: 13px; color: var(--ink); flex: 0 0 auto; }
 .brand:hover { color: var(--ink); }
-.brand-mark { height: 64px; width: auto; flex: none; filter: drop-shadow(0 3px 8px rgba(12, 31, 51, 0.16)); }
+.brand-mark { height: 64px; width: auto; flex: none; filter: brightness(1.06) saturate(1.12) drop-shadow(0 3px 8px rgba(12, 31, 51, 0.16)); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.05; white-space: nowrap; }
 .brand-name {
   font-family: var(--ff-display);
@@ -1462,6 +1462,18 @@ input[type="range"]::-moz-range-thumb {
 .form-success:focus { outline: none; }
 
 .form-note { font-size: 0.72rem; color: var(--muted-2); margin-top: 12px; line-height: 1.6; }
+.form-submit-error { color: var(--danger); font-weight: 600; }
+.resume-drop {
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: #f8faf9;
+  transition: border-color 0.18s, background 0.18s;
+}
+.resume-drop.is-dragover { border-color: var(--green); background: var(--green-soft); }
+.resume-drop p { margin: 0 0 10px; color: var(--muted); font-size: 0.82rem; }
+.resume-drop input[type="file"] { max-width: 100%; font: inherit; font-size: 0.82rem; }
+.resume-drop .resume-file-name { margin: 10px 0 0; color: var(--green); font-weight: 600; overflow-wrap: anywhere; }
 .form-success {
   display: none;
   text-align: center;

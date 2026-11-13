@@ -484,7 +484,7 @@
         <p class="lead">If your CV is on a job portal, a LinkedIn URL or a Google Drive link is enough. You can also email it to <a href="mailto:hr@sobhakrita.com">hr@sobhakrita.com</a> with the role name in the subject.</p>
 
         <div class="form-card mt-3">
-          <form data-lead-form novalidate>
+          <form data-lead-form="careers" novalidate>
             <div class="form-grid">
 
               <div class="field">
@@ -542,6 +542,16 @@
               <div class="field field-full">
                 <label for="crResume">CV / LinkedIn / portfolio link</label>
                 <input id="crResume" name="resume_link" type="url" placeholder="https://…">
+                <span class="field-error"></span>
+              </div>
+
+              <div class="field field-full">
+                <label for="crResumeFile">Attach CV / resume</label>
+                <div class="resume-drop" data-resume-drop>
+                  <p>Drop one file here or browse to attach it. PDF, DOC, or DOCX up to 5 MB.</p>
+                  <input id="crResumeFile" name="resume_file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" data-resume-file aria-describedby="crResumeFileName">
+                  <p id="crResumeFileName" class="resume-file-name" data-resume-file-name aria-live="polite"></p>
+                </div>
                 <span class="field-error"></span>
               </div>
 

@@ -1,12 +1,14 @@
 ﻿const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
+const nodemailer = require("nodemailer");
+const CONFIG = require("./config");
 
 const ROOT = __dirname;
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(ROOT, "data");
 const LEAD_FILE = path.join(DATA_DIR, "chat-leads.jsonl");
-const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "services@sobhakrita.com";
+const CONTACT_EMAIL = CONFIG.contactEmail;
 const NOTIFY_PHONES = (process.env.CHAT_NOTIFY_PHONES || "+918886633118,+918886633119")
   .split(",")
   .map((phone) => phone.trim())
@@ -107,41 +109,92 @@ async function saveLead(lead) {
   await fs.promises.appendFile(LEAD_FILE, JSON.stringify(lead) + "\n", "utf8");
 }
 
-async function sendLeadEmail(lead) {
-  const text = [
-    "New sobhi chat query",
-    "",
-    "Name: " + lead.name,
-    "Phone: " + lead.phone,
-    "Email: " + (lead.email || "Not provided"),
-    "Language: " + lead.language,
-    "Page: " + (lead.page || "Homepage chatbot"),
-    "Submitted: " + lead.createdAt,
-    "",
-    "Question:",
-    lead.question
-  ].join("\n");
+function escapeEmailHtml(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
+function renderBrandedEmail({ title, intro, details, submittedAt }) {
+  const accent = CONFIG.emailBrand.accent;
+  const rows = details.split("\n").filter(Boolean).map((line, index) => {
+    const separator = line.indexOf(":");
+    const label = separator < 0 ? "Detail" : line.slice(0, separator);
+    const value = separator < 0 ? line : line.slice(separator + 1).trim();
+    const border = index ? "border-top:1px solid #e6ece8;" : "";
+    return "<tr><td style=\"" + border + "padding:11px 14px;color:#52635d;font-size:13px;width:34%;vertical-align:top;background:transparent\"><strong>" + escapeEmailHtml(label) + "</strong></td><td style=\"" + border + "padding:11px 14px;color:#1b2b26;font-size:13px;line-height:1.55;word-break:break-word;background:transparent\">" + escapeEmailHtml(value) + "</td></tr>";
+  }).join("");
+  const logoUrl = escapeEmailHtml(CONFIG.emailBrand.logoUrl);
+  const watermarkOpacity = Math.max(0, Math.min(1, Number(CONFIG.emailBrand.watermarkOpacity) || 0.1));
+  const whiteOverlayOpacity = (1 - watermarkOpacity).toFixed(2);
+
+  return "<!doctype html><html><body style=\"margin:0;padding:24px 12px;background:#f1f5f3;font-family:Arial,Helvetica,sans-serif;color:#1b2b26\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #dfe8e3;border-radius:12px;overflow:hidden\"><tr><td style=\"padding:22px 26px;background:" + accent + ";color:#ffffff\"><table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\"><tr><td style=\"vertical-align:middle;padding-right:14px\"><img src=\"" + logoUrl + "\" width=\"48\" height=\"48\" alt=\"\" style=\"display:block;width:48px;height:48px;border:0\"></td><td style=\"vertical-align:middle\"><div style=\"font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85\">" + escapeEmailHtml(CONFIG.emailBrand.name) + "</div><div style=\"font-size:21px;font-weight:700;margin-top:4px;color:#ffffff\">" + escapeEmailHtml(title) + "</div></td></tr></table></td></tr><tr><td style=\"background-color:#ffffff;background-image:linear-gradient(rgba(255,255,255," + whiteOverlayOpacity + "),rgba(255,255,255," + whiteOverlayOpacity + ")),url('" + logoUrl + "');background-repeat:no-repeat,no-repeat;background-position:center center,center center;background-size:100% 100%,160px 160px;padding:24px 18px 20px\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td style=\"padding:0 8px 16px;font-size:14px;line-height:1.6;color:#41534c;background:transparent\">" + escapeEmailHtml(intro) + "</td></tr><tr><td style=\"padding:0;background:transparent\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">" + rows + "</table></td></tr></table></td></tr><tr><td style=\"padding:15px 26px;background:#f7faf8;border-top:1px solid #e4ebe7;color:#66766f;font-size:11px;line-height:1.5\">Received " + escapeEmailHtml(submittedAt) + " · This message contains information submitted through the Sobhakrita website.</td></tr></table></body></html>";
+}
+
+function toWebhookAttachment(attachment) {
+  return {
+    filename: attachment.filename,
+    contentType: attachment.contentType,
+    content: Buffer.from(attachment.content).toString("base64"),
+    cid: attachment.cid,
+    contentDisposition: attachment.contentDisposition
+  };
+}
+
+async function sendConfiguredEmail({ to, subject, text, html, replyTo, payload, attachments = [] }) {
+  const allAttachments = attachments;
   const webhook = process.env.LEAD_EMAIL_WEBHOOK;
   if (webhook) {
     const response = await fetch(webhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        to: CONTACT_EMAIL,
-        subject: "sobhi chat query from " + lead.name,
+        to,
+        subject,
         text,
-        lead
+        html,
+        replyTo,
+        lead: payload,
+        attachments: allAttachments.map(toWebhookAttachment)
       })
     });
     if (!response.ok) throw new Error("Email webhook returned " + response.status);
     return { ok: true, via: "webhook" };
   }
 
+  const smtpPassword = process.env.SMTP_PASSWORD;
+  if (smtpPassword && CONFIG.smtp.host && CONFIG.smtp.user) {
+    const transporter = nodemailer.createTransport({
+      host: CONFIG.smtp.host,
+      port: CONFIG.smtp.port,
+      secure: CONFIG.smtp.secure,
+      requireTLS: !CONFIG.smtp.secure,
+      auth: { user: CONFIG.smtp.user, pass: smtpPassword }
+    });
+
+    await transporter.sendMail({
+      from: CONFIG.smtp.from || CONFIG.smtp.user,
+      to,
+      replyTo: replyTo || undefined,
+      subject,
+      text,
+      html,
+      attachments: allAttachments
+    });
+    return { ok: true, via: "smtp" };
+  }
+
+  if (attachments.length) {
+    throw new Error("The FormSubmit fallback cannot send file attachments. Configure SMTP or an email webhook for Careers submissions.");
+  }
+
   // Keyless fallback: FormSubmit delivers to the inbox after a one-time
   // activation click on the first submission.
   const response = await fetch(
-    "https://formsubmit.co/ajax/" + encodeURIComponent(CONTACT_EMAIL),
+    "https://formsubmit.co/ajax/" + encodeURIComponent(to),
     {
       method: "POST",
       headers: {
@@ -149,16 +202,14 @@ async function sendLeadEmail(lead) {
         Accept: "application/json"
       },
       body: JSON.stringify({
-        _subject: "sobhi chat query from " + lead.name,
+        _subject: subject,
         _template: "table",
         _captcha: "false",
-        Name: lead.name,
-        Phone: lead.phone,
-        Email: lead.email || "Not provided",
-        Language: lead.language,
-        Page: lead.page || "Homepage chatbot",
-        Question: lead.question,
-        Transcript: lead.transcript.map((item) => item.role + ": " + item.text).join("\n")
+        Name: payload.name || "Not provided",
+        Phone: payload.phone || "Not provided",
+        Email: payload.email || "Not provided",
+        Page: payload.page || "Website",
+        Details: text
       })
     }
   );
@@ -168,6 +219,181 @@ async function sendLeadEmail(lead) {
     throw new Error(body.message || "Email delivery failed");
   }
   return { ok: true, via: "formsubmit" };
+}
+
+async function sendLeadEmail(lead) {
+  const submittedAt = lead.createdAt || new Date().toISOString();
+  const title = "Website chat enquiry";
+  const intro = "A visitor has sent a question through Agent Sobhi. Please review their contact details and request below.";
+  const text = [
+    title,
+    intro,
+    "",
+    "Name: " + lead.name,
+    "Phone: " + lead.phone,
+    "Email: " + (lead.email || "Not provided"),
+    "Language: " + lead.language,
+    "Received: " + submittedAt,
+    "Question:",
+    lead.question
+  ].join("\n");
+
+  return sendConfiguredEmail({
+    to: CONTACT_EMAIL,
+    subject: "Website enquiry | " + lead.name,
+    text,
+    html: renderBrandedEmail({
+      title,
+      intro,
+      details: [
+        "Full name: " + lead.name,
+        "Mobile number: " + lead.phone,
+        "Email address: " + (lead.email || "Not provided"),
+        "Preferred language: " + lead.language,
+        "Question: " + lead.question
+      ].join("\n"),
+      submittedAt
+    }),
+    replyTo: lead.email,
+    payload: lead
+  });
+}
+
+function renderEmailTemplate(template, values) {
+  return template.replace(/\{\{([a-zA-Z0-9_]+)\}\}/g, function (match, key) {
+    return Object.prototype.hasOwnProperty.call(values, key) ? String(values[key] || "") : "";
+  });
+}
+
+function normalizeFormFields(rawFields) {
+  if (!rawFields || typeof rawFields !== "object" || Array.isArray(rawFields)) return null;
+  const fields = {};
+  Object.entries(rawFields).slice(0, 40).forEach(([key, value]) => {
+    if (!/^[a-zA-Z0-9_-]{1,60}$/.test(key)) return;
+    fields[key] = cleanText(value, 3000);
+  });
+  return fields;
+}
+
+function humanizeFieldName(name) {
+  return name
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function parseResumeAttachment(rawAttachment) {
+  if (!rawAttachment) return null;
+  if (typeof rawAttachment !== "object" || Array.isArray(rawAttachment)) {
+    throw new Error("Invalid CV attachment.");
+  }
+
+  const filename = cleanText(String(rawAttachment.filename || "").replace(/\\/g, "/").split("/").pop(), 180);
+  const extension = path.extname(filename).toLowerCase();
+  const contentTypes = {
+    ".pdf": "application/pdf",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  };
+  if (!filename || !contentTypes[extension]) {
+    throw new Error("Attach a PDF, DOC, or DOCX CV file.");
+  }
+
+  const encoded = String(rawAttachment.content || "");
+  if (!encoded || encoded.length > 7 * 1024 * 1024 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
+    throw new Error("The CV attachment is invalid or too large.");
+  }
+  const content = Buffer.from(encoded, "base64");
+  const maxBytes = 5 * 1024 * 1024;
+  if (!content.length || content.length > maxBytes || Number(rawAttachment.size) !== content.length) {
+    throw new Error("CV files must be no larger than 5 MB.");
+  }
+
+  return {
+    filename,
+    content,
+    contentType: contentTypes[extension],
+    contentDisposition: "attachment"
+  };
+}
+
+async function handleFormSubmission(req, res) {
+  let payload;
+  try {
+    payload = await readJsonBody(req, 8 * 1024 * 1024);
+  } catch (error) {
+    return sendJson(res, 400, { ok: false, error: error.message });
+  }
+
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return sendJson(res, 400, { ok: false, error: "Invalid enquiry form." });
+  }
+
+  const formType = cleanText(payload.formType, 40);
+  const template = Object.prototype.hasOwnProperty.call(CONFIG.formEmails, formType)
+    ? CONFIG.formEmails[formType]
+    : null;
+  const fields = normalizeFormFields(payload.fields);
+  if (!template || !fields) {
+    return sendJson(res, 400, { ok: false, error: "Invalid enquiry form." });
+  }
+
+  if (fields.company_website) return sendJson(res, 200, { ok: true, emailSent: true });
+
+  for (const field of template.requiredFields) {
+    if (!fields[field]) {
+      return sendJson(res, 422, { ok: false, error: "Please complete all required fields." });
+    }
+  }
+
+  const phoneDigits = String(fields.phone || "").replace(/\D/g, "");
+  if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+    return sendJson(res, 422, { ok: false, error: "Please enter a valid mobile number." });
+  }
+  if (fields.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
+    return sendJson(res, 422, { ok: false, error: "Please enter a valid email address." });
+  }
+
+  let resumeAttachment;
+  try {
+    resumeAttachment = parseResumeAttachment(payload.attachment);
+    if (resumeAttachment && formType !== "careers") {
+      return sendJson(res, 400, { ok: false, error: "File attachments are only accepted on the careers form." });
+    }
+    if (resumeAttachment) fields.resume_file = resumeAttachment.filename;
+  } catch (error) {
+    return sendJson(res, 422, { ok: false, error: error.message });
+  }
+
+  const submittedAt = new Date().toISOString();
+  const details = Object.entries(fields)
+    .filter(([key]) => key !== "company_website")
+    .map(([key, value]) => {
+      const label = CONFIG.formFieldLabels[key] || humanizeFieldName(key);
+      return label + ": " + (key === "consent" ? "Yes" : value || "Not provided");
+    })
+    .join("\n");
+  const values = Object.assign({}, fields, { details, submittedAt });
+  const subject = renderEmailTemplate(template.subject, values);
+  const intro = renderEmailTemplate(template.body, values);
+  const text = [template.title, intro, "", details, "", "Received: " + submittedAt].join("\n");
+  const html = renderBrandedEmail({ title: template.title, intro, details, submittedAt });
+
+  try {
+    await sendConfiguredEmail({
+      to: template.to,
+      subject,
+      text,
+      html,
+      replyTo: fields.email,
+      payload: { formType, submittedAt, fields },
+      attachments: resumeAttachment ? [resumeAttachment] : []
+    });
+    return sendJson(res, 200, { ok: true, emailSent: true });
+  } catch (error) {
+    console.error("Website form email failed:", error.message);
+    return sendJson(res, 502, { ok: false, error: "We could not submit your request. Please try again or contact us by phone or email." });
+  }
 }
 
 async function sendWhatsAppNotification(lead) {
@@ -563,6 +789,13 @@ const server = http.createServer((req, res) => {
       return sendJson(res, 405, { ok: false, error: "Method Not Allowed" });
     }
     return handleChatLead(req, res);
+  }
+
+  if (url.pathname === "/api/forms/submit") {
+    if (req.method !== "POST") {
+      return sendJson(res, 405, { ok: false, error: "Method Not Allowed" });
+    }
+    return handleFormSubmission(req, res);
   }
 
   if (req.method !== "GET" && req.method !== "HEAD") {
