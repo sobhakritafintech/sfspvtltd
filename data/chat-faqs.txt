@@ -1,0 +1,274 @@
+# Sobhakrita chat FAQ knowledge base
+# Format: one block per question/answer pair.
+# Use Q:, A:, PAGE:, TAGS: lines.
+# Separate entries with ---
+
+Q: Who is Sobhakrita Fintech Solutions?
+A: Sobhakrita Fintech Solutions Private Limited is a loan facilitator and Direct Selling Agent based in Chittoor, Andhra Pradesh. We help customers compare loan offers from partner banks and RBI-regulated NBFCs. We are not a bank or NBFC and do not lend in our own name.
+PAGE: about
+TAGS: company, about, sfs, fintech, loan facilitator
+---
+
+Q: What loan products do you offer?
+A: We support personal loans, business loans, home loans, mortgage loans or loan against property, car loans, education loans, agriculture loans, and industrial or MSME loans. The exact product, amount, rate and eligibility depend on the lender and the applicant profile.
+PAGE: loans
+TAGS: loan products, personal loan, business loan, home loan, mortgage, car loan, education loan, agriculture loan, industrial loan
+---
+
+Q: What is a loan facilitator?
+A: A loan facilitator is a service provider who helps customers understand loan options, compare suitable lenders, and complete the application process with the relevant bank or NBFC. Sobhakrita does not issue loans in its own name.
+PAGE: about
+TAGS: loan facilitator, dsa, direct selling agent, process
+---
+
+Q: Do you give loans directly?
+A: No. Sobhakrita is not a bank or NBFC. We connect applicants with our partner banks and RBI-regulated NBFCs. Loan sanction, disbursement and final terms are decided by the lender.
+PAGE: about
+TAGS: direct loan, bank, nbfc, lender
+---
+
+Q: How do I apply for a personal loan?
+A: Apply online at https://www.sobhakritafintech.com/apply.html, or speak with our team about eligibility and documents. We usually ask for basic KYC and income proof before matching you with suitable lenders.
+PAGE: apply
+TAGS: personal loan, apply, online application, documents
+---
+
+Q: What are the basic eligibility criteria for a loan?
+A: Typical criteria include age, income, employment or business continuity, KYC documents, repayment capacity, and a credit profile. The final eligibility is set by the partner lender. Many applicants are considered on a case-by-case basis.
+PAGE: eligibility
+TAGS: eligibility, documents, income, age, cibil, salary, self-employed
+---
+
+Q: What is a CIBIL score?
+A: A CIBIL score is a credit history score used by lenders to assess repayment behaviour. In general, a score of 700 or above is considered healthier, but the final minimum score and approval decision depend on the lender and the loan product.
+PAGE: eligibility
+TAGS: cibil, credit score, credit history, score, eligibility
+---
+
+Q: What documents do I need to apply?
+A: Usually you need PAN and Aadhaar, address proof, recent income proof, bank statements, employment or business proof, and photographs. Salaried and self-employed borrowers may need different documentation. Final requirements are set by the lender.
+PAGE: apply
+TAGS: documents, pan, aadhaar, kyc, bank statement, income proof
+---
+
+Q: What documents are required for a salaried person?
+A: Salaried applicants usually need PAN, Aadhaar, address proof, last 3 months salary slips, 6 months bank statements, and employment details. Final requirements vary by lender.
+PAGE: documents
+TAGS: salaried, employment, documents, salary slip, bank statement
+---
+
+Q: What documents are required for a self-employed person?
+A: Self-employed borrowers often need PAN, Aadhaar, address proof, 2 years ITR and computation, business proof, GST or trade proof if applicable, and 6 to 12 months bank statements.
+PAGE: documents
+TAGS: self-employed, business, itr, gst, documents
+---
+
+Q: What is the process for getting a loan?
+A: The usual process starts with understanding your requirement, checking eligibility, collecting KYC and income documents, shortlisting suitable lenders, reviewing the sanction and Key Fact Statement, and then the lender disburses the loan if approved.
+PAGE: process
+TAGS: process, steps, application, sanction, kfs, approval
+---
+
+Q: How long does it take to get a loan decision?
+A: Personal and business loans may receive an indicative decision in 48 to 72 working hours, while home and mortgage loans may take longer depending on the lender and property verification. Timelines vary by product and profile.
+PAGE: process
+TAGS: approval time, decision, turnaround, home loan, mortgage, business loan
+---
+
+Q: What fees and charges do you charge?
+A: Sobhakrita does not charge an application, consultation, file, advance or security deposit in its own name. A minimal service fee may apply only after disbursal with written consent. Separate lender charges such as processing fee, legal fees, stamp duty, CERSAI charges, insurance premium and statutory charges are disclosed by the lender.
+PAGE: fees
+TAGS: fees, charges, hidden charges, processing fee, service fee
+---
+
+Q: Are there any hidden charges?
+A: No hidden fee is charged by Sobhakrita in its own name. The lender may levy separate charges depending on the product, and these are typically disclosed in the sanction letter and Key Fact Statement before documentation.
+PAGE: fees
+TAGS: hidden fees, charges, processing, lender charges
+---
+
+Q: How does EMI work?
+A: EMI is the fixed monthly repayment amount that includes both principal and interest. It depends on the loan amount, interest rate, tenure and any processing or related charges added by the lender.
+PAGE: emi-calculator
+TAGS: emi, monthly repayment, interest, tenure, repayment
+---
+
+Q: Can I prepay or foreclose my loan?
+A: Prepayment and foreclosure policies vary by lender and loan type. Some lenders allow partial or full prepayment after a lock-in period, while others charge a fee or limit it based on the sanction terms.
+PAGE: fees
+TAGS: prepayment, foreclosure, part payment, repay early
+---
+
+Q: What is the interest rate for a loan?
+A: Interest rates vary widely by loan type, lender, borrower profile, tenure, and current market conditions. We can help you compare indicative offers from partner lenders based on your requirements.
+PAGE: loans
+TAGS: rate of interest, roi, interest, personal loan, business loan, home loan
+---
+
+Q: Which cities do you serve?
+A: Our registered office is in Chittoor, Andhra Pradesh. We regularly serve Chittoor, Tirupati, Madanapalle, Punganur, Palamaner, Kuppam, Nellore and nearby towns, and we can help with applications across India depending on the lender.
+PAGE: contact
+TAGS: service area, cities, chittoor, tirupati, andhra pradesh
+---
+
+Q: Where is your office?
+A: Our office is located at #20-90B/1, Naidu Buildings, Behind Dominos, Mittoor, Chittoor, Andhra Pradesh 517001, India.
+PAGE: contact
+TAGS: office, address, location, chittoor
+---
+
+Q: What are your working hours?
+A: Our office hours are Monday to Saturday from 9:00 AM to 6:00 PM. Sunday is closed.
+PAGE: contact
+TAGS: working hours, office time, monday to saturday
+---
+
+Q: When will your team acknowledge my query?
+A: Our team will acknowledge a submitted query within one working day during office hours, Monday to Saturday from 9:00 AM to 6:00 PM IST. Resolving the query may take longer depending on the request.
+PAGE: contact
+TAGS: acknowledgement, response time, query, support, sla
+---
+
+Q: How can I contact Sobhakrita?
+A: You can call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or visit our office in Chittoor. You can also book a free consultation call through our website.
+PAGE: contact
+TAGS: contact, call, email, whatsapp, support
+---
+
+Q: How do I book a free call?
+A: Book a free consultation at https://www.sobhakritafintech.com/book-a-call.html. Our team will confirm the slot and guide you on the next steps.
+PAGE: book-a-call
+TAGS: free call, consultation, schedule, appointment, call back
+---
+
+Q: Can I call or WhatsApp you?
+A: Yes. You can reach us by phone at +91 88866 33119 or +91 88866 33118. You can also contact us through WhatsApp for quick assistance.
+PAGE: contact
+TAGS: whatsapp, phone, call, support
+---
+
+Q: How do I apply online?
+A: Use the online form at https://www.sobhakritafintech.com/apply.html. Share your basic details and loan requirement, and our team will guide you to a suitable lender.
+PAGE: apply
+TAGS: apply, online, form, submit application
+---
+
+Q: Which loan is best for me?
+A: The right loan depends on the purpose, amount, tenure, income and whether you are salaried or self-employed. We can help you compare the best lender match based on your requirement and profile.
+PAGE: loans
+TAGS: best loan, recommend, loan choice, comparison
+---
+
+Q: What is the difference between a bank loan and a loan facilitator?
+A: A bank or NBFC is the lender and final decision maker. A loan facilitator like Sobhakrita helps you compare offers, prepare documentation, and connect your file with suitable lenders. The lender decides sanction and rate.
+PAGE: about
+TAGS: bank, nbfc, facilitator, difference
+---
+
+Q: Do you help with home loans?
+A: Yes. We support home loans and loan against property. A home loan usually requires property details, income proof, KYC, and lender-specific documentation.
+PAGE: home-loan
+TAGS: home loan, mortgage, property, housing finance
+---
+
+Q: Do you help with business loans?
+A: Yes. We assist with business loans for working capital, expansion, equipment, and other business requirements. Eligibility depends on turnover, vintage, revenue stability, and lender policy.
+PAGE: business-loan
+TAGS: business loan, working capital, small business, turn over
+---
+
+Q: Do you help with car loans?
+A: Yes. Car loan assistance is available for new or used vehicle purchases depending on the lender and eligibility. We can help match your profile to suitable lenders.
+PAGE: car-loan
+TAGS: car loan, vehicle loan, auto financing
+---
+
+Q: Do you help with education loans?
+A: Yes. Education loans are available for recognized courses and institutions, subject to lender policies, eligibility, and required documentation. We can guide you through the process.
+PAGE: education-loan
+TAGS: education loan, study loan, student loan
+---
+
+Q: Do you help with agriculture loans?
+A: Yes. Agriculture loans can support farming, working capital, equipment and allied activities depending on the lender and policy. We help identify suitable options and documentation requirements.
+PAGE: agriculture-loan
+TAGS: agriculture loan, farm loan, rural financing
+---
+
+Q: Do you help with industrial and MSME loans?
+A: Yes. We support industrial and MSME loan requirements, including business expansion and capital expenditure, subject to lender policy and your business profile.
+PAGE: industrial-loan
+TAGS: industrial loan, msme, manufacturing, business expansion
+---
+
+Q: What is the grievance redressal process?
+A: If you have a complaint or grievance, you can reach out through the contact page or email services@sobhakrita.com. We review concerns and route them to the appropriate team or lender process.
+PAGE: contact
+TAGS: grievance, complaint, support, redressal
+---
+
+Q: Is my information secure?
+A: We ask for KYC and contact details only as needed to assess eligibility and route your application to suitable lenders. Information handling should follow lender and regulatory norms and is managed with caution and confidentiality.
+PAGE: privacy-policy
+TAGS: privacy, security, data, kyc, documents
+---
+
+Q: Is there a fee to use your service?
+A: The service fee, if any, is only quoted and collected after disbursal and after written consent. It is not charged upfront for the application process.
+PAGE: fees
+TAGS: fee, consultant, service fee, advance payment
+---
+
+Q: What happens after I submit my loan request?
+A: After submission, our team reviews your requirement and documents, suggests suitable lenders, and coordinates the next steps. The lender may request additional information before sanctioning the loan.
+PAGE: apply
+TAGS: submit, next steps, after application
+---
+
+Q: Can I talk to a real person?
+A: Yes. Call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or book a free call at https://www.sobhakritafintech.com/book-a-call.html. Our advisors can guide you on loan options and required documents.
+PAGE: contact
+TAGS: advisor, human support, call, consultation
+---
+
+Q: How do I know if I am eligible?
+A: Eligibility depends on factors such as income, age, employment status, business profile, credit profile and other lender rules. We can help you understand the likely fit after reviewing your requirement and documents.
+PAGE: eligibility
+TAGS: eligibility check, likely fit, qualification
+---
+
+Q: Do you charge any application fee?
+A: No. Sobhakrita does not charge an application fee in its own name. Any charges are disclosed separately by the lender, if applicable.
+PAGE: fees
+TAGS: application fee, upfront charge
+---
+
+Q: Which lender is best for my profile?
+A: We match your requirement and profile to lenders most likely to approve your application. Final approval depends on the lender's policy, income, KYC and documentation.
+PAGE: apply
+TAGS: lender match, loan comparison, suitable lender
+---
+
+Q: Is Sobhakrita regulated?
+A: Sobhakrita is a loan facilitator offering services to customers in connection with partner banks and RBI-regulated NBFCs. The final credit relationship is between the borrower and the lending institution.
+PAGE: about
+TAGS: regulated, rbi, lender, compliance
+---
+
+Q: Do you have branches outside Chittoor?
+A: Our primary office is in Chittoor, but we support customers across multiple locations and can coordinate digital or phone-based support depending on the case.
+PAGE: contact
+TAGS: branches, remote support, pan india
+---
+
+Q: What is the Key Fact Statement?
+A: The Key Fact Statement is a lender document that discloses the loan terms, charges, fees, tenure, interest rate, and important disclosures before final documentation. We advise borrowers to read it carefully.
+PAGE: fees
+TAGS: key fact statement, kfs, sanction, loan terms
+---
+
+Q: Can you help with loan comparison?
+A: Yes. We help compare suitable lenders and loan options based on the amount, use case, tenure, income, documents and the risk profile of the application.
+PAGE: loans
+TAGS: compare, compare lenders, options, best fit
+---

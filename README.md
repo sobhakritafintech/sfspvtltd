@@ -28,26 +28,44 @@ python tools\check-site.py
 
 ## sobhi — website assistant
 
-`assets/js/sobhi-chat.js` adds a small chat assistant named **sobhi** to every page.
-It is intentionally lightweight:
+`assets/js/sobhi-boot.js` is a tiny launcher that loads `assets/js/sobhi-chat.js`
+only when a visitor shows intent, keeping the initial page payload small.
+The assistant is intentionally lightweight:
 
 1. sobhi greets the visitor and asks for a language (12 Indian languages plus
    "other"). Language can be changed at any time with the globe button.
 2. sobhi offers short support options (loans, eligibility, fees, EMI, apply,
-   talk to a human).
+   talk to a human) plus quick Call / WhatsApp / Apply actions.
 3. Answers are grounded only in the content of the pages in this repository.
-   Retrieval runs in the browser. Free-form answers come from a free, keyless
-   model (Pollinations, called by `server.js`), then from
-   [Puter.js](https://js.puter.com/v2/) when the site is hosted without the
-   Node server, and finally from the matched page text.
-4. If no answer is found, sobhi offers to send the question to the team. On
+   Retrieval runs in the browser over the FAQ knowledge base and the built-in
+   site facts. Free-form answers come from a free, keyless
+   model (Pollinations, called by `server.js`), with streamed responses and a
+   fast fallback to the matched page text.
+4. The transcript and language choice survive page reloads for the browser
+   session, long answers can be expanded in place, and chats restore where the
+   visitor left off.
+5. If no answer is found, sobhi offers to send the question to the team. On
    consent it collects name, mobile number, optional email and the question.
-5. Leads are stored in `data/chat-leads.jsonl`, emailed to
+6. Leads are stored in `data/chat-leads.jsonl`, emailed to
    `services@sobhakrita.com`, and sent as a short SMS notification.
 
-The `/api/chat/ask` endpoint caches repeated answers for 30 minutes and limits
-each IP to 40 model calls per 10 minutes. The free model may occasionally be
-rate limited; sobhi then answers from the site content instead.
+The `/api/chat/ask` endpoint streams model output when requested, caches
+repeated answers for 30 minutes (keyed by the retrieved context), and limits
+each IP to 40 model calls per 10 minutes. A short circuit breaker skips a model
+that recently failed so fallback responses stay fast.
+
+### Translated FAQ (optional)
+
+Generate locally translated copies of the FAQ so non-English visitors get
+faster answers without per-message translation:
+
+```powershell
+npm run translate-faqs
+npm run translate-faqs -- te hi ta
+```
+
+The generated `data/chat-faqs.<lang>.txt` files are used automatically when
+present; otherwise sobhi falls back to `data/chat-faqs.txt`.
 
 ### Chat configuration
 
@@ -61,6 +79,7 @@ All settings are optional environment variables for `server.js`:
 | `SMTP_PASSWORD` | SMTP mailbox password/app password; keep only in the server environment | — |
 | `WHATSAPP_WEBHOOK_URL` | POST endpoint that sends a WhatsApp notification | — |
 | `WHATSAPP_TO` | Comma-separated WhatsApp recipient numbers in international format | — |
+| `TRUST_PROXY` | Set to `1` when running behind a trusted reverse proxy so rate limits use `X-Forwarded-For` | — |
 | `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN` | Meta WhatsApp Cloud API sender ID and access token | — |
 | `WHATSAPP_API_VERSION` | Meta Graph API version | `v23.0` |
 | `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_TEMPLATE_LANGUAGE` | Optional approved template and language (template body expects name, phone, email, language, question) | — |
@@ -81,7 +100,8 @@ Configure either `WHATSAPP_WEBHOOK_URL` or the Meta Cloud API variables to send
 chat queries to WhatsApp in the background. Meta credentials and all other
 secrets belong in the hosting environment, not in source control. The form
 reports success when at least one configured notification channel delivers the
-query. Never commit `data/`.
+query. Never commit chat leads or generated caches under `data/`; the FAQ
+knowledge files themselves are safe to ship.
 
 ### Website enquiry forms
 

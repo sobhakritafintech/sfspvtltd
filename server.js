@@ -2,6 +2,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const nodemailer = require("nodemailer");
+const zlib = require("node:zlib");
 const CONFIG = require("./config");
 
 const ROOT = __dirname;
@@ -593,75 +594,66 @@ async function handleChatLead(req, res) {
   });
 }
 
-async function handleChatAsk(req, res) {
-  let payload;
-  try {
-    payload = await readJsonBody(req, 64 * 1024);
-  } catch (error) {
-    return sendJson(res, 400, { ok: false, error: error.message });
-  }
-
-  const question = cleanText(payload.question, 1500);
-  const context = cleanText(payload.context, 12000);
-  const language = cleanText(payload.language, 60) || "English";
-
-  if (question.length < 2) {
-    return sendJson(res, 422, { ok: false, error: "Please ask a question." });
-  }
-  if (!context) {
-    return sendJson(res, 422, { ok: false, error: "No context available." });
-  }
-
-  const ip = (req.socket.remoteAddress || "unknown").replace(/^::ffff:/, "");
-  if (!allowAsk(ip)) {
-    return sendJson(res, 429, { ok: false, error: "Too many questions. Please try again in a few minutes." });
-  }
-
-  const cached = readCache(question, language);
-  if (cached) return sendJson(res, 200, { ok: true, answer: cached });
-
-  try {
-    const answer = await askFreeModel(question, context, language);
-    if (!isNoContextAnswer(answer)) writeCache(question, language, answer);
-    return sendJson(res, 200, { ok: true, answer });
-  } catch (error) {
-    console.error("sobhi answer failed:", error.message);
-    return sendJson(res, 502, { ok: false, error: "The assistant is unavailable right now." });
-  }
-}
-
 const ASK_WINDOW_MS = 10 * 60 * 1000;
 const ASK_MAX = 40;
 const askHits = new Map();
 const answerCache = new Map();
 const ANSWER_TTL_MS = 30 * 60 * 1000;
+const ANSWER_CACHE_MAX = 300;
+const MODEL_NAMES = ["openai-fast", "openai"];
+const MODEL_COOLDOWN_MS = 30 * 1000;
+const modelCooldown = new Map();
 
-function answerKey(question, language) {
-  return (language + "\n" + question).toLowerCase().replace(/\s+/g, " ").slice(0, 400);
+function hashString(value) {
+  const text = String(value || "");
+  let hash = 5381;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = ((hash << 5) + hash + text.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(36);
+}
+
+function clientIp(req) {
+  if (process.env.TRUST_PROXY === "1") {
+    const forwarded = req.headers["x-forwarded-for"];
+    if (typeof forwarded === "string" && forwarded.trim()) {
+      return forwarded.split(",")[0].trim();
+    }
+  }
+  return (req.socket.remoteAddress || "unknown").replace(/^::ffff:/, "");
+}
+
+function answerKey(question, language, context) {
+  return language.toLowerCase() + "|" + hashString(context) + "|" +
+    question.toLowerCase().replace(/\s+/g, " ").slice(0, 400);
 }
 
 function isNoContextAnswer(answer) {
   return /\[NO_CONTEXT\]/i.test(answer) ||
+    /\[OFF_TOPIC\]/i.test(answer) ||
     /not (?:listed|available) (?:on|in) (?:the|our) (?:site|website)/i.test(answer) ||
     /(?:don't|do not) have (?:that|this) information/i.test(answer);
 }
 
-function readCache(question, language) {
-  const entry = answerCache.get(answerKey(question, language));
+function readCache(key) {
+  const entry = answerCache.get(key);
   if (!entry) return "";
   if (Date.now() - entry.time > ANSWER_TTL_MS) {
-    answerCache.delete(answerKey(question, language));
+    answerCache.delete(key);
     return "";
   }
+  // Refresh insertion order so the map behaves like an LRU cache.
+  answerCache.delete(key);
+  answerCache.set(key, entry);
   return entry.answer;
 }
 
-function writeCache(question, language, answer) {
-  if (answerCache.size > 200) {
+function writeCache(key, answer) {
+  if (answerCache.size >= ANSWER_CACHE_MAX) {
     const oldest = answerCache.keys().next().value;
     answerCache.delete(oldest);
   }
-  answerCache.set(answerKey(question, language), { answer, time: Date.now() });
+  answerCache.set(key, { answer, time: Date.now() });
 }
 
 function allowAsk(ip) {
@@ -680,36 +672,114 @@ function allowAsk(ip) {
   return entry.count <= ASK_MAX;
 }
 
-const MODEL_NAMES = ["openai-fast", "openai"];
+function modelAvailable(model) {
+  const until = modelCooldown.get(model);
+  return !until || until <= Date.now();
+}
+
+function markModelFailure(model) {
+  modelCooldown.set(model, Date.now() + MODEL_COOLDOWN_MS);
+}
+
+function markModelSuccess(model) {
+  modelCooldown.delete(model);
+}
 
 function retryDelayMs(body, headers) {
   const header = headers && (headers.get("retry-after") || headers.get("x-retry-after"));
   if (header && /^\d+$/.test(header.trim())) return Number(header.trim()) * 1000;
   const text = typeof body === "string" ? body : JSON.stringify(body || {});
-  const match = /retry after (\d+)\s*s/i.exec(text);
-  return match ? Number(match[1]) * 1000 : 0;
+  const match = /retry after (\d+)\s*(ms|s)\b/i.exec(text);
+  if (match) return Number(match[1]) * (match[2].toLowerCase() === "ms" ? 1 : 1000);
+  return 0;
 }
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function askFreeModel(question, context, language) {
-  const system = [
+function chatSystemPrompt(language) {
+  return [
     "You are sobhi, the friendly customer-support assistant for Sobhakrita Fintech Solutions Private Limited, a loan facilitator and Direct Selling Agent based in Chittoor, Andhra Pradesh.",
     "Answer ONLY from the WEBSITE CONTEXT provided. Never invent or guess loan amounts, rates, fees, eligibility, policies, phone numbers or addresses.",
     "If the answer is not clearly present in the context, reply with exactly [NO_CONTEXT] and nothing else.",
+    "If the CUSTOMER QUESTION is unrelated to Sobhakrita, loans, eligibility, documents, fees, EMI, applying, or contacting the team, reply with exactly [OFF_TOPIC] and nothing else. Never respond with a general list of loan products or rates for an unrelated question.",
     "If the context contains general or partial eligibility or document information, share it and say the lender confirms the final criteria. Do not claim information is missing when relevant context is present.",
-    "Keep replies short, warm and practical, ideally under 100 words. Use simple sentences.",
+    "Keep replies short, warm and practical, ideally under 100 words. Use simple sentences and plain text bullet points. Do not use markdown headings or tables.",
     "Always reply in " + language + ", even if the context is in English.",
     "Do not mention that you are an AI, that you use a context, or that you cannot browse. Do not give legal or financial advice. For final terms, ask the customer to confirm with the lender.",
     "Write the answer in your own words and do not add source labels. When useful, refer to a full page link such as https://www.sobhakritafintech.com/apply.html or https://www.sobhakritafintech.com/book-a-call.html."
   ].join(" ");
+}
 
+function chatMessages(question, context, language) {
+  return [
+    { role: "system", content: chatSystemPrompt(language) },
+    { role: "user", content: "WEBSITE CONTEXT:\n" + context + "\n\nCUSTOMER QUESTION:\n" + question }
+  ];
+}
+
+async function handleChatAsk(req, res) {
+  let payload;
+  try {
+    payload = await readJsonBody(req, 64 * 1024);
+  } catch (error) {
+    return sendJson(res, 400, { ok: false, error: error.message });
+  }
+
+  const question = cleanText(payload.question, 1500);
+  const context = cleanText(payload.context, 12000);
+  const language = cleanText(payload.language, 60) || "English";
+  const wantsStream = payload.stream === true;
+
+  if (question.length < 2) {
+    return sendJson(res, 422, { ok: false, error: "Please ask a question." });
+  }
+  if (!context) {
+    return sendJson(res, 422, { ok: false, error: "No context available." });
+  }
+
+  const ip = clientIp(req);
+  if (!allowAsk(ip)) {
+    return sendJson(res, 429, { ok: false, error: "Too many questions. Please try again in a few minutes." });
+  }
+
+  const key = answerKey(question, language, context);
+  const cached = readCache(key);
+  if (cached) {
+    if (!wantsStream) return sendJson(res, 200, { ok: true, answer: cached });
+    res.writeHead(200, {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-store",
+      "Connection": "keep-alive",
+      "X-Accel-Buffering": "no",
+      "X-Content-Type-Options": "nosniff"
+    });
+    res.write("data: " + JSON.stringify({ delta: cached }) + "\n\n");
+    res.end("data: " + JSON.stringify({ done: true, answer: cached }) + "\n\n");
+    return;
+  }
+
+  try {
+    if (wantsStream) {
+      await streamFreeModel(req, res, question, context, language, key);
+      return;
+    }
+    const answer = await askFreeModel(question, context, language);
+    if (!isNoContextAnswer(answer)) writeCache(key, answer);
+    return sendJson(res, 200, { ok: true, answer });
+  } catch (error) {
+    console.error("sobhi answer failed:", error.message);
+    return sendJson(res, 502, { ok: false, error: "The assistant is unavailable right now." });
+  }
+}
+
+async function askFreeModel(question, context, language) {
   let lastError = null;
-  const deadline = Date.now() + 8000;
+  const deadline = Date.now() + 6500;
 
   for (const model of MODEL_NAMES) {
+    if (!modelAvailable(model)) continue;
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const remaining = deadline - Date.now();
       if (remaining < 1500) break;
@@ -724,13 +794,7 @@ async function askFreeModel(question, context, language) {
           body: JSON.stringify({
             model: model,
             temperature: 0.2,
-            messages: [
-              { role: "system", content: system },
-              {
-                role: "user",
-                content: "WEBSITE CONTEXT:\n" + context + "\n\nCUSTOMER QUESTION:\n" + question
-              }
-            ]
+            messages: chatMessages(question, context, language)
           }),
           signal: controller.signal
         });
@@ -739,12 +803,11 @@ async function askFreeModel(question, context, language) {
           const text = await response.text().catch(() => "");
           lastError = new Error("Model returned " + response.status + " (" + model + ")");
           const delay = retryDelayMs(text, response.headers);
-          // Only wait for short rate-limit windows; otherwise fail fast and let
-          // the browser model or the site content answer instead.
           if ((response.status === 402 || response.status === 429) && delay > 0 && delay <= 3000 && attempt === 0 && deadline - Date.now() > delay + 1500) {
             await wait(delay + 250);
             continue;
           }
+          markModelFailure(model);
           break;
         }
 
@@ -753,11 +816,14 @@ async function askFreeModel(question, context, language) {
         const answer = message && typeof message.content === "string" ? message.content.trim() : "";
         if (!answer) {
           lastError = new Error("Model returned an empty answer");
+          markModelFailure(model);
           break;
         }
+        markModelSuccess(model);
         return answer;
       } catch (error) {
         lastError = error;
+        markModelFailure(model);
         break;
       } finally {
         clearTimeout(timer);
@@ -766,6 +832,200 @@ async function askFreeModel(question, context, language) {
   }
 
   throw lastError || new Error("Assistant unavailable");
+}
+
+async function streamFreeModel(req, res, question, context, language, cacheKey) {
+  let started = false;
+  let clientGone = false;
+  let lastError = null;
+  const deadline = Date.now() + 6500;
+
+  res.on("close", () => {
+    if (!res.writableEnded) clientGone = true;
+  });
+
+  function begin() {
+    if (started) return;
+    started = true;
+    res.writeHead(200, {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-store",
+      "Connection": "keep-alive",
+      "X-Accel-Buffering": "no",
+      "X-Content-Type-Options": "nosniff"
+    });
+  }
+
+  function send(payload) {
+    if (!clientGone) res.write("data: " + JSON.stringify(payload) + "\n\n");
+  }
+
+  for (const model of MODEL_NAMES) {
+    if (!modelAvailable(model)) continue;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const remaining = deadline - Date.now();
+      if (remaining < 1500) break;
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), remaining);
+      let answer = "";
+      let modelStarted = false;
+
+      try {
+        const response = await fetch("https://text.pollinations.ai/openai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: model,
+            temperature: 0.2,
+            stream: true,
+            messages: chatMessages(question, context, language)
+          }),
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          const text = await response.text().catch(() => "");
+          lastError = new Error("Model returned " + response.status + " (" + model + ")");
+          const delay = retryDelayMs(text, response.headers);
+          if ((response.status === 402 || response.status === 429) && delay > 0 && delay <= 3000 && attempt === 0 && deadline - Date.now() > delay + 1500) {
+            await wait(delay + 250);
+            continue;
+          }
+          markModelFailure(model);
+          break;
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const body = await response.json();
+          const message = body && body.choices && body.choices[0] && body.choices[0].message;
+          const answer = message && typeof message.content === "string" ? message.content.trim() : "";
+          if (!answer) {
+            lastError = new Error("Model returned an empty answer");
+            markModelFailure(model);
+            break;
+          }
+          markModelSuccess(model);
+          if (!isNoContextAnswer(answer)) writeCache(cacheKey, answer);
+          begin();
+          send({ delta: answer });
+          send({ done: true, answer });
+          if (!clientGone) res.end();
+          return;
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          if (clientGone) {
+            controller.abort();
+            break;
+          }
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          buffer += decoder.decode(chunk.value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            if (!line.startsWith("data:")) continue;
+            const data = line.slice(5).trim();
+            if (!data || data === "[DONE]") continue;
+            let parsed;
+            try { parsed = JSON.parse(data); } catch { continue; }
+            const choice = parsed.choices && parsed.choices[0];
+            const delta = choice && choice.delta && typeof choice.delta.content === "string"
+              ? choice.delta.content
+              : "";
+            if (!delta) continue;
+            if (!modelStarted) {
+              modelStarted = true;
+              if (!started) begin();
+            }
+            answer += delta;
+            send({ delta });
+          }
+        }
+
+        if (!answer) {
+          lastError = new Error("Model returned an empty answer");
+          markModelFailure(model);
+          break;
+        }
+
+        markModelSuccess(model);
+        if (!isNoContextAnswer(answer)) writeCache(cacheKey, answer);
+        if (!started) {
+          begin();
+          send({ delta: answer });
+        }
+        send({ done: true, answer });
+        if (!clientGone) res.end();
+        return;
+      } catch (error) {
+        lastError = error;
+        markModelFailure(model);
+        break;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    if (started) break;
+  }
+
+  if (!started) {
+    console.error("sobhi stream failed:", lastError ? lastError.message : "unknown error");
+    if (!res.headersSent) {
+      return sendJson(res, 502, { ok: false, error: "The assistant is unavailable right now." });
+    }
+  }
+  send({ error: "The assistant is unavailable right now." });
+  if (!clientGone) res.end();
+}
+
+const COMPRESSIBLE = new Set([".html", ".css", ".js", ".json", ".svg", ".txt", ".xml", ".webmanifest"]);
+const compressedCache = new Map();
+const COMPRESSED_CACHE_MAX = 80;
+
+function cacheControlFor(extension) {
+  if (extension === ".html") return "no-cache";
+  if (extension === ".js" || extension === ".css" || extension === ".txt") {
+    return "public, max-age=86400, must-revalidate";
+  }
+  if (extension === ".png" || extension === ".jpg" || extension === ".jpeg" ||
+      extension === ".webp" || extension === ".svg" || extension === ".woff2" ||
+      extension === ".ico") {
+    return "public, max-age=2592000";
+  }
+  return "public, max-age=3600";
+}
+
+function etagFor(stat) {
+  return 'W/"' + stat.size.toString(16) + "-" + Math.floor(stat.mtimeMs || 0).toString(16) + '"';
+}
+
+function compressAsset(filePath, stat, encoding) {
+  const key = filePath + "|" + stat.size + "|" + stat.mtimeMs + "|" + encoding;
+  if (compressedCache.has(key)) return compressedCache.get(key);
+  const source = fs.readFileSync(filePath);
+  const body = encoding === "br"
+    ? zlib.brotliCompressSync(source, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5 } })
+    : zlib.gzipSync(source, { level: 6 });
+  if (compressedCache.size >= COMPRESSED_CACHE_MAX) {
+    compressedCache.delete(compressedCache.keys().next().value);
+  }
+  compressedCache.set(key, body);
+  return body;
+}
+
+function preferredEncoding(req) {
+  const header = String(req.headers["accept-encoding"] || "").toLowerCase();
+  if (header.includes("br") && typeof zlib.brotliCompressSync === "function") return "br";
+  if (header.includes("gzip")) return "gzip";
+  return "";
 }
 
 const server = http.createServer((req, res) => {
@@ -831,14 +1091,46 @@ const server = http.createServer((req, res) => {
       );
     }
 
-    res.writeHead(200, {
-      "Content-Type": MIME[path.extname(filePath).toLowerCase()] ||
-        "application/octet-stream",
-      "X-Content-Type-Options": "nosniff"
-    });
+    const extension = path.extname(filePath).toLowerCase();
+    const etag = etagFor(stat);
+    const headers = {
+      "Content-Type": MIME[extension] || "application/octet-stream",
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": cacheControlFor(extension),
+      "ETag": etag,
+      "Last-Modified": new Date(stat.mtimeMs || Date.now()).toUTCString()
+    };
 
-    if (req.method === "HEAD") return res.end();
+    if (req.headers["if-none-match"] === etag) {
+      res.writeHead(304, headers);
+      return res.end();
+    }
 
+    const encoding = COMPRESSIBLE.has(extension) ? preferredEncoding(req) : "";
+    if (encoding) {
+      headers["Content-Encoding"] = encoding;
+      headers["Vary"] = "Accept-Encoding";
+    }
+
+    if (req.method === "HEAD") {
+      res.writeHead(200, headers);
+      return res.end();
+    }
+
+    if (encoding) {
+      try {
+        const body = compressAsset(filePath, stat, encoding);
+        headers["Content-Length"] = body.length;
+        res.writeHead(200, headers);
+        return res.end(body);
+      } catch {
+        // Fall through to the uncompressed stream below.
+        delete headers["Content-Encoding"];
+        delete headers["Vary"];
+      }
+    }
+
+    res.writeHead(200, headers);
     fs.createReadStream(filePath)
       .on("error", () => {
         if (!res.headersSent) res.writeHead(500);

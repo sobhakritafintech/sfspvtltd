@@ -13,8 +13,10 @@ build/
 *.log
 npm-debug.log*
 
-# Chat leads (personal data)
-data/
+# Chat data (leads are personal data; FAQ knowledge files are shipped)
+data/*
+!data/chat-faqs.txt
+!data/chat-faqs.*.txt
 
 # OS files
 .DS_Store

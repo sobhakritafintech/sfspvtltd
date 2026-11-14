@@ -1,7 +1,7 @@
 /* ==========================================================================
    sobhi — simple website assistant for Sobhakrita Fintech Solutions
-   - No API keys. Uses Puter.js for optional free AI generation and falls
-     back to a local retrieval answer built from the site's own pages.
+   - No API keys. Retrieval runs in the browser over the site FAQ and facts;
+     free-form replies stream from /api/chat/ask with a fast local fallback.
    - Language is chosen first, then sobhi offers support options.
    - Unanswered questions can be sent to the team through /api/chat/lead.
    ========================================================================== */
@@ -20,13 +20,6 @@
   var closeBtn = root.querySelector("[data-sobhi-close]");
   var langBtn = root.querySelector("[data-sobhi-lang]");
   var langLabel = root.querySelector("[data-sobhi-lang-label]");
-  var greetingPill = document.getElementById("sfsGreetingPill");
-
-  if (greetingPill) {
-    setTimeout(function () {
-      greetingPill.classList.add("is-hidden");
-    }, 5000);
-  }
 
   var state = {
     booted: false,
@@ -39,9 +32,18 @@
     awaitingEscalation: false,
     awaitingFeedback: false,
     awaitingClarification: false,
+    awaitingMoreHelp: false,
     knowledge: [],
     knowledgePromise: null,
-    lastQuestion: ""
+    knowledgePromises: {},
+    knowledgeLang: "en",
+    lastQuestion: "",
+    lastMatchPage: "",
+    lastWasTyped: false,
+    translateCode: "",
+    langPicked: false,
+    requestId: 0,
+    restoring: false
   };
 
   var LANGUAGES = [
@@ -79,6 +81,7 @@
       choose: "Choose an option below or type your question.",
       opts: ["Loan information", "Eligibility", "Documents", "Fees & charges", "EMI & repayment", "Apply for a loan", "Book a call"],
       noContext: "I'm sorry, I don't have that information in the website content.",
+      offTopic: "I can help with questions about Sobhakrita's loan services — eligibility, documents, fees, EMI, applications and contact details. Please choose an option below or ask about one of these topics.",
       askSubmit: "Would you like to submit your question to our team? Reply Yes or No.",
       yes: "Yes",
       no: "No",
@@ -101,6 +104,7 @@
       choose: "క్రింద ఒక ఎంపికను ఎంచుకోండి లేదా మీ ప్రశ్నను టైప్ చేయండి.",
       opts: ["రుణ సమాచారం", "అర్హత", "పత్రాలు", "రుసుములు & ఛార్జీలు", "EMI & తిరిగి చెల్లింపు", "రుణానికి దరఖాస్తు", "కాల్ బుక్ చేయండి"],
       noContext: "క్షమించండి, వెబ్‌సైట్ సమాచారంలో ఆ వివరాలు నాకు లేవు.",
+      offTopic: "సోభకృత రుణ సేవల గురించి — అర్హత, పత్రాలు, రుసుములు, EMI, దరఖాస్తులు మరియు సంప్రదింపు వివరాలు — నేను సహాయం చేయగలను. దయచేసి క్రింద ఒక ఎంపికను ఎంచుకోండి లేదా ఈ అంశాల గురించి అడగండి.",
       askSubmit: "మీ ప్రశ్నను మా బృందానికి పంపాలా? అవును లేదా కాదు అని సమాధానం ఇవ్వండి.",
       yes: "అవును",
       no: "కాదు",
@@ -123,6 +127,7 @@
       choose: "नीचे एक विकल्प चुनें या अपना सवाल लिखें।",
       opts: ["ऋण की जानकारी", "पात्रता", "दस्तावेज़", "शुल्क और चार्ज", "EMI और पुनर्भुगतान", "ऋण के लिए आवेदन करें", "कॉल बुक करें"],
       noContext: "क्षमा करें, वेबसाइट की जानकारी में मुझे यह जानकारी नहीं मिली।",
+      offTopic: "मैं सोभकृता की ऋण सेवाओं — पात्रता, दस्तावेज़, शुल्क, EMI, आवेदन और संपर्क विवरण — के बारे में मदद कर सकता हूँ। कृपया नीचे कोई विकल्प चुनें या इन विषयों में से कुछ पूछें।",
       askSubmit: "क्या आप अपना सवाल हमारी टीम को भेजना चाहते हैं? हाँ या नहीं लिखें।",
       yes: "हाँ",
       no: "नहीं",
@@ -145,6 +150,7 @@
       choose: "கீழே ஒரு விருப்பத்தைத் தேர்ந்தெடுக்கவும் அல்லது உங்கள் கேள்வியைத் தட்டச்சு செய்யவும்.",
       opts: ["கடன் தகவல்", "தகுதி", "ஆவணங்கள்", "கட்டணங்கள் & கட்டண விவரங்கள்", "EMI & திருப்பிச் செலுத்துதல்", "கடனுக்கு விண்ணப்பிக்கவும்", "அழைப்பை பதிவு செய்யவும்"],
       noContext: "மன்னிக்கவும், வலைத்தளத் தகவலில் அந்த விவரம் என்னிடம் இல்லை.",
+      offTopic: "சோபகிருதாவின் கடன் சேவைகள் — தகுதி, ஆவணங்கள், கட்டணங்கள், EMI, விண்ணப்பங்கள் மற்றும் தொடர்பு விவரங்கள் — பற்றி நான் உதவ முடியும். கீழே ஒரு விருப்பத்தைத் தேர்ந்தெடுக்கவும் அல்லது இந்தத் தலைப்புகளில் ஏதாவது கேளுங்கள்.",
       askSubmit: "உங்கள் கேள்வியை எங்கள் குழுவுக்கு அனுப்ப விரும்புகிறீர்களா? ஆம் அல்லது இல்லை என்று பதிலளிக்கவும்.",
       yes: "ஆம்",
       no: "இல்லை",
@@ -167,6 +173,7 @@
       choose: "ಕೆಳಗಿನ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ.",
       opts: ["ಸಾಲದ ಮಾಹಿತಿ", "ಅರ್ಹತೆ", "ದಾಖಲೆಗಳು", "ಶುಲ್ಕ ಮತ್ತು ಶುಲ್ಕಗಳು", "EMI ಮತ್ತು ಮರುಪಾವತಿ", "ಸಾಲಕ್ಕೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ", "ಕರೆ ಬುಕ್ ಮಾಡಿ"],
       noContext: "ಕ್ಷಮಿಸಿ, ವೆಬ್‌ಸೈಟ್ ಮಾಹಿತಿಯಲ್ಲಿ ಆ ವಿವರ ನನಗೆ ಇಲ್ಲ.",
+      offTopic: "ಸೋಭಕೃತದ ಸಾಲ ಸೇವೆಗಳು — ಅರ್ಹತೆ, ದಾಖಲೆಗಳು, ಶುಲ್ಕಗಳು, EMI, ಅರ್ಜಿಗಳು ಮತ್ತು ಸಂಪರ್ಕ ವಿವರಗಳು — ಬಗ್ಗೆ ನಾನು ಸಹಾಯ ಮಾಡಬಲ್ಲೆ. ದಯವಿಟ್ಟು ಕೆಳಗೆ ಒಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ ಅಥವಾ ಈ ವಿಷಯಗಳ ಬಗ್ಗೆ ಕೇಳಿ.",
       askSubmit: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಬೇಕೇ? ಹೌದು ಅಥವಾ ಇಲ್ಲ ಎಂದು ಉತ್ತರಿಸಿ.",
       yes: "ಹೌದು",
       no: "ಇಲ್ಲ",
@@ -189,6 +196,7 @@
       choose: "ചുവടെയുള്ള ഒരു ഓപ്ഷൻ തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ ചോദ്യം ടൈപ്പ് ചെയ്യുക.",
       opts: ["വായ്പ വിവരങ്ങൾ", "യോഗ്യത", "രേഖകൾ", "ഫീസുകളും ചാർജുകളും", "EMIയും തിരിച്ചടവും", "വായ്പയ്ക്ക് അപേക്ഷിക്കുക", "കോൾ ബുക്ക് ചെയ്യുക"],
       noContext: "ക്ഷമിക്കണം, വെബ്സൈറ്റ് വിവരങ്ങളിൽ ആ വിവരം എനിക്കില്ല.",
+      offTopic: "സോഭകൃതയുടെ വായ്പാ സേവനങ്ങൾ — യോഗ്യത, രേഖകൾ, ഫീസ്, EMI, അപേക്ഷകൾ, ബന്ധപ്പെടാനുള്ള വിവരങ്ങൾ — എന്നിവയെക്കുറിച്ച് എനിക്ക് സഹായിക്കാം. താഴെ ഒരു ഓപ്ഷൻ തിരഞ്ഞെടുക്കുകയോ ഈ വിഷയങ്ങളിൽ എന്തെങ്കിലും ചോദിക്കുകയോ ചെയ്യുക.",
       askSubmit: "നിങ്ങളുടെ ചോദ്യം ഞങ്ങളുടെ ടീമിന് അയയ്ക്കണോ? അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന് മറുപടി നൽകുക.",
       yes: "അതെ",
       no: "ഇല്ല",
@@ -211,6 +219,7 @@
       choose: "खालील पर्याय निवडा किंवा तुमचा प्रश्न टाइप करा.",
       opts: ["कर्जाची माहिती", "पात्रता", "कागदपत्रे", "शुल्क आणि शुल्के", "EMI आणि परतफेड", "कर्जासाठी अर्ज करा", "कॉल बुक करा"],
       noContext: "क्षमस्व, वेबसाइटच्या माहितीत मला ही माहिती मिळाली नाही.",
+      offTopic: "मी सोभकृताच्या कर्ज सेवा — पात्रता, कागदपत्रे, शुल्क, EMI, अर्ज आणि संपर्क तपशील — याबद्दल मदत करू शकतो. कृपया खालील पर्याय निवडा किंवा यापैकी काही विचारा.",
       askSubmit: "तुमचा प्रश्न आमच्या टीमला पाठवायचा आहे का? होय किंवा नाही असे उत्तर द्या.",
       yes: "होय",
       no: "नाही",
@@ -233,6 +242,7 @@
       choose: "নিচে একটি বিকল্প বেছে নিন বা আপনার প্রশ্ন টাইপ করুন।",
       opts: ["ঋণের তথ্য", "যোগ্যতা", "নথিপত্র", "ফি ও চার্জ", "EMI ও পরিশোধ", "ঋণের জন্য আবেদন করুন", "কল বুক করুন"],
       noContext: "দুঃখিত, ওয়েবসাইটের তথ্যে আমার কাছে সেই তথ্য নেই।",
+      offTopic: "আমি সোভাকৃতার ঋণ পরিষেবা — যোগ্যতা, নথি, ফি, EMI, আবেদন এবং যোগাযোগের বিবরণ — সম্পর্কে সাহায্য করতে পারি। অনুগ্রহ করে নিচে একটি বিকল্প বেছে নিন বা এই বিষয়গুলোর মধ্যে কিছু জিজ্ঞাসা করুন।",
       askSubmit: "আপনার প্রশ্ন আমাদের টিমে পাঠাতে চান? হ্যাঁ বা না লিখুন।",
       yes: "হ্যাঁ",
       no: "না",
@@ -255,6 +265,7 @@
       choose: "નીચેનો વિકલ્પ પસંદ કરો અથવા તમારો પ્રશ્ન લખો.",
       opts: ["લોન માહિતી", "પાત્રતા", "દસ્તાવેજો", "ફી અને ચાર્જ", "EMI અને ચુકવણી", "લોન માટે અરજી કરો", "કૉલ બુક કરો"],
       noContext: "માફ કરશો, વેબસાઇટની માહિતીમાં મને આ માહિતી મળી નથી.",
+      offTopic: "હું સોભકૃતાની લોન સેવાઓ — પાત્રતા, દસ્તાવેજો, ફી, EMI, અરજીઓ અને સંપર્ક વિગતો — વિશે મદદ કરી શકું છું. કૃપા કરીને નીચે એક વિકલ્પ પસંદ કરો અથવા આ વિષયોમાંથી કંઈક પૂછો.",
       askSubmit: "તમારો પ્રશ્ન અમારી ટીમને મોકલવો છે? હા અથવા ના લખો.",
       yes: "હા",
       no: "ના",
@@ -277,6 +288,7 @@
       choose: "ਹੇਠਾਂ ਇੱਕ ਵਿਕਲਪ ਚੁਣੋ ਜਾਂ ਆਪਣਾ ਸਵਾਲ ਲਿਖੋ।",
       opts: ["ਕਰਜ਼ੇ ਦੀ ਜਾਣਕਾਰੀ", "ਯੋਗਤਾ", "ਦਸਤਾਵੇਜ਼", "ਫੀਸ ਅਤੇ ਚਾਰਜ", "EMI ਅਤੇ ਭੁਗਤਾਨ", "ਕਰਜ਼ੇ ਲਈ ਅਰਜ਼ੀ ਦਿਓ", "ਕਾਲ ਬੁੱਕ ਕਰੋ"],
       noContext: "ਮਾਫ਼ ਕਰਨਾ, ਵੈੱਬਸਾਈਟ ਦੀ ਜਾਣਕਾਰੀ ਵਿੱਚ ਮੈਨੂੰ ਇਹ ਜਾਣਕਾਰੀ ਨਹੀਂ ਮਿਲੀ।",
+      offTopic: "ਮੈਂ ਸੋਭਕ੍ਰਿਤਾ ਦੀਆਂ ਕਰਜ਼ਾ ਸੇਵਾਵਾਂ — ਯੋਗਤਾ, ਦਸਤਾਵੇਜ਼, ਫੀਸ, EMI, ਅਰਜ਼ੀਆਂ ਅਤੇ ਸੰਪਰਕ ਵੇਰਵੇ — ਬਾਰੇ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ। ਕਿਰਪਾ ਕਰਕੇ ਹੇਠਾਂ ਇੱਕ ਵਿਕਲਪ ਚੁਣੋ ਜਾਂ ਇਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਵਿੱਚੋਂ ਕੁਝ ਪੁੱਛੋ।",
       askSubmit: "ਕੀ ਤੁਸੀਂ ਆਪਣਾ ਸਵਾਲ ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜਣਾ ਚਾਹੁੰਦੇ ਹੋ? ਹਾਂ ਜਾਂ ਨਹੀਂ ਲਿਖੋ।",
       yes: "ਹਾਂ",
       no: "ਨਹੀਂ",
@@ -299,6 +311,7 @@
       choose: "ତଳେ ଏକ ବିକଳ୍ପ ବାଛନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଲେଖନ୍ତୁ।",
       opts: ["ଋଣ ସୂଚନା", "ଯୋଗ୍ୟତା", "ଦଲିଲ", "ଫି ଓ ଚାର୍ଜ", "EMI ଓ ପରିଶୋଧ", "ଋଣ ପାଇଁ ଆବେଦନ", "କଲ ବୁକ କରନ୍ତୁ"],
       noContext: "କ୍ଷମା କରନ୍ତୁ, ୱେବସାଇଟ ସୂଚନାରେ ମୋତେ ଏହି ତଥ୍ୟ ମିଳିଲା ନାହିଁ।",
+      offTopic: "ମୁଁ ସୋଭକୃତାର ଋଣ ସେବା — ଯୋଗ୍ୟତା, ଦଲିଲ, ଫି, EMI, ଆବେଦନ ଏବଂ ଯୋଗାଯୋଗ ବିବରଣୀ — ବିଷୟରେ ସାହାଯ୍ୟ କରିପାରିବି। ଦୟାକରି ତଳେ ଏକ ବିକଳ୍ପ ବାଛନ୍ତୁ କିମ୍ବା ଏହି ବିଷୟଗୁଡ଼ିକ ମଧ୍ୟରୁ କିଛି ପଚାରନ୍ତୁ।",
       askSubmit: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଆମ ଦଳକୁ ପଠାଇବାକୁ ଚାହାଁନ୍ତି କି? ହଁ କିମ୍ବା ନା ଲେଖନ୍ତୁ।",
       yes: "ହଁ",
       no: "ନା",
@@ -321,6 +334,7 @@
       choose: "نیچے کوئی آپشن منتخب کریں یا اپنا سوال لکھیں۔",
       opts: ["قرض کی معلومات", "اہلیت", "دستاویزات", "فیس اور چارجز", "EMI اور ادائیگی", "قرض کے لیے درخواست دیں", "کال بک کریں"],
       noContext: "معاف کریں، ویب سائٹ کی معلومات میں مجھے یہ معلومات نہیں ملیں۔",
+      offTopic: "میں سوبھکریتا کی قرضہ خدمات — اہلیت، دستاویزات، فیس، EMI، درخواستیں اور رابطہ تفصیلات — کے بارے میں مدد کر سکتا ہوں۔ براہ کرم نیچے کوئی آپشن منتخب کریں یا ان موضوعات میں سے کچھ پوچھیں۔",
       askSubmit: "کیا آپ اپنا سوال ہماری ٹیم کو بھیجنا چاہتے ہیں؟ ہاں یا نہیں لکھیں۔",
       yes: "ہاں",
       no: "نہیں",
@@ -340,18 +354,18 @@
   };
 
   var FEEDBACK_COPY = {
-    en: { prompt: "Did this answer your question?", thanks: "Thanks for letting me know.", clarify: "Tell me what I should clarify, or submit your question to our team.", addDetails: "Add more details", submitQuery: "Submit a query", sendOptions: "Thanks for sharing your query. Choose WhatsApp or email below to send it to our team." },
-    te: { prompt: "ఈ సమాధానం మీ ప్రశ్నకు సమాధానమిచ్చిందా?", thanks: "తెలియజేసినందుకు ధన్యవాదాలు.", clarify: "ఏమి వివరించాలో చెప్పండి లేదా మీ ప్రశ్నను మా బృందానికి పంపండి.", addDetails: "మరిన్ని వివరాలు జోడించండి", submitQuery: "ప్రశ్నను పంపండి", sendOptions: "మీ ప్రశ్నను పంచుకున్నందుకు ధన్యవాదాలు. మా బృందానికి పంపడానికి క్రింద WhatsApp లేదా ఇమెయిల్ ఎంచుకోండి." },
-    hi: { prompt: "क्या इस जवाब से आपका सवाल हल हुआ?", thanks: "बताने के लिए धन्यवाद।", clarify: "बताएँ कि किस बात को स्पष्ट करना है, या अपना सवाल हमारी टीम को भेजें।", addDetails: "और जानकारी दें", submitQuery: "सवाल भेजें", sendOptions: "अपना सवाल साझा करने के लिए धन्यवाद। इसे हमारी टीम को भेजने के लिए नीचे WhatsApp या ईमेल चुनें।" },
-    ta: { prompt: "இந்தப் பதில் உங்கள் கேள்விக்கு உதவியதா?", thanks: "தெரிவித்ததற்கு நன்றி.", clarify: "எதைத் தெளிவுபடுத்த வேண்டும் என்று கூறுங்கள் அல்லது உங்கள் கேள்வியை எங்கள் குழுவுக்கு அனுப்புங்கள்.", addDetails: "மேலும் விவரங்களைச் சேர்க்கவும்", submitQuery: "கேள்வியை அனுப்பவும்", sendOptions: "உங்கள் கேள்வியைப் பகிர்ந்ததற்கு நன்றி. எங்கள் குழுவுக்கு அனுப்ப கீழே WhatsApp அல்லது மின்னஞ்சலைத் தேர்ந்தெடுக்கவும்." },
-    kn: { prompt: "ಈ ಉತ್ತರ ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಉತ್ತರಿಸಿತೇ?", thanks: "ತಿಳಿಸಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು.", clarify: "ಏನನ್ನು ಸ್ಪಷ್ಟಪಡಿಸಬೇಕೆಂದು ತಿಳಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಿ.", addDetails: "ಇನ್ನಷ್ಟು ವಿವರ ಸೇರಿಸಿ", submitQuery: "ಪ್ರಶ್ನೆ ಕಳುಹಿಸಿ", sendOptions: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಹಂಚಿಕೊಂಡಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಲು ಕೆಳಗೆ WhatsApp ಅಥವಾ ಇಮೇಲ್ ಆಯ್ಕೆಮಾಡಿ." },
-    ml: { prompt: "ഈ മറുപടി നിങ്ങളുടെ ചോദ്യത്തിന് ഉത്തരം നൽകിയോ?", thanks: "അറിയിച്ചതിന് നന്ദി.", clarify: "എന്താണ് വ്യക്തമാക്കേണ്ടതെന്ന് പറയുക, അല്ലെങ്കിൽ നിങ്ങളുടെ ചോദ്യം ഞങ്ങളുടെ ടീമിന് അയയ്ക്കുക.", addDetails: "കൂടുതൽ വിവരങ്ങൾ ചേർക്കുക", submitQuery: "ചോദ്യം അയയ്ക്കുക", sendOptions: "നിങ്ങളുടെ ചോദ്യം പങ്കുവെച്ചതിന് നന്ദി. ടീമിന് അയയ്ക്കാൻ താഴെ WhatsApp അല്ലെങ്കിൽ ഇമെയിൽ തിരഞ്ഞെടുക്കുക." },
-    mr: { prompt: "या उत्तराने तुमच्या प्रश्नाचे समाधान झाले का?", thanks: "कळवल्याबद्दल धन्यवाद.", clarify: "काय स्पष्ट करायचे ते सांगा किंवा तुमचा प्रश्न आमच्या टीमला पाठवा.", addDetails: "अधिक माहिती जोडा", submitQuery: "प्रश्न पाठवा", sendOptions: "तुमचा प्रश्न शेअर केल्याबद्दल धन्यवाद. टीमला पाठवण्यासाठी खाली WhatsApp किंवा ईमेल निवडा." },
-    bn: { prompt: "এই উত্তরটি কি আপনার প্রশ্নের সমাধান করেছে?", thanks: "জানানোর জন্য ধন্যবাদ।", clarify: "কোন বিষয়টি পরিষ্কার করা দরকার বলুন, অথবা আপনার প্রশ্নটি আমাদের টিমে পাঠান।", addDetails: "আরও তথ্য যোগ করুন", submitQuery: "প্রশ্ন পাঠান", sendOptions: "আপনার প্রশ্নটি শেয়ার করার জন্য ধন্যবাদ। টিমে পাঠাতে নিচে WhatsApp বা ইমেল বেছে নিন।" },
-    gu: { prompt: "શું આ જવાબથી તમારા પ્રશ્નનો ઉકેલ આવ્યો?", thanks: "જણાવવા બદલ આભાર.", clarify: "શું સ્પષ્ટ કરવું તે જણાવો અથવા તમારો પ્રશ્ન અમારી ટીમને મોકલો.", addDetails: "વધુ વિગતો ઉમેરો", submitQuery: "પ્રશ્ન મોકલો", sendOptions: "તમારો પ્રશ્ન શેર કરવા બદલ આભાર. અમારી ટીમને મોકલવા માટે નીચે WhatsApp અથવા ઇમેઇલ પસંદ કરો." },
-    pa: { prompt: "ਕੀ ਇਸ ਜਵਾਬ ਨਾਲ ਤੁਹਾਡਾ ਸਵਾਲ ਹੱਲ ਹੋਇਆ?", thanks: "ਦੱਸਣ ਲਈ ਧੰਨਵਾਦ।", clarify: "ਦੱਸੋ ਕਿ ਕੀ ਸਪੱਸ਼ਟ ਕਰਨਾ ਹੈ ਜਾਂ ਆਪਣਾ ਸਵਾਲ ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜੋ।", addDetails: "ਹੋਰ ਜਾਣਕਾਰੀ ਦਿਓ", submitQuery: "ਸਵਾਲ ਭੇਜੋ", sendOptions: "ਆਪਣਾ ਸਵਾਲ ਸਾਂਝਾ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜਣ ਲਈ ਹੇਠਾਂ WhatsApp ਜਾਂ ਈਮੇਲ ਚੁਣੋ।" },
-    or: { prompt: "ଏହି ଉତ୍ତର ଆପଣଙ୍କ ପ୍ରଶ୍ନର ସମାଧାନ କଲା କି?", thanks: "ଜଣାଇଥିବାରୁ ଧନ୍ୟବାଦ।", clarify: "କ’ଣ ସ୍ପଷ୍ଟ କରିବାକୁ ହେବ କୁହନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଆମ ଦଳକୁ ପଠାନ୍ତୁ।", addDetails: "ଅଧିକ ବିବରଣୀ ଯୋଡ଼ନ୍ତୁ", submitQuery: "ପ୍ରଶ୍ନ ପଠାନ୍ତୁ", sendOptions: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସେୟାର କରିଥିବାରୁ ଧନ୍ୟବାଦ। ଆମ ଦଳକୁ ପଠାଇବା ପାଇଁ ତଳେ WhatsApp କିମ୍ବା ଇମେଲ୍ ବାଛନ୍ତୁ।" },
-    ur: { prompt: "کیا اس جواب سے آپ کا سوال حل ہوا؟", thanks: "بتانے کا شکریہ۔", clarify: "بتائیں کہ کیا واضح کرنا ہے، یا اپنا سوال ہماری ٹیم کو بھیجیں۔", addDetails: "مزید تفصیل شامل کریں", submitQuery: "سوال بھیجیں", sendOptions: "اپنا سوال شیئر کرنے کا شکریہ۔ ہماری ٹیم کو بھیجنے کے لیے نیچے WhatsApp یا ای میل منتخب کریں۔" }
+    en: { prompt: "Did this answer your question?", thanks: "Thanks for letting me know.", clarify: "Tell me what I should clarify, or submit your question to our team.", addDetails: "Add more details", submitQuery: "Submit a query", sendOptions: "Thanks for sharing your query. Choose WhatsApp or email below to send it to our team.", moreHelpPrompt: "Is there anything else I can help you with?", goodbye: "Great! Thank you for reaching out to Sobhakrita. Have a nice day! 👋" },
+    te: { prompt: "ఈ సమాధానం మీ ప్రశ్నకు సమాధానమిచ్చిందా?", thanks: "తెలియజేసినందుకు ధన్యవాదాలు.", clarify: "ఏమి వివరించాలో చెప్పండి లేదా మీ ప్రశ్నను మా బృందానికి పంపండి.", addDetails: "మరిన్ని వివరాలు జోడించండి", submitQuery: "ప్రశ్నను పంపండి", sendOptions: "మీ ప్రశ్నను పంచుకున్నందుకు ధన్యవాదాలు. మా బృందానికి పంపడానికి క్రింద WhatsApp లేదా ఇమెయిల్ ఎంచుకోండి.", moreHelpPrompt: "మీకు ఇంకా ఏదైనా సహాయం కావాలా?", goodbye: "బాగుంది! సోభకృతను సంప్రదించినందుకు ధన్యవాదాలు. మీకు శుభదినం! 👋" },
+    hi: { prompt: "क्या इस जवाब से आपका सवाल हल हुआ?", thanks: "बताने के लिए धन्यवाद।", clarify: "बताएँ कि किस बात को स्पष्ट करना है, या अपना सवाल हमारी टीम को भेजें।", addDetails: "और जानकारी दें", submitQuery: "सवाल भेजें", sendOptions: "अपना सवाल साझा करने के लिए धन्यवाद। इसे हमारी टीम को भेजने के लिए नीचे WhatsApp या ईमेल चुनें।", moreHelpPrompt: "क्या आपको किसी और चीज़ में मदद चाहिए?", goodbye: "बहुत बढ़िया! सोभकृता से संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो! 👋" },
+    ta: { prompt: "இந்தப் பதில் உங்கள் கேள்விக்கு உதவியதா?", thanks: "தெரிவித்ததற்கு நன்றி.", clarify: "எதைத் தெளிவுபடுத்த வேண்டும் என்று கூறுங்கள் அல்லது உங்கள் கேள்வியை எங்கள் குழுவுக்கு அனுப்புங்கள்.", addDetails: "மேலும் விவரங்களைச் சேர்க்கவும்", submitQuery: "கேள்வியை அனுப்பவும்", sendOptions: "உங்கள் கேள்வியைப் பகிர்ந்ததற்கு நன்றி. எங்கள் குழுவுக்கு அனுப்ப கீழே WhatsApp அல்லது மின்னஞ்சலைத் தேர்ந்தெடுக்கவும்.", moreHelpPrompt: "உங்களுக்கு வேறு ஏதாவது உதவி தேவையா?", goodbye: "நன்று! சோபகிருதாவைத் தொடர்பு கொண்டதற்கு நன்றி. உங்களுக்கு இனிய நாள்! 👋" },
+    kn: { prompt: "ಈ ಉತ್ತರ ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಉತ್ತರಿಸಿತೇ?", thanks: "ತಿಳಿಸಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು.", clarify: "ಏನನ್ನು ಸ್ಪಷ್ಟಪಡಿಸಬೇಕೆಂದು ತಿಳಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಿ.", addDetails: "ಇನ್ನಷ್ಟು ವಿವರ ಸೇರಿಸಿ", submitQuery: "ಪ್ರಶ್ನೆ ಕಳುಹಿಸಿ", sendOptions: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಹಂಚಿಕೊಂಡಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ನಮ್ಮ ತಂಡಕ್ಕೆ ಕಳುಹಿಸಲು ಕೆಳಗೆ WhatsApp ಅಥವಾ ಇಮೇಲ್ ಆಯ್ಕೆಮಾಡಿ.", moreHelpPrompt: "ನಿಮಗೆ ಬೇರೆ ಏನಾದರೂ ಸಹಾಯ ಬೇಕೇ?", goodbye: "ಚೆನ್ನಾಗಿದೆ! ಸೋಭಕೃತವನ್ನು ಸಂಪರ್ಕಿಸಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. ನಿಮಗೆ ಶುಭ ದಿನ! 👋" },
+    ml: { prompt: "ഈ മറുപടി നിങ്ങളുടെ ചോദ്യത്തിന് ഉത്തരം നൽകിയോ?", thanks: "അറിയിച്ചതിന് നന്ദി.", clarify: "എന്താണ് വ്യക്തമാക്കേണ്ടതെന്ന് പറയുക, അല്ലെങ്കിൽ നിങ്ങളുടെ ചോദ്യം ഞങ്ങളുടെ ടീമിന് അയയ്ക്കുക.", addDetails: "കൂടുതൽ വിവരങ്ങൾ ചേർക്കുക", submitQuery: "ചോദ്യം അയയ്ക്കുക", sendOptions: "നിങ്ങളുടെ ചോദ്യം പങ്കുവെച്ചതിന് നന്ദി. ടീമിന് അയയ്ക്കാൻ താഴെ WhatsApp അല്ലെങ്കിൽ ഇമെയിൽ തിരഞ്ഞെടുക്കുക.", moreHelpPrompt: "നിങ്ങൾക്ക് മറ്റെന്തെങ്കിലും സഹായം വേണോ?", goodbye: "കൊള്ളാം! സോഭകൃതയെ ബന്ധപ്പെട്ടതിന് നന്ദി. നിങ്ങൾക്ക് ശുഭദിനം! 👋" },
+    mr: { prompt: "या उत्तराने तुमच्या प्रश्नाचे समाधान झाले का?", thanks: "कळवल्याबद्दल धन्यवाद.", clarify: "काय स्पष्ट करायचे ते सांगा किंवा तुमचा प्रश्न आमच्या टीमला पाठवा.", addDetails: "अधिक माहिती जोडा", submitQuery: "प्रश्न पाठवा", sendOptions: "तुमचा प्रश्न शेअर केल्याबद्दल धन्यवाद. टीमला पाठवण्यासाठी खाली WhatsApp किंवा ईमेल निवडा.", moreHelpPrompt: "तुम्हाला अजून काही मदत हवी आहे का?", goodbye: "छान! सोभकृताशी संपर्क केल्याबद्दल धन्यवाद. तुमचा दिवस चांगला जावो! 👋" },
+    bn: { prompt: "এই উত্তরটি কি আপনার প্রশ্নের সমাধান করেছে?", thanks: "জানানোর জন্য ধন্যবাদ।", clarify: "কোন বিষয়টি পরিষ্কার করা দরকার বলুন, অথবা আপনার প্রশ্নটি আমাদের টিমে পাঠান।", addDetails: "আরও তথ্য যোগ করুন", submitQuery: "প্রশ্ন পাঠান", sendOptions: "আপনার প্রশ্নটি শেয়ার করার জন্য ধন্যবাদ। টিমে পাঠাতে নিচে WhatsApp বা ইমেল বেছে নিন।", moreHelpPrompt: "আপনার আরও কিছু সাহায্যের প্রয়োজন আছে কি?", goodbye: "দারুণ! সোভাকৃতার সাথে যোগাযোগ করার জন্য ধন্যবাদ। আপনার দিন শুভ হোক! 👋" },
+    gu: { prompt: "શું આ જવાબથી તમારા પ્રશ્નનો ઉકેલ આવ્યો?", thanks: "જણાવવા બદલ આભાર.", clarify: "શું સ્પષ્ટ કરવું તે જણાવો અથવા તમારો પ્રશ્ન અમારી ટીમને મોકલો.", addDetails: "વધુ વિગતો ઉમેરો", submitQuery: "પ્રશ્ન મોકલો", sendOptions: "તમારો પ્રશ્ન શેર કરવા બદલ આભાર. અમારી ટીમને મોકલવા માટે નીચે WhatsApp અથવા ઇમેઇલ પસંદ કરો.", moreHelpPrompt: "તમને બીજી કોઈ મદદની જરૂર છે?", goodbye: "સરસ! સોભકૃતાનો સંપર્ક કરવા બદલ આભાર. તમારો દિવસ શુભ રહે! 👋" },
+    pa: { prompt: "ਕੀ ਇਸ ਜਵਾਬ ਨਾਲ ਤੁਹਾਡਾ ਸਵਾਲ ਹੱਲ ਹੋਇਆ?", thanks: "ਦੱਸਣ ਲਈ ਧੰਨਵਾਦ।", clarify: "ਦੱਸੋ ਕਿ ਕੀ ਸਪੱਸ਼ਟ ਕਰਨਾ ਹੈ ਜਾਂ ਆਪਣਾ ਸਵਾਲ ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜੋ।", addDetails: "ਹੋਰ ਜਾਣਕਾਰੀ ਦਿਓ", submitQuery: "ਸਵਾਲ ਭੇਜੋ", sendOptions: "ਆਪਣਾ ਸਵਾਲ ਸਾਂਝਾ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। ਸਾਡੀ ਟੀਮ ਨੂੰ ਭੇਜਣ ਲਈ ਹੇਠਾਂ WhatsApp ਜਾਂ ਈਮੇਲ ਚੁਣੋ।", moreHelpPrompt: "ਕੀ ਤੁਹਾਨੂੰ ਹੋਰ ਕੋਈ ਮਦਦ ਚਾਹੀਦੀ ਹੈ?", goodbye: "ਵਧੀਆ! ਸੋਭਕ੍ਰਿਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। ਤੁਹਾਡਾ ਦਿਨ ਸ਼ੁਭ ਹੋਵੇ! 👋" },
+    or: { prompt: "ଏହି ଉତ୍ତର ଆପଣଙ୍କ ପ୍ରଶ୍ନର ସମାଧାନ କଲା କି?", thanks: "ଜଣାଇଥିବାରୁ ଧନ୍ୟବାଦ।", clarify: "କ’ଣ ସ୍ପଷ୍ଟ କରିବାକୁ ହେବ କୁହନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଆମ ଦଳକୁ ପଠାନ୍ତୁ।", addDetails: "ଅଧିକ ବିବରଣୀ ଯୋଡ଼ନ୍ତୁ", submitQuery: "ପ୍ରଶ୍ନ ପଠାନ୍ତୁ", sendOptions: "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସେୟାର କରିଥିବାରୁ ଧନ୍ୟବାଦ। ଆମ ଦଳକୁ ପଠାଇବା ପାଇଁ ତଳେ WhatsApp କିମ୍ବା ଇମେଲ୍ ବାଛନ୍ତୁ।", moreHelpPrompt: "ଆପଣଙ୍କୁ ଆଉ କିଛି ସାହାଯ୍ୟ ଦରକାର କି?", goodbye: "ବହୁତ ଭଲ! ସୋଭକୃତା ସହ ଯୋଗାଯୋଗ କରିଥିବାରୁ ଧନ୍ୟବାଦ। ଆପଣଙ୍କ ଦିନ ଶୁଭ ହେଉ! 👋" },
+    ur: { prompt: "کیا اس جواب سے آپ کا سوال حل ہوا؟", thanks: "بتانے کا شکریہ۔", clarify: "بتائیں کہ کیا واضح کرنا ہے، یا اپنا سوال ہماری ٹیم کو بھیجیں۔", addDetails: "مزید تفصیل شامل کریں", submitQuery: "سوال بھیجیں", sendOptions: "اپنا سوال شیئر کرنے کا شکریہ۔ ہماری ٹیم کو بھیجنے کے لیے نیچے WhatsApp یا ای میل منتخب کریں۔", moreHelpPrompt: "کیا آپ کو کسی اور چیز میں مدد چاہیے؟", goodbye: "بہت خوب! سوبھکریتا سے رابطہ کرنے کا شکریہ۔ آپ کا دن اچھا گزرے! 👋" }
   };
 
   function feedbackText(key) {
@@ -408,6 +422,26 @@
     ur: "دوسرا سوال"
   };
 
+  var EXTRA_COPY = {
+    en: { more: "Read more", less: "Show less", placeholder: "Type your message…", call: "Call", whatsapp: "WhatsApp", apply: "Apply" },
+    te: { more: "మరిన్ని చూడండి", less: "తక్కువ చూడండి", placeholder: "మీ సందేశాన్ని టైప్ చేయండి…", call: "కాల్", whatsapp: "WhatsApp", apply: "దరఖాస్తు" },
+    hi: { more: "और पढ़ें", less: "कम दिखाएँ", placeholder: "अपना संदेश लिखें…", call: "कॉल", whatsapp: "WhatsApp", apply: "आवेदन करें" },
+    ta: { more: "மேலும் படிக்க", less: "குறைவாகக் காட்டு", placeholder: "உங்கள் செய்தியைத் தட்டச்சு செய்யவும்…", call: "அழைப்பு", whatsapp: "WhatsApp", apply: "விண்ணப்பிக்கவும்" },
+    kn: { more: "ಇನ್ನಷ್ಟು ಓದಿ", less: "ಕಡಿಮೆ ತೋರಿಸಿ", placeholder: "ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ…", call: "ಕರೆ", whatsapp: "WhatsApp", apply: "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" },
+    ml: { more: "കൂടുതൽ വായിക്കുക", less: "കുറച്ച് കാണിക്കുക", placeholder: "നിങ്ങളുടെ സന്ദേശം ടൈപ്പ് ചെയ്യുക…", call: "വിളിക്കുക", whatsapp: "WhatsApp", apply: "അപേക്ഷിക്കുക" },
+    mr: { more: "अधिक वाचा", less: "कमी दाखवा", placeholder: "तुमचा संदेश टाइप करा…", call: "कॉल", whatsapp: "WhatsApp", apply: "अर्ज करा" },
+    bn: { more: "আরও পড়ুন", less: "কম দেখান", placeholder: "আপনার বার্তা লিখুন…", call: "কল", whatsapp: "WhatsApp", apply: "আবেদন করুন" },
+    gu: { more: "વધુ વાંચો", less: "ઓછું બતાવો", placeholder: "તમારો સંદેશ લખો…", call: "કૉલ", whatsapp: "WhatsApp", apply: "અરજી કરો" },
+    pa: { more: "ਹੋਰ ਪੜ੍ਹੋ", less: "ਘੱਟ ਦਿਖਾਓ", placeholder: "ਆਪਣਾ ਸੁਨੇਹਾ ਲਿਖੋ…", call: "ਕਾਲ", whatsapp: "WhatsApp", apply: "ਅਰਜ਼ੀ ਦਿਓ" },
+    or: { more: "ଅଧିକ ପଢ଼ନ୍ତୁ", less: "କମ୍ ଦେଖାନ୍ତୁ", placeholder: "ଆପଣଙ୍କ ସନ୍ଦେଶ ଲେଖନ୍ତୁ…", call: "କଲ", whatsapp: "WhatsApp", apply: "ଆବେଦନ କରନ୍ତୁ" },
+    ur: { more: "مزید پڑھیں", less: "کم دکھائیں", placeholder: "اپنا پیغام لکھیں…", call: "کال", whatsapp: "WhatsApp", apply: "درخواست دیں" }
+  };
+
+  function copy(key) {
+    var pack = EXTRA_COPY[state.lang] || EXTRA_COPY.en;
+    return pack[key] || EXTRA_COPY.en[key];
+  }
+
   var TYPE_QUESTION = {
     en: "Please type your question below and I will look it up.",
     te: "దయచేసి మీ ప్రశ్నను క్రింద టైప్ చేయండి, నేను చూస్తాను.",
@@ -437,6 +471,74 @@
 
   var SITE_ORIGIN = "https://www.sobhakritafintech.com/";
 
+  var SESSION_KEY = "sobhi.session.v2";
+  var ANSWER_CACHE_KEY = "sobhi.answers.v2";
+  var ANSWER_TTL_MS = 30 * 60 * 1000;
+
+  function hashText(value) {
+    var text = String(value || "");
+    var hash = 5381;
+    for (var i = 0; i < text.length; i += 1) {
+      hash = ((hash << 5) + hash + text.charCodeAt(i)) >>> 0;
+    }
+    return hash.toString(36) + "-" + text.length;
+  }
+
+  function saveSession() {
+    if (state.restoring) return;
+    try {
+      window.sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        lang: state.lang,
+        langName: state.langName,
+        translateCode: state.translateCode,
+        history: state.history.slice(-30)
+      }));
+    } catch (error) { /* storage may be unavailable */ }
+  }
+
+  function readSession() {
+    try {
+      var raw = window.sessionStorage.getItem(SESSION_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function translationCode() {
+    if (state.lang === "en") return "en";
+    if (state.lang === "other") return state.translateCode || "";
+    return state.lang;
+  }
+
+  function answerCacheKey(question) {
+    return (translationCode() || "en") + "|" + state.knowledgeLang + "|" + normalizeText(question);
+  }
+
+  function readCachedAnswer(question) {
+    try {
+      var raw = window.sessionStorage.getItem(ANSWER_CACHE_KEY);
+      var map = raw ? JSON.parse(raw) : {};
+      var entry = map[answerCacheKey(question)];
+      if (!entry || Date.now() - entry.time > ANSWER_TTL_MS) return "";
+      return entry.answer || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function writeCachedAnswer(question, answer) {
+    if (!answer) return;
+    try {
+      var raw = window.sessionStorage.getItem(ANSWER_CACHE_KEY);
+      var map = raw ? JSON.parse(raw) : {};
+      var keys = Object.keys(map);
+      if (keys.length >= 40) delete map[keys[0]];
+      map[answerCacheKey(question)] = { answer: answer, time: Date.now() };
+      window.sessionStorage.setItem(ANSWER_CACHE_KEY, JSON.stringify(map));
+    } catch (error) { /* ignore quota errors */ }
+  }
+
   var FALLBACK_KB = [
     { page: "About", text: "Sobhakrita Fintech Solutions Private Limited is a loan facilitator and Direct Selling Agent based in Chittoor, Andhra Pradesh. It is not a bank or NBFC and does not lend in its own name. It helps customers compare loans from partner banks and RBI-regulated NBFCs." },
     { page: "Contact", text: "Sobhakrita office is at #20-90B/1, Naidu Buildings, Behind Dominos, Mittoor, Chittoor, Andhra Pradesh 517001. Phone +91 88866 33119 and +91 88866 33118. Email services@sobhakrita.com. Office hours are Monday to Saturday, 9:00 AM to 6:00 PM. Sunday closed." },
@@ -463,7 +565,8 @@
     how: 1, can: 1, you: 1, your: 1, are: 1, is: 1, do: 1, does: 1, i: 1, me: 1,
     my: 1, we: 1, our: 1, about: 1, please: 1, tell: 1, give: 1, show: 1, any: 1,
     have: 1, has: 1, there: 1, it: 1, of: 1, to: 1, in: 1, on: 1, at: 1, or: 1,
-    an: 1, a: 1, be: 1, will: 1, would: 1, should: 1, could: 1, help: 1
+    an: 1, a: 1, be: 1, will: 1, would: 1, should: 1, could: 1, help: 1,
+    who: 1, whom: 1, whose: 1, why: 1, when: 1, where: 1, was: 1, were: 1
   };
 
   var FAQ_FILE = "data/chat-faqs.txt";
@@ -561,10 +664,68 @@
     return pageLinkPattern;
   }
 
+  var PAGE_LABELS = {
+    "": "Home",
+    apply: "Apply online",
+    "book-a-call": "Book a call",
+    contact: "Contact us",
+    loans: "View loan options",
+    "emi-calculator": "EMI calculator",
+    fees: "Fees & charges",
+    "personal-loan": "Personal loan details",
+    "business-loan": "Business loan details",
+    "home-loan": "Home loan details",
+    "car-loan": "Car loan details",
+    "education-loan": "Education loan details",
+    "agriculture-loan": "Agriculture loan details",
+    "industrial-loan": "Industrial loan details",
+    "mortgage-loan": "Mortgage loan details",
+    "insurance-services": "Insurance services",
+    about: "About us",
+    careers: "Careers",
+    disclaimer: "Disclaimer",
+    "privacy-policy": "Privacy policy",
+    "terms-conditions": "Terms & conditions"
+  };
+
+  function titleCase(value) {
+    var words = String(value || "").replace(/[-_]+/g, " ").trim();
+    if (!words) return "";
+    return words.charAt(0).toUpperCase() + words.slice(1);
+  }
+
+  function pageLabel(href) {
+    var path = String(href || "")
+      .replace(/^https?:\/\/[^/]+/i, "")
+      .replace(/[?#].*$/, "")
+      .replace(/^\/+/, "")
+      .replace(/\.html$/i, "")
+      .replace(/\/+$/, "");
+    if (Object.prototype.hasOwnProperty.call(PAGE_LABELS, path)) return PAGE_LABELS[path];
+    return titleCase(path.split("/").pop()) || "Open page";
+  }
+
+  // Show a short, readable label instead of a long raw URL.
+  function linkLabel(value, href) {
+    if (/^mailto:/i.test(href)) return value.replace(/^mailto:/i, "");
+    if (/^tel:/i.test(href)) return value;
+    if (/wa\.me|whatsapp/i.test(href)) return "WhatsApp";
+    if (/sobhakritafintech\.com/i.test(href) || /\.html(?:[?#].*)?$/i.test(value)) {
+      return pageLabel(href);
+    }
+    var host = /^https?:\/\/([^/]+)/i.exec(href);
+    if (host) return host[1].replace(/^www\./i, "");
+    return value;
+  }
+
   function linkify(text) {
     text = String(text || "")
       .replace(/\*\*(.*?)\*\*/g, "$1")
       .replace(/`([^`]+)`/g, "$1")
+      .replace(/^\s*#{1,6}\s+/gm, "")
+      .replace(/^\s*[-*+]\s+/gm, "• ")
+      .replace(/^\s*\d+[.)]\s+/gm, "• ")
+      .replace(/^\s*---+\s*$/gm, "")
       .trim();
 
     var pattern = new RegExp(
@@ -575,6 +736,14 @@
     var last = 0;
     var match;
     var html = "";
+    var mdLinks = [];
+
+    // Preserve model-style [label](url) links and render only the label.
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi, function (_, label, url) {
+      var index = mdLinks.length;
+      mdLinks.push({ label: label, url: url });
+      return "\u0000md" + index + "\u0000";
+    });
 
     while ((match = pattern.exec(text)) !== null) {
       html += escapeHtml(text.slice(last, match.index));
@@ -602,11 +771,21 @@
         href = "https://" + value;
       }
 
-      html += '<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener">' + escapeHtml(value) + "</a>" + escapeHtml(trailing);
+      var visible = linkLabel(value, href);
+      html += '<a href="' + escapeHtml(href) + '" title="' + escapeHtml(href) +
+        '" target="_blank" rel="noopener">' + escapeHtml(visible) + "</a>" +
+        escapeHtml(trailing);
       last = match.index + raw.length;
     }
 
     html += escapeHtml(text.slice(last));
+    html = html.replace(/\u0000md(\d+)\u0000/g, function (_, index) {
+      var link = mdLinks[Number(index)];
+      if (!link) return "";
+      var label = link.label || linkLabel(link.url, link.url);
+      return '<a href="' + escapeHtml(link.url) + '" title="' + escapeHtml(link.url) +
+        '" target="_blank" rel="noopener">' + escapeHtml(label) + "</a>";
+    });
     return html.replace(/\n/g, "<br>");
   }
 
@@ -628,16 +807,77 @@
 
     var bubble = document.createElement("div");
     bubble.className = "sobhi-bubble";
-    bubble.innerHTML = linkify(text);
+    var body = document.createElement("div");
+    body.className = "sobhi-bubble-text";
+    body.innerHTML = linkify(text);
+    bubble.appendChild(body);
     row.appendChild(bubble);
     messagesEl.appendChild(row);
+
+    if (role === "assistant") applyReadMore(bubble, body, text);
     scrollToBottom();
 
     if (!options || !options.skipHistory) {
       state.history.push({ role: role, text: String(text || "") });
       if (state.history.length > 30) state.history.shift();
+      saveSession();
     }
     return row;
+  }
+
+  function applyReadMore(bubble, body, text) {
+    var raw = String(text || "");
+    if (raw.length < 420 && raw.split("\n").length < 8) return;
+    bubble.classList.add("is-clamped");
+
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "sobhi-more";
+    button.textContent = copy("more");
+    button.setAttribute("aria-expanded", "false");
+    button.addEventListener("click", function () {
+      var clamped = bubble.classList.toggle("is-clamped");
+      button.textContent = clamped ? copy("more") : copy("less");
+      button.setAttribute("aria-expanded", clamped ? "false" : "true");
+      scrollToBottom();
+    });
+    bubble.appendChild(button);
+  }
+
+  function createStreamingRow() {
+    var row = document.createElement("div");
+    row.className = "sobhi-msg sobhi-msg--assistant";
+    var avatar = document.createElement("span");
+    avatar.className = "sobhi-msg-avatar";
+    avatar.setAttribute("aria-hidden", "true");
+    avatar.textContent = "S";
+    row.appendChild(avatar);
+    var bubble = document.createElement("div");
+    bubble.className = "sobhi-bubble";
+    var body = document.createElement("div");
+    body.className = "sobhi-bubble-text";
+    bubble.appendChild(body);
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    scrollToBottom();
+
+    return {
+      update: function (text) {
+        body.innerHTML = linkify(text);
+        scrollToBottom();
+      },
+      finish: function (text) {
+        body.innerHTML = linkify(text);
+        applyReadMore(bubble, body, text);
+        state.history.push({ role: "assistant", text: String(text || "") });
+        if (state.history.length > 30) state.history.shift();
+        saveSession();
+        scrollToBottom();
+      },
+      remove: function () {
+        if (row.parentNode) row.parentNode.removeChild(row);
+      }
+    };
   }
 
   function showTyping() {
@@ -654,13 +894,30 @@
     chipsEl.hidden = true;
   }
 
+  // Drop any in-flight reply so a language change cannot leave the composer
+  // stuck in the busy state or append a stale answer in the old language.
+  function cancelPending() {
+    state.requestId += 1;
+    state.busy = false;
+    var pending = messagesEl.querySelectorAll(".sobhi-typing");
+    Array.prototype.forEach.call(pending, function (node) {
+      if (node.parentNode) node.parentNode.removeChild(node);
+    });
+  }
+
   function showChips(items) {
     clearChips();
     items.forEach(function (item) {
       var button = document.createElement("button");
       button.type = "button";
-      button.className = "sobhi-chip";
-      button.textContent = item.label;
+      button.className = "sobhi-chip" + (item.modifier ? " " + item.modifier : "");
+      if (item.icon) {
+        button.innerHTML = item.icon;
+        button.setAttribute("aria-label", item.ariaLabel || item.label || "");
+        if (item.label) button.title = item.label;
+      } else {
+        button.textContent = item.label;
+      }
       button.addEventListener("click", function () {
         if (state.busy && !item.force) return;
         clearChips();
@@ -683,6 +940,7 @@
   }
 
   function selectLanguage(lang) {
+    cancelPending();
     if (lang.code === "other") {
       state.lang = "other";
       state.langName = "Other language";
@@ -693,17 +951,29 @@
       return;
     }
 
+    var switching = state.langPicked;
     state.lang = lang.code;
     state.langName = lang.name;
+    state.translateCode = lang.code;
+    state.langPicked = true;
     state.stage = "chat";
     state.awaitingEscalation = false;
+    state.awaitingFeedback = false;
+    state.awaitingClarification = false;
+    state.awaitingMoreHelp = false;
     root.setAttribute("lang", lang.code);
     root.setAttribute("dir", lang.dir);
     if (langLabel) langLabel.textContent = lang.code.toUpperCase();
-    addMessage("user", lang.native);
-    addMessage("assistant", t("welcome"));
-    addMessage("assistant", t("choose"));
+    input.placeholder = copy("placeholder");
+
+    if (!switching) addMessage("user", lang.native);
+    if (!switching) {
+      addMessage("assistant", t("welcome"));
+      addMessage("assistant", t("choose"));
+    }
     showOptions();
+    loadKnowledge();
+    saveSession();
   }
 
   function showOptions() {
@@ -728,6 +998,27 @@
         }
       };
     }));
+    appendCtaChips();
+  }
+
+  function appendCtaChips() {
+    var ctas = [
+      { label: copy("call"), href: "tel:+918886633119" },
+      { label: copy("whatsapp"), href: "https://wa.me/918886633119?text=Hi%20Sobhakrita%2C%20I%20would%20like%20to%20know%20more%20about%20a%20loan." },
+      { label: copy("apply"), href: "apply.html" }
+    ];
+    ctas.forEach(function (item) {
+      var link = document.createElement("a");
+      link.className = "sobhi-chip sobhi-chip--cta";
+      link.href = item.href;
+      link.textContent = item.label;
+      if (/^https?:/i.test(item.href)) {
+        link.target = "_blank";
+        link.rel = "noopener";
+      }
+      chipsEl.appendChild(link);
+    });
+    chipsEl.hidden = false;
   }
 
   function resolveAnswerFeedback(isHelpful, userReply) {
@@ -735,7 +1026,7 @@
     addMessage("user", userReply);
     if (isHelpful) {
       addMessage("assistant", feedbackText("thanks"));
-      showOptions();
+      askMoreHelp();
       return;
     }
 
@@ -755,20 +1046,63 @@
     ]);
   }
 
-  function showAnswerFeedback() {
-    state.awaitingFeedback = true;
-    state.awaitingClarification = false;
-    addMessage("assistant", feedbackText("prompt"));
+  function askMoreHelp() {
+    state.awaitingMoreHelp = true;
+    addMessage("assistant", feedbackText("moreHelpPrompt"));
     showChips([
       {
         label: t("yes"),
         force: true,
-        onClick: function () { resolveAnswerFeedback(true, t("yes")); }
+        onClick: function () { resolveMoreHelp(true, t("yes")); }
       },
       {
         label: t("no"),
         force: true,
-        onClick: function () { resolveAnswerFeedback(false, t("no")); }
+        onClick: function () { resolveMoreHelp(false, t("no")); }
+      }
+    ]);
+  }
+
+  function resolveMoreHelp(wantsMore, userReply) {
+    state.awaitingMoreHelp = false;
+    addMessage("user", userReply);
+    if (wantsMore) {
+      addMessage("assistant", t("choose"));
+      showOptions();
+      return;
+    }
+
+    addMessage("assistant", feedbackText("goodbye"));
+    state.stage = "closed";
+    clearChips();
+    // Give the visitor a moment to read the goodbye before closing the chat.
+    setTimeout(closeChat, 2200);
+  }
+
+  var THUMBS_UP_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
+  var THUMBS_DOWN_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>';
+
+  function showAnswerFeedback() {
+    state.awaitingFeedback = true;
+    state.awaitingClarification = false;
+    state.awaitingMoreHelp = false;
+    addMessage("assistant", feedbackText("prompt"));
+    showChips([
+      {
+        label: t("yes"),
+        ariaLabel: t("yes"),
+        icon: THUMBS_UP_SVG,
+        modifier: "sobhi-chip--thumb",
+        force: true,
+        onClick: function () { resolveAnswerFeedback(true, "👍"); }
+      },
+      {
+        label: t("no"),
+        ariaLabel: t("no"),
+        icon: THUMBS_DOWN_SVG,
+        modifier: "sobhi-chip--thumb",
+        force: true,
+        onClick: function () { resolveAnswerFeedback(false, "👎"); }
       }
     ]);
   }
@@ -784,11 +1118,47 @@
   }
 
   function isGreeting(text) {
-    return /^(hi|hello|hey|namaste|namaskar|vanakkam|namaskara|namaskaram|salaam|assalam|good morning|good evening|నమస్తే|नमस्ते|வணக்கம்|ನಮಸ್ಕಾರ|നമസ്കാരം)/i.test(text.trim());
+    var value = normalizeText(text);
+    return /^(hi|hello|hey|namaste|namaskar|vanakkam|namaskara|namaskaram|salaam|assalam|good morning|good afternoon|good evening|నమస్తే|नमस्ते|வணக்கம்|ನಮಸ್ಕಾರ|നമസ്കാരം)(?:\s|$)/.test(value);
   }
 
   function isFollowUpQuestion(text) {
-    return /^(and|what about|how about|what if|for me|in my case|also|does that|will that|can i still)\b/i.test(normalizeText(text));
+    var value = normalizeText(text);
+    if (!value) return false;
+    if (/^(and|what about|how about|what if|for me|in my case|also|does that|will that|can i still)\b/i.test(value)) return true;
+    if (/(?:^|\s)(it|its|this|that|them|these|those|same|also|too)(?:\s|$)/i.test(value)) return true;
+    if (/^(और|उसका|इसका|वही|అది|దాని|இது|அதன்|ಅದು|അത്|এটা|તે|ਇਹ|ଏହା|اس)/.test(value)) return true;
+    return false;
+  }
+
+  var DOMAIN_TOKENS = {
+    loan: 1, loans: 1, lending: 1, lend: 1, borrow: 1, borrowing: 1, emi: 1,
+    eligibility: 1, eligible: 1, document: 1, documents: 1, fee: 1, fees: 1,
+    charge: 1, charges: 1, apply: 1, application: 1, interest: 1, rate: 1,
+    rates: 1, tenure: 1, repayment: 1, repay: 1, cibil: 1, credit: 1,
+    mortgage: 1, insurance: 1, msme: 1, sobhakrita: 1, advisor: 1, contact: 1,
+    whatsapp: 1, email: 1, office: 1, address: 1, appointment: 1, grievance: 1,
+    complaint: 1, salary: 1, income: 1, bank: 1, kyc: 1, pan: 1, aadhaar: 1,
+    property: 1, vehicle: 1, education: 1, agriculture: 1, customer: 1,
+    service: 1, services: 1, timing: 1, timings: 1, branch: 1, location: 1,
+    call: 1, book: 1, personal: 1, business: 1, home: 1, car: 1, gold: 1,
+    industrial: 1, study: 1, farm: 1, nbfc: 1, dsa: 1, sobha: 1, krita: 1,
+    fintech: 1, lender: 1, lenders: 1, hours: 1, open: 1, closed: 1,
+    timing: 1, document: 1, paperwork: 1, qualification: 1
+  };
+
+  function looksDomainRelated(text) {
+    return tokenize(text).some(function (token) {
+      return !!DOMAIN_TOKENS[token];
+    });
+  }
+
+  function looksLikeTest(text) {
+    var value = normalizeText(text);
+    if (!value) return false;
+    if (/^(test|testing|test test|testing testing|asdf|asdfgh|qwerty|abcd?|xyz+|foo|bar|sample|demo)\b/.test(value)) return true;
+    var squashed = value.replace(/\s+/g, "");
+    return squashed.length >= 4 && /^(.)\1+$/.test(squashed);
   }
 
   function normalizeText(text) {
@@ -861,32 +1231,99 @@
     return expanded;
   }
 
-  function similarityScore(question, entry) {
+  function tokenSet(tokens) {
+    var set = {};
+    tokens.forEach(function (token) { if (token) set[token] = 1; });
+    return set;
+  }
+
+  function toEntry(entry) {
+    return {
+      page: entry.page || "General",
+      question: entry.question || "",
+      answer: entry.answer || "",
+      tags: entry.tags || "",
+      text: entry.text || ((entry.question || "") + " " + (entry.answer || ""))
+    };
+  }
+
+  function buildIndex(entries) {
+    return entries.map(toEntry).map(function (entry) {
+      entry._normQuestion = normalizeText(entry.question);
+      entry._normText = normalizeText(entry.question + " " + entry.answer + " " + entry.page + " " + entry.tags);
+      entry._tokens = expandTokens(tokenize(entry._normText));
+      entry._tokenSet = tokenSet(entry._tokens);
+      entry._questionTokens = expandTokens(tokenize(entry.question));
+      entry._questionSet = tokenSet(entry._questionTokens);
+      entry._pageNorm = normalizeText(entry.page);
+      entry._pageTokens = tokenize(entry.page);
+      return entry;
+    });
+  }
+
+  function mergeWithFallback(faqEntries) {
+    var merged = [];
+    var seen = {};
+
+    (faqEntries || []).forEach(function (item) {
+      var key = normalizeText(item.question);
+      if (!key || seen[key]) return;
+      seen[key] = 1;
+      merged.push(toEntry(item));
+    });
+
+    FALLBACK_KB.forEach(function (item) {
+      var key = normalizeText(item.page + " " + String(item.text).slice(0, 80));
+      if (seen[key]) return;
+      seen[key] = 1;
+      merged.push({
+        page: item.page,
+        question: item.page + " information",
+        answer: item.text,
+        tags: item.page,
+        text: item.text
+      });
+    });
+
+    return merged;
+  }
+
+  function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function containsPhrase(haystack, needle) {
+    if (!haystack || !needle || needle.length < 4) return false;
+    var pattern = new RegExp(
+      "(?:^|[^\\p{L}\\p{N}])" + escapeRegExp(needle) + "(?:$|[^\\p{L}\\p{N}])",
+      "u"
+    );
+    return pattern.test(haystack);
+  }
+
+  function similarityScore(question, entry, contextTokens) {
     var normalizedQuestion = normalizeText(question);
-    var combinedText = normalizeText((entry.question || "") + " " + (entry.answer || "") + " " + (entry.page || "") + " " + (entry.tags || ""));
-    var preferred = normalizeText(entry.page || "");
     var score = 0;
 
     if (!normalizedQuestion) return 0;
 
-    if (combinedText.indexOf(normalizedQuestion) !== -1) score += 55;
-    if ((entry.question || "").toLowerCase().indexOf(question.toLowerCase()) !== -1) score += 18;
+    // Word-boundary matching avoids false hits such as "test" inside "latest".
+    if (containsPhrase(entry._normText, normalizedQuestion)) score += 55;
+    if (containsPhrase(entry._normQuestion, normalizedQuestion)) score += 18;
 
     var queryTokens = expandTokens(tokenize(question));
-    var answerTokens = expandTokens(tokenize(combinedText));
-    var entryQuestionTokens = expandTokens(tokenize(entry.question || ""));
     var seen = {};
     queryTokens.forEach(function (token) {
       if (!token || seen[token]) return;
       seen[token] = true;
-      if (answerTokens.indexOf(token) !== -1) {
+      if (entry._tokenSet[token]) {
         score += token.length > 5 ? 8 : 4;
       }
-      if (entryQuestionTokens.indexOf(token) !== -1) score += 12;
+      if (entry._questionSet[token]) score += 12;
     });
 
     if (/\bcibil\b|credit score|credit history/i.test(normalizedQuestion)) {
-      if (/\bcibil\b|credit score|credit history/i.test(combinedText)) score += 42;
+      if (/\bcibil\b|credit score|credit history/i.test(entry._normText)) score += 42;
       else score -= 20;
     }
 
@@ -910,55 +1347,77 @@
     ];
 
     phrasePatterns.forEach(function (pattern) {
-      if (pattern.test(normalizedQuestion) && pattern.test(combinedText)) {
+      if (pattern.test(normalizedQuestion) && pattern.test(entry._normText)) {
         score += 18;
       }
     });
 
-    var pageTokens = tokenize(preferred);
     var pageHit = 0;
-    pageTokens.forEach(function (token) {
+    entry._pageTokens.forEach(function (token) {
       if (normalizedQuestion.indexOf(token) !== -1) pageHit += 1;
     });
     score += pageHit * 10;
 
-    if (entry.page && String(entry.page).toLowerCase() === normalizeText(question).split(" ")[0]) {
+    if (entry._pageNorm && entry._pageNorm === normalizedQuestion.split(" ")[0]) {
       score += 12;
+    }
+
+    if (contextTokens && contextTokens.length) {
+      var contextSeen = {};
+      var contextHits = 0;
+      contextTokens.forEach(function (token) {
+        if (!token || contextSeen[token]) return;
+        contextSeen[token] = 1;
+        if (entry._tokenSet[token]) contextHits += 1;
+      });
+      score += Math.min(contextHits * 2, 8);
     }
 
     return score;
   }
 
   function loadKnowledge() {
-    if (state.knowledgePromise) return state.knowledgePromise;
+    var code = translationCode() || "en";
+    if (state.knowledgePromises[code]) return state.knowledgePromises[code];
 
-    state.knowledge = FALLBACK_KB.slice();
+    function fetchText(url) {
+      return fetch(url, { credentials: "same-origin" })
+        .then(function (response) { return response.ok ? response.text() : ""; });
+    }
 
-    state.knowledgePromise = fetch(FAQ_FILE, { credentials: "same-origin" })
-      .then(function (response) {
-        if (!response.ok) return [];
-        return response.text();
-      })
-      .then(function (text) {
-        var faqEntries = parseFaqKnowledge(text);
-        if (faqEntries && faqEntries.length) {
-          state.knowledge = faqEntries.map(function (entry) {
-            return {
-              page: entry.page,
-              question: entry.question,
-              answer: entry.answer,
-              tags: entry.tags,
-              text: entry.text
-            };
-          });
-        }
-        return state.knowledge;
-      })
-      .catch(function () {
-        return state.knowledge;
+    function applyEntries(entries, langCode) {
+      state.knowledge = buildIndex(entries);
+      state.knowledgeLang = langCode;
+      return state.knowledge;
+    }
+
+    function englishKnowledge() {
+      return fetchText(FAQ_FILE).then(function (text) {
+        return applyEntries(mergeWithFallback(parseFaqKnowledge(text)), "en");
+      }).catch(function () {
+        return applyEntries(mergeWithFallback([]), "en");
       });
+    }
 
-    return state.knowledgePromise;
+    // Show the built-in facts immediately while the FAQ file loads.
+    if (!state.knowledge.length) state.knowledge = buildIndex(mergeWithFallback([]));
+
+    var promise;
+    if (code !== "en") {
+      promise = fetchText("data/chat-faqs." + code + ".txt")
+        .then(function (text) {
+          var entries = parseFaqKnowledge(text);
+          if (entries.length) return applyEntries(entries, code);
+          return englishKnowledge();
+        })
+        .catch(englishKnowledge);
+    } else {
+      promise = englishKnowledge();
+    }
+
+    state.knowledgePromises[code] = promise;
+    state.knowledgePromise = promise;
+    return promise;
   }
 
   function splitForTranslation(text, max) {
@@ -992,71 +1451,180 @@
   }
 
   function translateToEnglish(text) {
-    if (state.lang === "en") return Promise.resolve(text);
-    var source = state.lang === "other" ? "auto" : state.lang;
-    return googleTranslate(String(text).slice(0, 900), source, "en")
+    var code = translationCode();
+    if (!code || code === "en") return Promise.resolve(text);
+    return googleTranslate(String(text).slice(0, 900), code, "en")
       .then(function (translated) { return translated && translated.length > 1 ? translated : text; })
       .catch(function () { return text; });
   }
 
-  var translationCache = {};
+  var TRANSLATION_CACHE_KEY = "sobhi.translations.v2";
+  var TRANSLATION_CACHE_MAX = 200;
+  var translationCache = null;
+
+  function loadTranslationCache() {
+    if (translationCache) return translationCache;
+    try {
+      var raw = window.localStorage.getItem(TRANSLATION_CACHE_KEY);
+      translationCache = raw ? JSON.parse(raw) : {};
+    } catch (error) {
+      translationCache = {};
+    }
+    return translationCache;
+  }
+
+  function saveTranslationCache() {
+    try {
+      var cache = loadTranslationCache();
+      var keys = Object.keys(cache);
+      if (keys.length > TRANSLATION_CACHE_MAX) {
+        keys.slice(0, keys.length - TRANSLATION_CACHE_MAX).forEach(function (key) {
+          delete cache[key];
+        });
+      }
+      window.localStorage.setItem(TRANSLATION_CACHE_KEY, JSON.stringify(cache));
+    } catch (error) { /* storage may be full */ }
+  }
 
   function translateToLang(text) {
-    if (!text || state.lang === "en" || state.lang === "other") return Promise.resolve("");
-    var key = state.lang + "|" + text.length + "|" + text.slice(0, 60);
-    if (translationCache[key]) return Promise.resolve(translationCache[key]);
-    return googleTranslate(text, "en", state.lang).then(function (translated) {
-      if (translated && translated.length > 1) translationCache[key] = translated;
-      return translated && translated.length > 1 ? translated : "";
+    if (!text) return Promise.resolve("");
+    var target = translationCode();
+    if (!target || target === "en") return Promise.resolve("");
+    if (state.knowledgeLang === target) return Promise.resolve(text);
+
+    var cache = loadTranslationCache();
+    var key = target + "|" + hashText(text);
+    if (cache[key]) return Promise.resolve(cache[key]);
+
+    return googleTranslate(text, "en", target).then(function (translated) {
+      if (translated && translated.length > 1 && translated !== text) {
+        cache[key] = translated;
+        saveTranslationCache();
+        return translated;
+      }
+      return "";
     }).catch(function () { return ""; });
   }
 
+  var LANGUAGE_NAME_CODES = {
+    english: "en", telugu: "te", hindi: "hi", tamil: "ta", kannada: "kn",
+    malayalam: "ml", marathi: "mr", bengali: "bn", gujarati: "gu",
+    punjabi: "pa", odia: "or", oriya: "or", urdu: "ur",
+    french: "fr", german: "de", spanish: "es", portuguese: "pt", arabic: "ar",
+    japanese: "ja", korean: "ko", chinese: "zh-CN", russian: "ru", italian: "it",
+    dutch: "nl", turkish: "tr", thai: "th", vietnamese: "vi", indonesian: "id",
+    malay: "ms", sinhala: "si", nepali: "ne", assamese: "as", konkani: "gom"
+  };
+
+  function detectLangCode(text) {
+    var value = String(text || "");
+    var scripts = [
+      [/[\u0C00-\u0C7F]/, "te"],
+      [/[\u0B80-\u0BFF]/, "ta"],
+      [/[\u0C80-\u0CFF]/, "kn"],
+      [/[\u0D00-\u0D7F]/, "ml"],
+      [/[\u0980-\u09FF]/, "bn"],
+      [/[\u0A80-\u0AFF]/, "gu"],
+      [/[\u0A00-\u0A7F]/, "pa"],
+      [/[\u0B00-\u0B7F]/, "or"],
+      [/[\u0600-\u06FF]/, "ur"],
+      [/[\u0900-\u097F]/, "hi"]
+    ];
+    for (var i = 0; i < scripts.length; i += 1) {
+      if (scripts[i][0].test(value)) return scripts[i][1];
+    }
+    var normalized = normalizeText(value);
+    if (LANGUAGE_NAME_CODES[normalized]) return LANGUAGE_NAME_CODES[normalized];
+    if (/^[a-z\s-]+$/i.test(value) && /[a-z]/i.test(value)) return "en";
+    return "";
+  }
+
   var LEGAL_PAGES = { disclaimer: 1, "terms conditions": 1, "privacy policy": 1 };
+  var MATCH_FLOOR = 24;
+
+  function recentUserQuestions(question) {
+    var list = [];
+    for (var i = state.history.length - 1; i >= 0 && list.length < 3; i -= 1) {
+      var item = state.history[i];
+      if (item.role !== "user") continue;
+      if (item.text === question) continue;
+      list.unshift(item.text);
+    }
+    return list;
+  }
 
   function retrieve(question, preferredPage, previousQuestion) {
     return loadKnowledge()
       .then(function () { return translateToEnglish(question); })
       .then(function (englishQuestion) {
-        var followUpContext = isFollowUpQuestion(question) ? previousQuestion || "" : "";
+        var recent = recentUserQuestions(question);
+        if (previousQuestion) recent.push(previousQuestion);
+        var contextText = recent.slice(-3).join(" ");
         var queryText = (question || "") + " " + (englishQuestion || "");
-        if (followUpContext && tokenize(queryText).length < 2) {
-          queryText += " " + followUpContext;
-        }
         var queryTokens = tokenize(queryText);
-        var preferred = normalizeText(preferredPage || "");
+        var contextTokens = expandTokens(tokenize(contextText)).slice(0, 24);
 
         if (!queryTokens.length) {
-          return { items: state.knowledge.slice(0, 3), score: 0, query: englishQuestion };
+          if (isFollowUpQuestion(question) && contextText) {
+            // "what about that?" carries the previous topic forward.
+            queryText = contextText;
+            queryTokens = expandTokens(tokenize(contextText)).slice(0, 12);
+          }
+          if (!queryTokens.length) {
+            return { items: [], ranked: [], score: 0, query: englishQuestion };
+          }
         }
 
-        var scored = state.knowledge.map(function (item) {
-          var pageText = normalizeText(item.page || "");
-          var score = similarityScore(queryText, item);
+        // Only carry the previous page forward when this is a true follow-up
+        // (a pronoun/lead-in or a shared term). Short unrelated queries like
+        // "testing" must not inherit the previous topic.
+        var explicitPage = normalizeText(preferredPage || "");
+        var recentTokens = tokenize(contextText);
+        var sharesRecent = queryTokens.some(function (token) {
+          return recentTokens.indexOf(token) !== -1;
+        });
+        var useLastPage = !explicitPage && (isFollowUpQuestion(question) || sharesRecent);
+        var preferred = explicitPage || (useLastPage ? normalizeText(state.lastMatchPage || "") : "");
 
-          var pageHits = 0;
+        var scored = state.knowledge.map(function (item) {
+          var score = similarityScore(queryText, item, contextTokens);
+
+          var matchedTokens = 0;
           var unique = {};
           queryTokens.forEach(function (token) {
             if (unique[token]) return;
             unique[token] = true;
-            if (normalizeText(item.page + " " + item.text).indexOf(token) !== -1) {
-              pageHits += 1;
-            }
+            if (item._tokenSet[token]) matchedTokens += 1;
           });
 
-          if (preferred && pageText === preferred) score += 45;
-          score += pageHits * 4;
+          var pageMatch = !!preferred && item._pageNorm === preferred;
+          if (pageMatch) score += 45;
+          score += matchedTokens * 4;
 
-          if (LEGAL_PAGES[item.page] && pageHits === 0 && !/disclaimer|privacy|terms|grievance|complaint/i.test(queryText)) {
+          if (LEGAL_PAGES[item.page] && matchedTokens === 0 && !/disclaimer|privacy|terms|grievance|complaint/i.test(queryText)) {
             score = 0;
           }
 
-          return { item: item, score: score };
-        }).filter(function (row) { return row.score > 0; })
-          .sort(function (a, b) { return b.score - a.score; });
+          return {
+            item: item,
+            score: score,
+            queryHit: matchedTokens > 0,
+            pageMatch: pageMatch
+          };
+        }).filter(function (row) {
+          // A match must share at least one real query term. Page/context
+          // bonuses alone are not enough to treat an unrelated question as
+          // relevant.
+          return row.score > 0 && (row.queryHit || (explicitPage && row.pageMatch));
+        }).sort(function (a, b) { return b.score - a.score; });
 
         var top = scored.slice(0, 6);
+        if (top.length && top[0].queryHit && top[0].score >= 20) {
+          state.lastMatchPage = top[0].item.page;
+        }
         return {
           items: top.map(function (row) { return row.item; }),
+          ranked: top,
           score: top.length ? top[0].score : 0,
           query: englishQuestion
         };
@@ -1076,74 +1644,105 @@
     });
   }
 
-  function loadPuter() {
-    return Promise.reject(new Error("Puter AI fallback disabled"));
-  }
+  function readSseAnswer(body, onDelta) {
+    var reader = body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = "";
+    var answer = "";
 
-  function extractModelText(result) {
-    if (!result) return "";
-    if (typeof result === "string") return result;
-    var content = result.message && result.message.content;
-    if (typeof content === "string") return content;
-    if (Array.isArray(content)) {
-      return content.map(function (part) {
-        return typeof part === "string" ? part : (part && part.text) || "";
-      }).join("");
+    function parseEvent(chunk) {
+      var lines = chunk.split("\n");
+      var data = lines.filter(function (line) { return line.indexOf("data:") === 0; })
+        .map(function (line) { return line.slice(5).trim(); })
+        .join("\n");
+      if (!data) return null;
+      if (data === "[DONE]") return { done: true };
+      try { return JSON.parse(data); } catch (error) { return null; }
     }
-    if (typeof result.text === "string") return result.text;
-    return "";
+
+    function pump() {
+      return reader.read().then(function (result) {
+        if (result.done) {
+          if (!answer) throw new Error("Empty assistant reply");
+          return answer;
+        }
+        buffer += decoder.decode(result.value, { stream: true });
+        var parts = buffer.split("\n\n");
+        buffer = parts.pop();
+        for (var i = 0; i < parts.length; i += 1) {
+          var event = parseEvent(parts[i]);
+          if (!event) continue;
+          if (event.error) throw new Error(event.error);
+          if (event.delta) {
+            answer += event.delta;
+            if (onDelta) onDelta(answer);
+          }
+          if (event.done) {
+            if (event.answer) answer = event.answer;
+            if (!answer) throw new Error("Empty assistant reply");
+            return answer;
+          }
+        }
+        return pump();
+      });
+    }
+
+    return pump();
   }
 
-  function buildSystemPrompt() {
-    return [
-      "You are sobhi, the friendly customer-support assistant for Sobhakrita Fintech Solutions Private Limited, a loan facilitator in Chittoor, Andhra Pradesh.",
-      "Answer ONLY from the WEBSITE CONTEXT below. Never invent or guess loan amounts, rates, fees, eligibility, policies, phone numbers or addresses.",
-      "If the answer is not clearly present in the context, reply with exactly [NO_CONTEXT] and nothing else.",
-      "If the context contains general or partial eligibility or document information, share it and say the lender confirms the final criteria. Do not claim information is missing when relevant context is present.",
-      "Keep replies short, warm and practical, ideally under 100 words. Use simple sentences.",
-      "Always reply in " + state.langName + ". If the customer wrote in another language, still reply in " + state.langName + ".",
-      "Do not mention that you are an AI, that you use a context, or that you cannot browse. Do not give legal or financial advice. For final terms, ask the customer to confirm with the lender.",
-      "Write the answer in your own words and do not add source labels. When useful, refer to a full page link such as https://www.sobhakritafintech.com/apply.html or https://www.sobhakritafintech.com/book-a-call.html."
-    ].join(" ");
-  }
+  function askServer(question, context, onDelta) {
+    var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = setTimeout(function () {
+      if (controller) controller.abort();
+    }, 7000);
 
-  function askServer(question, context) {
-    return withTimeout(fetch("/api/chat/ask", {
+    var request = fetch("/api/chat/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         question: question,
         context: context,
-        language: state.langName
-      })
+        language: state.langName,
+        stream: true
+      }),
+      signal: controller ? controller.signal : undefined
     }).then(function (response) {
+      var type = response.headers.get("content-type") || "";
+      if (!response.ok) {
+        return response.json().catch(function () { return {}; }).then(function (body) {
+          var error = new Error(body.error || "Assistant unavailable");
+          error.assistantBusy = true;
+          throw error;
+        });
+      }
+      if (type.indexOf("text/event-stream") !== -1 && response.body && response.body.getReader && typeof TextDecoder !== "undefined") {
+        return readSseAnswer(response.body, onDelta);
+      }
       return response.json().catch(function () { return {}; }).then(function (body) {
-        if (response.ok && body.ok && body.answer) return body.answer;
+        if (body.ok && body.answer) {
+          if (onDelta) onDelta(body.answer);
+          return body.answer;
+        }
         var error = new Error(body.error || "Assistant unavailable");
-        // The server was reachable, so use the site content next instead of
-        // waiting on the slower browser model.
         error.assistantBusy = true;
         throw error;
       });
-    }), 9000, "Assistant reply");
-  }
-
-  function askPuter(question, context) {
-    return withTimeout(loadPuter().then(function (puter) {
-      return puter.ai.chat([
-        { role: "system", content: buildSystemPrompt() },
-        { role: "user", content: "WEBSITE CONTEXT:\n" + context + "\n\nCUSTOMER QUESTION:\n" + question }
-      ]);
-    }), 12000, "Assistant reply").then(extractModelText);
-  }
-
-  function askModel(question, context) {
-    return askServer(question, context).catch(function () {
-      // Browser-side AI is intentionally disabled on the public site to avoid
-      // forcing any visitor into a Puter login flow. Fall back to the curated
-      // website content instead.
-      return Promise.reject(new Error("Browser AI disabled"));
+    }).then(function (answer) {
+      clearTimeout(timer);
+      return answer;
+    }, function (error) {
+      clearTimeout(timer);
+      throw error;
     });
+
+    request.abort = function () {
+      if (controller) controller.abort();
+    };
+    return request;
+  }
+
+  function askModel(question, context, onDelta) {
+    return askServer(question, context, onDelta);
   }
 
   function shorten(text, max) {
@@ -1154,81 +1753,210 @@
     return cut.replace(/\s+\S*$/, "") + "…";
   }
 
-  function localAnswer(retrieval) {
-    var item = retrieval.items[0];
-    if (!item) return "";
-    var answer = String(item.answer || item.text || "").replace(/\s+/g, " ").trim();
-    return answer ? shorten(answer, 480) : "";
+  function composeLocalAnswer(retrieval) {
+    var ranked = retrieval.ranked || [];
+    if (!ranked.length) {
+      ranked = (retrieval.items || []).map(function (item) {
+        return { item: item, score: retrieval.score || 0 };
+      });
+    }
+    if (!ranked.length) return "";
+
+    var top = ranked[0];
+    var parts = [];
+    var seen = {};
+    var total = 0;
+
+    for (var i = 0; i < ranked.length && parts.length < 2; i += 1) {
+      var row = ranked[i];
+      // Only combine a second entry when it independently matched the query.
+      if (i > 0 && (!row.queryHit || row.score < top.score * 0.8)) break;
+      var text = String(row.item.answer || row.item.text || "").replace(/\s+/g, " ").trim();
+      var key = normalizeText(text);
+      if (!text || seen[key]) continue;
+      seen[key] = 1;
+      var max = parts.length === 0 ? 420 : 260;
+      var piece = shorten(text, max);
+      if (total + piece.length > 650) break;
+      parts.push(piece);
+      total += piece.length;
+    }
+
+    return parts.join("\n\n");
   }
 
-  function sendQuery(question, displayText, preferredPage) {
+  function prepareLocalAnswer(text) {
+    var target = translationCode();
+    if (!target || target === "en" || state.knowledgeLang === target) {
+      return Promise.resolve(text);
+    }
+    return translateToLang(text).then(function (translated) {
+      return translated || text;
+    });
+  }
+
+  function finishAnswer(wasTyped) {
+    if (wasTyped) showAnswerFeedback();
+    else showOptions();
+  }
+
+  function sendQuery(question, displayText, preferredPage, isTyped) {
     if (state.busy) return;
 
+    if (state.lang === "other" && !state.translateCode) {
+      state.translateCode = detectLangCode(displayText || question);
+    }
+
+    var wasTyped = !!isTyped;
+    var requestId = ++state.requestId;
     var previousQuestion = state.lastQuestion;
     state.busy = true;
     state.awaitingEscalation = false;
     state.awaitingFeedback = false;
     state.awaitingClarification = false;
+    state.awaitingMoreHelp = false;
     state.pendingQuestion = question;
     state.lastQuestion = question;
+    state.lastWasTyped = wasTyped;
     state.stage = "chat";
     addMessage("user", displayText || question);
     var typing = showTyping();
 
+    function stillCurrent() {
+      return requestId === state.requestId;
+    }
+
+    function showLocal(fallbackText) {
+      return prepareLocalAnswer(fallbackText).then(function (answer) {
+        if (!stillCurrent()) return;
+        typing.remove();
+        state.busy = false;
+        addMessage("assistant", answer);
+        finishAnswer(wasTyped);
+      });
+    }
+
     retrieve(question, preferredPage, previousQuestion).then(function (retrieval) {
-      var directAnswer = retrieval.score >= 18 ? localAnswer(retrieval) : "";
-      if (directAnswer) {
-        return translateToLang(directAnswer).then(function (translated) {
-          typing.remove();
-          state.busy = false;
-          addMessage("assistant", translated || directAnswer);
-          showAnswerFeedback();
-        });
+      if (!stillCurrent()) return;
+
+      var top = retrieval.ranked && retrieval.ranked[0];
+      var second = retrieval.ranked && retrieval.ranked[1];
+      var confident = !!top && top.score >= 34 &&
+        (!second || top.score - second.score >= 8 || top.item.page === second.item.page);
+      var fallbackText = composeLocalAnswer(retrieval);
+
+      if (looksLikeTest(question)) {
+        typing.remove();
+        state.busy = false;
+        offTopic(question);
+        return;
       }
 
-      var context;
-      if (retrieval.items.length && retrieval.score >= 2) {
-        context = retrieval.items.slice(0, 3).map(function (item) {
-          return "[" + item.page + "] " + item.text;
-        }).join("\n\n");
-      } else {
-        // Even when keyword matching is weak (for example a question typed in
-        // another script), still let the assistant use the core site facts so
-        // it can answer simple questions in any language.
-        context = FALLBACK_KB.map(function (item) {
-          return "[" + item.page + "] " + item.text;
-        }).join("\n\n");
+      if (!top || top.score < MATCH_FLOOR) {
+        typing.remove();
+        state.busy = false;
+        var topicText = (question || "") + " " + (retrieval.query || "");
+        if (looksLikeTest(question) || !looksDomainRelated(topicText)) {
+          offTopic(question);
+        } else {
+          noContext(question);
+        }
+        return;
       }
 
-      return askModel(question, context)
-        .then(function (answer) {
+      if (confident && fallbackText) {
+        return showLocal(fallbackText);
+      }
+
+      var cached = readCachedAnswer(question);
+      if (cached) {
+        typing.remove();
+        state.busy = false;
+        addMessage("assistant", cached);
+        finishAnswer(wasTyped);
+        return;
+      }
+
+      // Give the model only the matched site content. Never send the whole
+      // knowledge base, which made unrelated questions produce generic
+      // summaries of every loan product.
+      var context = retrieval.items.slice(0, 3).map(function (item) {
+        return "[" + item.page + "] " + item.text;
+      }).join("\n\n");
+
+      var settled = false;
+      var streamRow = null;
+      var earlyTimer = null;
+
+      if (fallbackText) {
+        earlyTimer = setTimeout(function () {
+          if (settled || !stillCurrent()) return;
+          settled = true;
+          showLocal(fallbackText);
+        }, 3000);
+      }
+
+      function clearEarly() {
+        if (earlyTimer) {
+          clearTimeout(earlyTimer);
+          earlyTimer = null;
+        }
+      }
+
+      function settle(answer, fromModel) {
+        if (settled) return;
+        settled = true;
+        clearEarly();
+        typing.remove();
+        state.busy = false;
+        answer = String(answer || "").trim();
+
+        var offTopicAnswer = /\[OFF_TOPIC\]/i.test(answer);
+        if (!answer || /\[NO_CONTEXT\]/i.test(answer) || offTopicAnswer) {
+          if (streamRow) streamRow.remove();
+          if (fallbackText) {
+            prepareLocalAnswer(fallbackText).then(function (text) {
+              if (!stillCurrent()) return;
+              addMessage("assistant", text);
+              finishAnswer(wasTyped);
+            });
+          } else if (offTopicAnswer) {
+            offTopic(question);
+          } else {
+            noContext(question);
+          }
+          return;
+        }
+
+        if (streamRow) streamRow.finish(answer);
+        else addMessage("assistant", answer);
+        if (fromModel) writeCachedAnswer(question, answer);
+        finishAnswer(wasTyped);
+      }
+
+      askModel(question, context, function (partial) {
+        if (settled || !stillCurrent()) return;
+        clearEarly();
+        if (!streamRow) {
           typing.remove();
-          state.busy = false;
-          answer = String(answer || "").trim();
-          if (!answer || /\[NO_CONTEXT\]/i.test(answer)) {
-            noContext(question);
-            return;
-          }
-          addMessage("assistant", answer);
-          showAnswerFeedback();
-        })
-        .catch(function () {
-          var fallback = localAnswer(retrieval);
-          if (!fallback) {
-            typing.remove();
-            state.busy = false;
-            noContext(question);
-            return;
-          }
-          // Model unavailable: share the site content in the chosen language.
-          translateToLang(fallback).then(function (translated) {
-            typing.remove();
-            state.busy = false;
-            addMessage("assistant", translated || fallback);
-            showAnswerFeedback();
-          });
-        });
+          streamRow = createStreamingRow();
+        }
+        streamRow.update(partial);
+      }).then(function (answer) {
+        if (!stillCurrent()) return;
+        settle(answer, true);
+      }).catch(function () {
+        if (!stillCurrent()) return;
+        if (settled) return;
+        settled = true;
+        clearEarly();
+        typing.remove();
+        state.busy = false;
+        if (fallbackText) showLocal(fallbackText);
+        else noContext(question);
+      });
     }).catch(function () {
+      if (!stillCurrent()) return;
       typing.remove();
       state.busy = false;
       noContext(question);
@@ -1236,27 +1964,26 @@
   }
 
   function noContext(question) {
-    state.awaitingEscalation = true;
+    state.awaitingEscalation = false;
     state.awaitingFeedback = false;
     state.awaitingClarification = false;
+    state.awaitingMoreHelp = false;
     state.pendingQuestion = question || state.pendingQuestion;
-    addMessage("assistant", t("noContext") + " You can call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or book a call at https://www.sobhakritafintech.com/book-a-call.html.\n\n" + t("askSubmit"));
-    showChips([
-      {
-        label: t("yes"),
-        force: true,
-        onClick: function () { startEscalation(t("formIntro")); }
-      },
-      {
-        label: t("no"),
-        force: true,
-        onClick: function () {
-          state.awaitingEscalation = false;
-          addMessage("assistant", t("choose"));
-          showOptions();
-        }
-      }
-    ]);
+    addMessage("assistant", t("noContext") + " You can call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or book a call at https://www.sobhakritafintech.com/book-a-call.html.");
+    // Ask for a quick thumbs up/down so the visitor can still escalate when
+    // the website content did not cover their question.
+    showAnswerFeedback();
+  }
+
+  function offTopic(question) {
+    state.awaitingEscalation = false;
+    state.awaitingFeedback = false;
+    state.awaitingClarification = false;
+    state.awaitingMoreHelp = false;
+    state.lastMatchPage = "";
+    state.pendingQuestion = question || state.pendingQuestion;
+    addMessage("assistant", t("offTopic"));
+    showOptions();
   }
 
   function startEscalation(intro) {
@@ -1265,6 +1992,7 @@
     state.awaitingEscalation = false;
     state.awaitingFeedback = false;
     state.awaitingClarification = false;
+    state.awaitingMoreHelp = false;
     clearChips();
     addMessage("assistant", intro || t("formIntro"));
     showLeadForm();
@@ -1390,13 +2118,48 @@
     });
   }
 
+  function applyLanguageAttrs() {
+    var lang = LANGUAGES.filter(function (item) { return item.code === state.lang; })[0];
+    var dir = lang ? lang.dir : "ltr";
+    if (state.lang === "other" && state.translateCode === "ur") dir = "rtl";
+    root.setAttribute("lang", state.lang === "other" ? "en" : state.lang);
+    root.setAttribute("dir", dir);
+    if (langLabel) {
+      langLabel.textContent = state.lang === "other" ? "•" : state.lang.toUpperCase();
+    }
+    input.placeholder = copy("placeholder");
+  }
+
   function boot() {
     if (state.booted) return;
     state.booted = true;
     state.stage = "chat";
-    root.setAttribute("lang", "en");
-    root.setAttribute("dir", "ltr");
-    if (langLabel) langLabel.textContent = "EN";
+
+    var saved = readSession();
+    if (saved && saved.history && saved.history.length) {
+      state.lang = saved.lang || "en";
+      state.langName = saved.langName || "English";
+      state.translateCode = saved.translateCode || "";
+      state.langPicked = true;
+      state.restoring = true;
+      saved.history.slice(-30).forEach(function (item) {
+        var role = item.role === "user" ? "user" : "assistant";
+        addMessage(role, item.text, { skipHistory: true });
+      });
+      state.restoring = false;
+      state.history = saved.history.slice(-30);
+      applyLanguageAttrs();
+      loadKnowledge();
+      var last = state.history[state.history.length - 1];
+      if (!last || last.role !== "assistant" || last.text !== t("choose")) {
+        addMessage("assistant", t("choose"));
+      }
+      showOptions();
+      saveSession();
+      return;
+    }
+
+    applyLanguageAttrs();
     loadKnowledge();
     addMessage("assistant", t("welcome"));
     addMessage("assistant", t("choose"));
@@ -1411,12 +2174,14 @@
       launcher.classList.add("is-active");
     }
     boot();
+    applyLanguageAttrs();
     setTimeout(function () { input.focus({ preventScroll: true }); }, 120);
   }
 
   function closeChat() {
     panel.hidden = true;
     root.classList.remove("is-open");
+    saveSession();
     if (launcher) {
       launcher.setAttribute("aria-expanded", "false");
       launcher.classList.remove("is-active");
@@ -1437,17 +2202,41 @@
   if (closeBtn) closeBtn.addEventListener("click", closeChat);
   if (langBtn) {
     langBtn.addEventListener("click", function () {
+      cancelPending();
       state.stage = "language";
       state.awaitingEscalation = false;
+      state.awaitingFeedback = false;
+      state.awaitingClarification = false;
+      state.awaitingMoreHelp = false;
       clearChips();
-      addMessage("assistant", UI.en.langPrompt);
+      addMessage("assistant", t("langPrompt"));
       renderLanguageChips();
     });
   }
 
+  panel.addEventListener("keydown", function (event) {
+    if (event.key !== "Tab" || panel.hidden) return;
+    var nodes = panel.querySelectorAll('a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    var list = Array.prototype.filter.call(nodes, function (node) {
+      return !node.hidden && node.offsetParent !== null;
+    });
+    if (!list.length) return;
+    var first = list[0];
+    var last = list[list.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && !panel.hidden) closeChat();
   });
+
+  window.addEventListener("sobhi:open", openChat);
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -1465,7 +2254,7 @@
         selectLanguage(match);
       } else {
         state.stage = "chat";
-        sendQuery(value, value);
+        sendQuery(value, value, null, true);
       }
       return;
     }
@@ -1473,12 +2262,16 @@
     if (state.stage === "language-other") {
       state.lang = "other";
       state.langName = value;
+      state.translateCode = detectLangCode(value) || "";
+      state.langPicked = true;
       state.stage = "chat";
-      root.setAttribute("lang", "other");
+      applyLanguageAttrs();
+      loadKnowledge();
       addMessage("user", value);
       addMessage("assistant", UI.en.welcome);
       addMessage("assistant", UI.en.choose);
       showOptions();
+      saveSession();
       return;
     }
 
@@ -1492,14 +2285,28 @@
         return;
       }
       state.awaitingFeedback = false;
-      sendQuery(value, value);
+      sendQuery(value, value, null, true);
+      return;
+    }
+
+    if (state.awaitingMoreHelp) {
+      if (isYes(value)) {
+        resolveMoreHelp(true, value);
+        return;
+      }
+      if (isNo(value)) {
+        resolveMoreHelp(false, value);
+        return;
+      }
+      state.awaitingMoreHelp = false;
+      sendQuery(value, value, null, true);
       return;
     }
 
     if (state.awaitingClarification) {
       state.awaitingClarification = false;
       var originalQuestion = state.pendingQuestion;
-      sendQuery(value, value);
+      sendQuery(value, value, null, true);
       if (originalQuestion) {
         state.pendingQuestion = originalQuestion + "\nAdditional details: " + value;
       }
@@ -1525,14 +2332,14 @@
       return;
     }
 
-    if (isGreeting(value) && state.lang === "en") {
+    if (isGreeting(value)) {
       addMessage("user", value);
       addMessage("assistant", t("welcome"));
       showOptions();
       return;
     }
 
-    sendQuery(value, value);
+    sendQuery(value, value, null, true);
   });
 
   panel.hidden = true;
