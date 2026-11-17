@@ -98,5 +98,13 @@ module.exports = {
       hours: "Monday – Saturday: 9:00 AM – 6:00 PM IST (Closed Sundays & Public Holidays)",
       website: "https://www.sobhakritafintech.com"
     }
-  }
+  },
+   gemini: {
+    model: "gemini-3.1-flash-lite",
+    temperature: 0.2,
+    maxOutputTokens: 3500,
+    topP: 0.9,
+    topK: 40,
+    timeoutMs: 45000
+  },
 };

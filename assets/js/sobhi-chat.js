@@ -16,8 +16,13 @@
   var chipsEl = root.querySelector("[data-sobhi-chips]");
   var form = root.querySelector("[data-sobhi-form]");
   var input = root.querySelector("[data-sobhi-input]");
+  var micBtn = root.querySelector("[data-sobhi-mic]");
+  var attachBtn = root.querySelector("[data-sobhi-attach]");
+  var fileInput = root.querySelector("[data-sobhi-file-input]");
+  var sendBtn = root.querySelector(".sobhi-send");
   var launcher = document.querySelector("[data-sobhi-toggle]");
   var closeBtn = root.querySelector("[data-sobhi-close]");
+  var newChatBtn = root.querySelector("[data-sobhi-new-chat]");
   var langBtn = root.querySelector("[data-sobhi-lang]");
   var langLabel = root.querySelector("[data-sobhi-lang-label]");
 
@@ -43,7 +48,17 @@
     translateCode: "",
     langPicked: false,
     requestId: 0,
-    restoring: false
+    restoring: false,
+    mediaRecorder: null,
+    audioPlayer: null,
+    audioObjectUrl: "",
+    audioText: "",
+    audioButton: null,
+    recordingStream: null,
+    recordingTimer: null,
+    recordingStartedAt: 0,
+    voiceSubmitRequested: false,
+    recordingStatus: null
   };
 
   var LANGUAGES = [
@@ -65,7 +80,7 @@
   var OPTIONS = [
     { key: "loans", page: "loans", query: "What loan products does Sobhakrita offer? Please list them with amounts and interest rates." },
     { key: "eligibility", page: "eligibility", query: "What are the basic eligibility criteria for a loan?" },
-    { key: "documents", page: "apply", query: "What documents do I need to apply?" },
+    { key: "documents", page: "documents", query: "What documents do I need to apply?" },
     { key: "fees", page: "fees", query: "What fees and charges does Sobhakrita charge? Are there any hidden charges?" },
     { key: "emi", page: "emi calculator", query: "How do EMI, tenure, repayment and prepayment work?" },
     { key: "apply", page: "apply", query: "How do I apply online?" },
@@ -472,7 +487,7 @@
   var SITE_ORIGIN = "https://www.sobhakritafintech.com/";
 
   var SESSION_KEY = "sobhi.session.v2";
-  var ANSWER_CACHE_KEY = "sobhi.answers.v2";
+  var ANSWER_CACHE_KEY = "sobhi.answers.v7";
   var ANSWER_TTL_MS = 30 * 60 * 1000;
 
   function hashText(value) {
@@ -546,7 +561,7 @@
     { page: "Fees", text: "Sobhakrita does not charge an application, consultation, file, advance fee or security deposit in its own name. A minimal service fee applies only after disbursal, with written consent, and is quoted in writing before documentation. Lender charges such as processing fee, legal or technical verification, stamp duty, CERSAI, insurance and statutory charges are separate and disclosed in the Key Fact Statement." },
     { page: "Process", text: "The usual process is: share the requirement, get a shortlist of suitable lenders, verify KYC and income documents once, review the sanction and Key Fact Statement, then receive funds from the lender. Personal and business loans may get an indicative decision in 48 to 72 working hours. Home and mortgage loans often take 7 to 15 working days." },
     { page: "Eligibility", text: "Indicative personal loan eligibility: age 21 to 60 years at application; salaried with at least 6 months in the current job, or self-employed with at least 2 years in business; minimum net monthly income of ₹15,000, which varies by lender and city; CIBIL score of 700+ preferred, with 650+ considered by select NBFCs; and existing EMIs within 40 to 50 percent of net income. Each partner lender sets its own final policy, and Sobhakrita matches your file to the lender most likely to approve it." },
-    { page: "Documents", text: "Documents usually needed for a loan: PAN card and Aadhaar card; recent address proof such as a utility bill, rent agreement or Aadhaar; for salaried applicants, the last 3 months' salary slips and 6 months' bank statement; for self-employed applicants, 2 years' ITR, computation and 6 to 12 months' bank statement; and a passport-size photograph plus employment or office ID. KYC and income documents are submitted once and routed securely to the lender." },
+    { page: "Documents", text: "Commonly requested documents include PAN, Aadhaar or other accepted identity/address proof, recent bank statements, income proof, employment or business proof and a photograph. Salaried applicants may be asked for recent salary slips and employment details. Self-employed applicants may be asked for business proof, ITR and financial records. The exact checklist depends on the loan and partner lender; we will confirm it before you submit documents. Share sensitive documents only through an authorised channel." },
     { page: "EMI", text: "The EMI calculator estimates monthly EMI, total interest and total repayment for home, personal, car, business, education and agriculture loans. EMI depends on the loan amount, interest rate and tenure." },
     { page: "Apply", text: "You can apply online for a loan, book a free consultation call, speak with our team on +91 88866 33119, or email services@sobhakrita.com for personalised assistance." },
     { page: "Service area", text: "Our office is in Chittoor, Andhra Pradesh. We regularly serve Chittoor, Tirupati, Madanapalle, Punganur, Palamaner, Kuppam, Nellore and nearby towns. Several partner lenders can process applications across India." }
@@ -814,6 +829,7 @@
     row.appendChild(bubble);
     messagesEl.appendChild(row);
 
+    if (role === "assistant") state.lastAssistantRow = row;
     if (role === "assistant") applyReadMore(bubble, body, text);
     scrollToBottom();
 
@@ -869,6 +885,7 @@
       finish: function (text) {
         body.innerHTML = linkify(text);
         applyReadMore(bubble, body, text);
+        state.lastAssistantRow = row;
         state.history.push({ role: "assistant", text: String(text || "") });
         if (state.history.length > 30) state.history.shift();
         saveSession();
@@ -1079,32 +1096,397 @@
     setTimeout(closeChat, 2200);
   }
 
+  var COPY_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>';
   var THUMBS_UP_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
   var THUMBS_DOWN_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>';
 
+  function copyAnswerText(value) {
+    var textToCopy = String(value || "").trim();
+    if (!textToCopy) return;
+    function fallbackCopy() {
+      var field = document.createElement("textarea");
+      field.value = textToCopy;
+      field.setAttribute("readonly", "readonly");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      try { document.execCommand("copy"); } catch (error) { /* clipboard may be blocked */ }
+      document.body.removeChild(field);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textToCopy).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  function latestAssistantAnswer() {
+    for (var i = state.history.length - 1; i >= 0; i -= 1) {
+      if (state.history[i].role === "assistant") {
+        var value = String(state.history[i].text || "");
+        if (value !== t("choose") && value !== t("welcome")) return value;
+      }
+    }
+    return "";
+  }
+
+  function installFeedbackStyles() {
+    if (document.getElementById("sobhi-answer-action-styles")) return;
+    var style = document.createElement("style");
+    style.id = "sobhi-answer-action-styles";
+    style.textContent = [
+      ".sobhi-answer-actions{width:100%;margin:10px 0 2px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;box-sizing:border-box}",
+      ".sobhi-answer-icon-row{display:flex;align-items:center;gap:8px}",
+      ".sobhi-answer-icon{width:34px;height:34px;min-width:34px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid #d8dde5;border-radius:50%;background:#fff;color:#596579;cursor:pointer;box-shadow:none}",
+      ".sobhi-answer-icon svg{display:block;width:17px;height:17px}",
+      ".sobhi-answer-icon:hover{background:#f3f6fb;border-color:#aebbd0;color:#26364d}",
+      ".sobhi-answer-actions button{font-family:inherit}",
+      ".sobhi-answer-icon--listen{width:auto;min-width:34px;padding:0 10px;border-radius:18px;gap:6px;font-size:12px}",
+      ".sobhi-answer-icon--listen span{white-space:nowrap}",
+      ".sobhi-compose{display:flex;align-items:center;gap:6px;position:relative}",
+      ".sobhi-compose [data-sobhi-input]{flex:1;min-width:0}",
+      ".sobhi-recording-status{display:none;position:absolute;left:44px;right:48px;top:-34px;align-items:center;gap:7px;padding:6px 10px;border:1px solid #b9d8c4;border-radius:18px;background:#f0faf3;color:#176b3a;font-size:12px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.06)}",
+      ".sobhi-recording-status.is-active{display:flex}",
+      ".sobhi-recording-dot{width:7px;height:7px;border-radius:50%;background:#dc4545;box-shadow:0 0 0 4px rgba(220,69,69,.13);animation:sobhi-record-pulse 1.2s infinite}",
+      "@keyframes sobhi-record-pulse{50%{opacity:.35;box-shadow:0 0 0 7px rgba(220,69,69,0)}}",
+      ".sobhi-tool-btn.is-recording{background:#fff1f1;border-color:#e7a0a0;color:#b42318}",
+      ".sobhi-send.is-voice-send{background:#176b3a;color:#fff;border-color:#176b3a}",
+      ".sobhi-voice-notice{margin:8px auto;padding:8px 12px;max-width:92%;border:1px solid #e6c98d;border-radius:10px;background:#fff9e9;color:#765515;font-size:12px;line-height:1.4;text-align:center}",
+      ".sobhi-tool-btn{width:36px;height:36px;min-width:36px;border:1px solid #d8dde5;border-radius:50%;background:#fff;color:#526174;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}",
+      ".sobhi-tool-btn:hover,.sobhi-tool-btn.is-recording{background:#eef5ff;border-color:#8da9d4;color:#234b82}",
+      ".sobhi-tool-btn:disabled{opacity:.45;cursor:not-allowed}",
+      "@media(max-width:420px){.sobhi-tool-btn{width:32px;height:32px;min-width:32px}.sobhi-compose{gap:4px}}"
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
   function showAnswerFeedback() {
+    installFeedbackStyles();
     state.awaitingFeedback = true;
     state.awaitingClarification = false;
     state.awaitingMoreHelp = false;
-    addMessage("assistant", feedbackText("prompt"));
-    showChips([
-      {
-        label: t("yes"),
-        ariaLabel: t("yes"),
-        icon: THUMBS_UP_SVG,
-        modifier: "sobhi-chip--thumb",
-        force: true,
-        onClick: function () { resolveAnswerFeedback(true, "👍"); }
-      },
-      {
-        label: t("no"),
-        ariaLabel: t("no"),
-        icon: THUMBS_DOWN_SVG,
-        modifier: "sobhi-chip--thumb",
-        force: true,
-        onClick: function () { resolveAnswerFeedback(false, "👎"); }
+
+    var answerRow = state.lastAssistantRow;
+    if (!answerRow) return;
+    var answerBubble = answerRow.querySelector(".sobhi-bubble");
+    if (!answerBubble) return;
+
+    // Prevent duplicate controls if the same answer completion callback fires twice.
+    if (answerBubble.querySelector(".sobhi-answer-actions")) {
+      showOptions(false);
+      return;
+    }
+
+    // Read only the customer-facing answer in this exact message. Do not pull
+    // from the conversation history, which also contains welcome prompts,
+    // language instructions, feedback prompts, and other assistant UI text.
+    var answerBody = answerBubble.querySelector(".sobhi-bubble-text");
+    // Read only this answer's content. Strip controls/hidden UI before TTS;
+    // never build speech text from the conversation history or surrounding UI.
+    var speechClone = answerBody ? answerBody.cloneNode(true) : null;
+    if (speechClone) {
+      speechClone.querySelectorAll("button, script, style, [aria-hidden='true'], .sobhi-more, .sobhi-answer-actions").forEach(function (node) {
+        node.remove();
+      });
+    }
+    var answerToCopy = speechClone ? String(speechClone.innerText || speechClone.textContent || "").trim() : "";
+    var actions = document.createElement("div");
+    actions.className = "sobhi-answer-actions";
+    var iconRow = document.createElement("div");
+    iconRow.className = "sobhi-answer-icon-row";
+    var buttons = [
+      { label: "Copy answer", aria: "Copy answer", icon: COPY_SVG, onClick: function (button) {
+        copyAnswerText(answerToCopy);
+        button.title = "Copied";
+        button.setAttribute("aria-label", "Copied");
+        setTimeout(function () {
+          if (button.isConnected) {
+            button.title = "Copy answer";
+            button.setAttribute("aria-label", "Copy answer");
+          }
+        }, 1400);
+      }},
+      { label: "Helpful", aria: "This answer was helpful", icon: THUMBS_UP_SVG, onClick: function () { resolveAnswerFeedback(true, "👍"); }},
+      { label: "Not helpful", aria: "This answer was not helpful", icon: THUMBS_DOWN_SVG, onClick: function () { resolveAnswerFeedback(false, "👎"); }}
+    ];
+    buttons.push({ label: "Listen to answer", aria: "Listen to answer", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13"/></svg><span>Listen</span>', onClick: function (button) {
+      speakAnswer(answerToCopy, button);
+    }});
+    buttons.forEach(function (item) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "sobhi-answer-icon" + (item.aria === "Listen to answer" ? " sobhi-answer-icon--listen" : "");
+      button.innerHTML = item.icon;
+      button.title = item.label;
+      button.setAttribute("aria-label", item.aria);
+      button.addEventListener("click", function () { item.onClick(button); });
+      iconRow.appendChild(button);
+    });
+    actions.appendChild(iconRow);
+    answerBubble.appendChild(actions);
+
+    // Keep the suggested follow-up chips in the existing shared quick-reply area.
+    showOptions(false);
+    scrollToBottom();
+  }
+
+  function languageForSpeech() {
+    var map = { en: 'en-IN', te: 'te-IN', hi: 'hi-IN', ta: 'ta-IN', kn: 'kn-IN', ml: 'ml-IN', mr: 'mr-IN', bn: 'bn-IN', gu: 'gu-IN', pa: 'pa-IN', or: 'or-IN', ur: 'ur-IN' };
+    var code = state.lang === 'other' ? state.translateCode : state.lang;
+    return map[code] || (code && /^[a-z]{2,3}(-[A-Z]{2})?$/.test(code) ? code : '');
+  }
+
+  function speakAnswer(text, button) {
+    var answer = String(text || '').trim();
+    if (!answer) return;
+    if (state.audioPlayer && state.audioText === answer) {
+      if (!state.audioPlayer.paused) {
+        state.audioPlayer.pause();
+        button.title = 'Listen to answer';
+        button.setAttribute('aria-label', 'Listen to answer');
+      } else {
+        state.audioPlayer.play().catch(function () {});
+        button.title = 'Pause audio';
+        button.setAttribute('aria-label', 'Pause audio');
       }
-    ]);
+      return;
+    }
+    if (state.audioPlayer) { state.audioPlayer.pause(); state.audioPlayer = null; }
+    if (state.audioButton && state.audioButton !== button) {
+      state.audioButton.title = 'Listen to answer';
+      state.audioButton.setAttribute('aria-label', 'Listen to answer');
+      state.audioButton.disabled = false;
+    }
+    state.audioButton = button;
+    if (state.audioObjectUrl) { URL.revokeObjectURL(state.audioObjectUrl); state.audioObjectUrl = ''; }
+    button.disabled = true;
+    button.title = 'Preparing audio…';
+    fetch('/api/chat/speak', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: answer, language: languageForSpeech() })
+    }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (body) {
+        if (!response.ok || !body.ok || !body.audioBase64) throw new Error(body.error || 'Read-aloud unavailable');
+        return body;
+      });
+    }).then(function (body) {
+      if (state.audioPlayer) { state.audioPlayer.pause(); state.audioPlayer = null; }
+      if (state.audioObjectUrl) URL.revokeObjectURL(state.audioObjectUrl);
+      var raw = atob(body.audioBase64);
+      var bytes = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
+      var blob = new Blob([bytes], { type: body.mimeType || 'audio/wav' });
+      state.audioObjectUrl = URL.createObjectURL(blob);
+      state.audioText = answer;
+      state.audioPlayer = new Audio(state.audioObjectUrl);
+      state.audioPlayer.addEventListener('ended', function () {
+        button.disabled = false; button.title = 'Listen to answer'; button.setAttribute('aria-label', 'Listen to answer');
+        state.audioPlayer = null;
+        state.audioText = '';
+        state.audioButton = null;
+        if (state.audioObjectUrl) URL.revokeObjectURL(state.audioObjectUrl);
+        state.audioObjectUrl = '';
+      });
+      state.audioPlayer.addEventListener('error', function () {
+        button.disabled = false; button.title = 'Listen to answer'; button.setAttribute('aria-label', 'Listen to answer');
+      });
+      button.disabled = false; button.title = 'Pause audio'; button.setAttribute('aria-label', 'Pause audio');
+      return state.audioPlayer.play();
+    }).catch(function (error) {
+      button.disabled = false; button.title = 'Listen to answer'; button.setAttribute('aria-label', 'Listen to answer');
+      // Playback/API errors are status notices, not chatbot answers. Keeping
+      // them out of the conversation also prevents them getting read aloud.
+      showVoiceNotice(error && error.message ? error.message : 'Read-aloud is unavailable right now.');
+    });
+  }
+
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var value = String(reader.result || '');
+        resolve(value.slice(value.indexOf(',') + 1));
+      };
+      reader.onerror = function () { reject(new Error('Could not read the selected file.')); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function analyzeUploadedFile(file) {
+    if (state.busy) return;
+    if (!file) return;
+    var allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    if (allowed.indexOf(file.type) === -1) {
+      addMessage('assistant', 'Please upload a JPG, PNG, WEBP image or a PDF.');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      addMessage('assistant', 'Please keep the file under 8 MB.');
+      return;
+    }
+    var consentText = 'Before uploading: this file will be sent to Google Gemini for analysis and is not saved by Sobhi on its server. Gemini API free-tier content may be used by Google to improve its products. Avoid uploading PAN, Aadhaar, bank statements, salary slips, account numbers, OTPs, PINs, passwords or other sensitive financial information. Scanned PDFs may not be readable; clear images or text-based PDFs work best. Continue only if the file does not contain sensitive personal or financial data.';
+    if (!window.confirm(consentText)) return;
+    state.busy = true;
+    state.awaitingFeedback = false;
+    state.pendingQuestion = 'Please summarize this file and explain any relevant loan-related information. Do not determine loan approval or eligibility.';
+    var requestId = ++state.requestId;
+    addMessage('user', 'Uploaded: ' + file.name);
+    var typing = showTyping();
+    Promise.all([
+      fileToBase64(file),
+      retrieve('loan documents and verification requirements', 'documents', state.lastQuestion).catch(function () { return { items: [] }; })
+    ]).then(function (results) {
+      var context = (results[1].items || []).slice(0, 3).map(function (item) { return '[' + item.page + '] ' + item.text; }).join('\n\n');
+      return fetch('/api/chat/analyze-file', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileBase64: results[0], mimeType: file.type, question: state.pendingQuestion, context: context, language: state.langName })
+      }).then(function (response) {
+        return response.json().catch(function () { return {}; }).then(function (body) {
+          if (!response.ok || !body.ok || !body.answer) throw new Error(body.error || 'Document processing failed.');
+          return body.answer;
+        });
+      });
+    }).then(function (answer) {
+      if (requestId !== state.requestId) return;
+      typing.remove(); state.busy = false;
+      addMessage('assistant', answer);
+      finishAnswer(true);
+    }).catch(function (error) {
+      if (requestId !== state.requestId) return;
+      typing.remove(); state.busy = false;
+      addMessage('assistant', error && error.message ? error.message : 'I could not process that file. Please try again.');
+      finishAnswer(true);
+    });
+  }
+
+  function ensureRecordingStatus() {
+    if (state.recordingStatus && state.recordingStatus.isConnected) return state.recordingStatus;
+    var status = document.createElement('div');
+    status.className = 'sobhi-recording-status';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    status.innerHTML = '<span class="sobhi-recording-dot" aria-hidden="true"></span><span>Sobhi is listening</span><strong data-sobhi-record-time>00:00</strong>';
+    if (form) form.insertBefore(status, form.firstChild);
+    state.recordingStatus = status;
+    return status;
+  }
+
+  function updateRecordingClock() {
+    var elapsed = Math.max(0, Math.floor((Date.now() - state.recordingStartedAt) / 1000));
+    var clock = state.recordingStatus && state.recordingStatus.querySelector('[data-sobhi-record-time]');
+    if (clock) clock.textContent = String(Math.floor(elapsed / 60)).padStart(2, '0') + ':' + String(elapsed % 60).padStart(2, '0');
+  }
+
+  function resetRecordingUi() {
+    if (state.recordingTimer) { clearInterval(state.recordingTimer); state.recordingTimer = null; }
+    if (state.recordingStatus) state.recordingStatus.classList.remove('is-active');
+    if (input) input.placeholder = 'Type your message…';
+    if (micBtn) { micBtn.classList.remove('is-recording'); micBtn.title = 'Record a voice question'; micBtn.setAttribute('aria-label', 'Record a voice question'); micBtn.disabled = false; }
+    if (sendBtn) {
+      sendBtn.classList.remove('is-voice-send');
+      sendBtn.setAttribute('aria-label', 'Send message');
+      sendBtn.title = 'Send message';
+      sendBtn.disabled = false;
+    }
+  }
+
+  function startVoiceRecording() {
+    if (state.busy || (state.mediaRecorder && state.mediaRecorder.state === 'recording')) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+      showVoiceNotice('Voice recording is not supported in this browser. Please type your question instead.');
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).then(function (stream) {
+      state.recordingStream = stream;
+      var mimeCandidates = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'];
+      var mime = mimeCandidates.filter(function (candidate) { return MediaRecorder.isTypeSupported(candidate); })[0] || '';
+      var recorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      var chunks = [];
+      state.mediaRecorder = recorder;
+      state.voiceSubmitRequested = false;
+      recorder.ondataavailable = function (event) { if (event.data && event.data.size) chunks.push(event.data); };
+      recorder.onerror = function () {
+        resetRecordingUi();
+        stream.getTracks().forEach(function (track) { track.stop(); });
+        state.recordingStream = null; state.mediaRecorder = null;
+        showVoiceNotice('Recording failed. Please try again or type your question.');
+      };
+      recorder.onstop = function () {
+        var shouldSubmit = state.voiceSubmitRequested;
+        resetRecordingUi();
+        stream.getTracks().forEach(function (track) { track.stop(); });
+        state.recordingStream = null; state.mediaRecorder = null;
+        state.voiceSubmitRequested = false;
+        if (!shouldSubmit) return;
+        var blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        if (!blob.size) { showVoiceNotice('No audio was captured. Please try recording again.'); return; }
+        if (blob.size > 8 * 1024 * 1024) { showVoiceNotice('That recording is too large. Please record a shorter question.'); return; }
+        state.busy = true;
+        if (sendBtn) sendBtn.disabled = true;
+        var typing = showTyping();
+        fileToBase64(blob).then(function (audioBase64) {
+          var actualMime = (recorder.mimeType || blob.type || 'audio/webm').split(';')[0].toLowerCase();
+          return fetch('/api/chat/transcribe', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ audioBase64: audioBase64, mimeType: actualMime })
+          }).then(function (response) {
+            return response.json().catch(function () { return {}; }).then(function (body) {
+              if (!response.ok || !body.ok || !body.transcript) {
+                var errorText = body.error || ('Voice transcription failed (HTTP ' + response.status + ').');
+                throw new Error(errorText);
+              }
+              typing.remove();
+              state.busy = false;
+              if (sendBtn) sendBtn.disabled = false;
+              sendQuery(body.transcript, body.transcript, null, true);
+            });
+          });
+        }).catch(function (error) {
+          typing.remove();
+          state.busy = false;
+          if (sendBtn) sendBtn.disabled = false;
+          showVoiceNotice(error && error.message ? error.message : 'Voice processing failed. Please try again.');
+        });
+      };
+      recorder.start(250);
+      state.recordingStartedAt = Date.now();
+      var status = ensureRecordingStatus();
+      status.classList.add('is-active');
+      updateRecordingClock();
+      state.recordingTimer = setInterval(updateRecordingClock, 250);
+      if (micBtn) { micBtn.classList.add('is-recording'); micBtn.title = 'Recording in progress'; micBtn.setAttribute('aria-label', 'Recording in progress'); micBtn.disabled = true; }
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.classList.add('is-voice-send');
+        sendBtn.setAttribute('aria-label', 'Send recorded voice question');
+        sendBtn.title = 'Send recorded voice question';
+      }
+      if (input) input.placeholder = 'Sobhi is listening…';
+      // Safety cap: submit automatically at 60 seconds rather than leaving the mic open.
+      setTimeout(function () {
+        if (state.mediaRecorder === recorder && recorder.state === 'recording') {
+          state.voiceSubmitRequested = true;
+          recorder.stop();
+        }
+      }, 60000);
+    }).catch(function () {
+      showVoiceNotice('Microphone access was blocked. Please allow microphone permission or type your question.');
+    });
+  }
+
+  function showVoiceNotice(message) {
+    installFeedbackStyles();
+    // Keep technical voice errors out of the assistant conversation and its Read Aloud controls.
+    var notice = document.createElement('div');
+    notice.className = 'sobhi-voice-notice';
+    notice.setAttribute('role', 'status');
+    notice.textContent = message;
+    if (messagesEl) {
+      messagesEl.appendChild(notice);
+      scrollToBottom();
+      setTimeout(function () { if (notice.isConnected) notice.remove(); }, 7000);
+    }
   }
 
   function isYes(text) {
@@ -1144,7 +1526,8 @@
     call: 1, book: 1, personal: 1, business: 1, home: 1, car: 1, gold: 1,
     industrial: 1, study: 1, farm: 1, nbfc: 1, dsa: 1, sobha: 1, krita: 1,
     fintech: 1, lender: 1, lenders: 1, hours: 1, open: 1, closed: 1,
-    timing: 1, document: 1, paperwork: 1, qualification: 1
+    timing: 1, document: 1, paperwork: 1, qualification: 1,
+    nach: 1, nache: 1, npci: 1, ecs: 1, mandate: 1
   };
 
   function looksDomainRelated(text) {
@@ -1171,6 +1554,95 @@
       .filter(function (word) {
         return word.length >= 2 && !STOP_WORDS[word];
       });
+  }
+
+  // Conservative FAQ-aware typo correction. Only correct a word when there is
+  // one clearly closest term in the loaded Sobhakrita FAQ vocabulary.
+  var QUERY_CORRECTION_ALIASES = {
+    documnt: "document", documnts: "documents", documets: "documents", documet: "document",
+    bussiness: "business", buisness: "business", busines: "business",
+    eligiblity: "eligibility", eligibilty: "eligibility",
+    intrest: "interest", interst: "interest", requred: "required", requird: "required",
+    lon: "loan",
+    requried: "required", aplicaton: "application", aplication: "application",
+    aplications: "applications", reciept: "receipt", recieve: "receive",
+    adress: "address", addres: "address", statemnt: "statement",
+    statments: "statements", salariedd: "salaried", empr: "employer"
+  };
+  var queryCorrectionVocabulary = null;
+
+  function buildQueryCorrectionVocabulary() {
+    if (queryCorrectionVocabulary) return queryCorrectionVocabulary;
+    var counts = {};
+    (state.knowledge || []).forEach(function (entry) {
+      // Questions, tags and page names are the strongest vocabulary signals.
+      var source = [entry.question, entry.tags, entry.page, entry.answer].join(" ");
+      tokenize(source).forEach(function (word) {
+        if (word.length >= 4) counts[word] = (counts[word] || 0) + 1;
+      });
+    });
+    Object.keys(QUERY_CORRECTION_ALIASES).forEach(function (wrong) {
+      var right = QUERY_CORRECTION_ALIASES[wrong];
+      counts[right] = Math.max(counts[right] || 0, 3);
+    });
+    queryCorrectionVocabulary = {};
+    Object.keys(counts).forEach(function (word) {
+      if (counts[word] >= 2) {
+        var length = word.length;
+        (queryCorrectionVocabulary[length] || (queryCorrectionVocabulary[length] = [])).push(word);
+      }
+    });
+    return queryCorrectionVocabulary;
+  }
+
+  function editDistanceWithin(a, b, limit) {
+    if (Math.abs(a.length - b.length) > limit) return limit + 1;
+    var previous = [];
+    for (var j = 0; j <= b.length; j += 1) previous[j] = j;
+    for (var i = 1; i <= a.length; i += 1) {
+      var current = [i];
+      var rowMin = i;
+      for (var k = 1; k <= b.length; k += 1) {
+        var cost = a.charAt(i - 1) === b.charAt(k - 1) ? 0 : 1;
+        current[k] = Math.min(current[k - 1] + 1, previous[k] + 1, previous[k - 1] + cost);
+        if (current[k] < rowMin) rowMin = current[k];
+      }
+      if (rowMin > limit) return limit + 1;
+      previous = current;
+    }
+    return previous[b.length];
+  }
+
+  function correctQueryText(text) {
+    var vocabulary = buildQueryCorrectionVocabulary();
+    return String(text || "").replace(/[A-Za-z][A-Za-z'-]*/g, function (rawWord) {
+      var word = rawWord.toLowerCase().replace(/^'+|'+$/g, "");
+      if (QUERY_CORRECTION_ALIASES[word]) {
+        var alias = QUERY_CORRECTION_ALIASES[word];
+        return rawWord.charAt(0) === rawWord.charAt(0).toUpperCase()
+          ? alias.charAt(0).toUpperCase() + alias.slice(1) : alias;
+      }
+      if (word.length < 4 || /^([a-z])\1+$/.test(word)) return rawWord;
+      var sameLength = vocabulary[word.length] || [];
+      if (sameLength.indexOf(word) !== -1) return rawWord;
+      var maxDistance = word.length >= 7 ? 2 : 1;
+      var candidates = [];
+      for (var delta = -maxDistance; delta <= maxDistance; delta += 1) {
+        (vocabulary[word.length + delta] || []).forEach(function (candidate) {
+          var distance = editDistanceWithin(word, candidate, maxDistance);
+          if (distance <= maxDistance) candidates.push({ word: candidate, distance: distance });
+        });
+      }
+      if (!candidates.length) return rawWord;
+      candidates.sort(function (a, b) { return a.distance - b.distance; });
+      var bestDistance = candidates[0].distance;
+      var best = candidates.filter(function (item) { return item.distance === bestDistance; });
+      // A tie is ambiguous; leave the customer's spelling untouched.
+      if (best.length !== 1) return rawWord;
+      var corrected = best[0].word;
+      return rawWord.charAt(0) === rawWord.charAt(0).toUpperCase()
+        ? corrected.charAt(0).toUpperCase() + corrected.slice(1) : corrected;
+    });
   }
 
   function parseFaqKnowledge(text) {
@@ -1319,7 +1791,7 @@
       if (entry._tokenSet[token]) {
         score += token.length > 5 ? 8 : 4;
       }
-      if (entry._questionSet[token]) score += 12;
+      if (entry._questionSet[token]) score += 20;
     });
 
     if (/\bcibil\b|credit score|credit history/i.test(normalizedQuestion)) {
@@ -1560,7 +2032,9 @@
         var recent = recentUserQuestions(question);
         if (previousQuestion) recent.push(previousQuestion);
         var contextText = recent.slice(-3).join(" ");
-        var queryText = (question || "") + " " + (englishQuestion || "");
+        var correctedQuestion = correctQueryText(englishQuestion || question || "");
+        // Search with the corrected wording, not the misspelled token sequence.
+        var queryText = correctedQuestion;
         var queryTokens = tokenize(queryText);
         var contextTokens = expandTokens(tokenize(contextText)).slice(0, 24);
 
@@ -1571,7 +2045,7 @@
             queryTokens = expandTokens(tokenize(contextText)).slice(0, 12);
           }
           if (!queryTokens.length) {
-            return { items: [], ranked: [], score: 0, query: englishQuestion };
+            return { items: [], ranked: [], score: 0, query: correctedQuestion, correctedQuery: correctedQuestion, originalQuery: question };
           }
         }
 
@@ -1626,7 +2100,9 @@
           items: top.map(function (row) { return row.item; }),
           ranked: top,
           score: top.length ? top[0].score : 0,
-          query: englishQuestion
+          query: correctedQuestion,
+          correctedQuery: correctedQuestion,
+          originalQuery: question
         };
       });
   }
@@ -1694,7 +2170,7 @@
     var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
     var timer = setTimeout(function () {
       if (controller) controller.abort();
-    }, 7000);
+    }, 45000);
 
     var request = fetch("/api/chat/ask", {
       method: "POST",
@@ -1796,8 +2272,8 @@
   }
 
   function finishAnswer(wasTyped) {
-    if (wasTyped) showAnswerFeedback();
-    else showOptions();
+    // Keep answer actions (Copy, feedback and Listen) directly under every answer.
+    showAnswerFeedback();
   }
 
   function sendQuery(question, displayText, preferredPage, isTyped) {
@@ -1836,6 +2312,43 @@
       });
     }
 
+    // A broad Documents request should show a category-wise overview. If the
+    // visitor names a specific loan category or applicant type, let retrieval
+    // find the more specific FAQ instead.
+    if (normalizeText(preferredPage) === "documents") {
+      var normalizedDocumentQuestion = normalizeText(question);
+      var namesSpecificCategory = /personal|business|msme|industrial|home|mortgage|property|lap|car|vehicle|education|student|agricultur|farm|crop|salaried|salary|self.?employed|employee|business owner/.test(normalizedDocumentQuestion);
+      if (!namesSpecificCategory) {
+        var categoryDocuments = "The documents depend on the loan and your income profile. These are the usual starting points:\n\n" +
+          "Personal loan\n" +
+          "• PAN, Aadhaar or accepted KYC/address proof\n" +
+          "• Salaried: latest 3 months' salary slips, around 6 months' bank statements and employment details\n" +
+          "• Self-employed: business proof, around 2 years' ITR and computation, and 6–12 months' bank statements\n\n" +
+          "Business / MSME / industrial loan\n" +
+          "• PAN and accepted KYC for the applicant/business\n" +
+          "• Business proof, bank statements, ITR and financial records\n" +
+          "• GST returns or Udyam details, where applicable\n\n" +
+          "Home loan / loan against property\n" +
+          "• Applicant KYC, income proof and bank statements\n" +
+          "• Property ownership, title and related property papers for lender checks\n\n" +
+          "Car loan\n" +
+          "• Applicant KYC, income proof and bank statements\n" +
+          "• Vehicle or dealer details requested by the lender\n\n" +
+          "Education loan\n" +
+          "• Student KYC and academic records\n" +
+          "• Admission/course details and fee information\n" +
+          "• Co-applicant income documents, if required\n\n" +
+          "Agriculture loan\n" +
+          "• Applicant KYC and available income/bank records\n" +
+          "• Farming activity details and land/lease information where relevant\n" +
+          "• Crop or equipment details, depending on the purpose\n\n" +
+          "This is a general overview, not a final checklist. The lender may ask for additional documents based on the product and your profile. Please share documents only through a channel verified by our team or the lender; never share OTPs, PINs or passwords.\n\n" +
+          "Which loan are you considering? I can narrow this down to the relevant checklist.";
+        showLocal(categoryDocuments);
+        return;
+      }
+    }
+
     retrieve(question, preferredPage, previousQuestion).then(function (retrieval) {
       if (!stillCurrent()) return;
 
@@ -1864,11 +2377,8 @@
         return;
       }
 
-      if (confident && fallbackText) {
-        return showLocal(fallbackText);
-      }
-
-      var cached = readCachedAnswer(question);
+      var modelQuestion = retrieval.correctedQuery || question;
+      var cached = readCachedAnswer(modelQuestion);
       if (cached) {
         typing.remove();
         state.busy = false;
@@ -1886,21 +2396,9 @@
 
       var settled = false;
       var streamRow = null;
-      var earlyTimer = null;
-
-      if (fallbackText) {
-        earlyTimer = setTimeout(function () {
-          if (settled || !stillCurrent()) return;
-          settled = true;
-          showLocal(fallbackText);
-        }, 3000);
-      }
 
       function clearEarly() {
-        if (earlyTimer) {
-          clearTimeout(earlyTimer);
-          earlyTimer = null;
-        }
+        // Kept as a no-op for the existing settle flow.
       }
 
       function settle(answer, fromModel) {
@@ -1930,11 +2428,11 @@
 
         if (streamRow) streamRow.finish(answer);
         else addMessage("assistant", answer);
-        if (fromModel) writeCachedAnswer(question, answer);
+        if (fromModel) writeCachedAnswer(modelQuestion, answer);
         finishAnswer(wasTyped);
       }
 
-      askModel(question, context, function (partial) {
+      askModel(modelQuestion, context, function (partial) {
         if (settled || !stillCurrent()) return;
         clearEarly();
         if (!streamRow) {
@@ -2132,6 +2630,7 @@
 
   function boot() {
     if (state.booted) return;
+    installFeedbackStyles();
     state.booted = true;
     state.stage = "chat";
 
@@ -2179,6 +2678,8 @@
   }
 
   function closeChat() {
+    if (state.mediaRecorder && state.mediaRecorder.state === 'recording') { state.voiceSubmitRequested = false; state.mediaRecorder.stop(); }
+    if (state.audioPlayer) { state.audioPlayer.pause(); state.audioPlayer = null; }
     panel.hidden = true;
     root.classList.remove("is-open");
     saveSession();
@@ -2187,6 +2688,32 @@
       launcher.classList.remove("is-active");
       launcher.focus({ preventScroll: true });
     }
+  }
+
+  function startNewChat() {
+    // Keep the selected language, but reset all active conversation state.
+    cancelPending();
+    state.busy = false;
+    state.stage = "chat";
+    state.history = [];
+    state.pendingQuestion = "";
+    state.awaitingEscalation = false;
+    state.awaitingFeedback = false;
+    state.awaitingClarification = false;
+    state.awaitingMoreHelp = false;
+    state.lastQuestion = "";
+    state.lastMatchPage = "";
+    state.lastWasTyped = false;
+    state.knowledgePromise = null;
+    input.value = "";
+    messagesEl.innerHTML = "";
+    clearChips();
+    applyLanguageAttrs();
+    addMessage("assistant", t("welcome"));
+    addMessage("assistant", t("choose"));
+    showOptions();
+    saveSession();
+    input.focus({ preventScroll: true });
   }
 
   function toggleChat() {
@@ -2200,6 +2727,7 @@
     launcher.addEventListener("click", toggleChat);
   }
   if (closeBtn) closeBtn.addEventListener("click", closeChat);
+  if (newChatBtn) newChatBtn.addEventListener("click", startNewChat);
   if (langBtn) {
     langBtn.addEventListener("click", function () {
       cancelPending();
@@ -2238,8 +2766,24 @@
 
   window.addEventListener("sobhi:open", openChat);
 
+  if (attachBtn && fileInput) {
+    attachBtn.addEventListener('click', function () { fileInput.click(); });
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files && fileInput.files[0]) analyzeUploadedFile(fileInput.files[0]);
+      fileInput.value = '';
+    });
+  }
+  if (micBtn) micBtn.addEventListener('click', startVoiceRecording);
+
   form.addEventListener("submit", function (event) {
     event.preventDefault();
+    if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+      // The regular Send button doubles as the voice-send control: stop and submit in one tap.
+      state.voiceSubmitRequested = true;
+      if (sendBtn) sendBtn.disabled = true;
+      state.mediaRecorder.stop();
+      return;
+    }
     var value = input.value.trim();
     if (!value) return;
     input.value = "";

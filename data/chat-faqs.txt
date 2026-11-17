@@ -1,274 +1,1647 @@
-# Sobhakrita chat FAQ knowledge base
-# Format: one block per question/answer pair.
-# Use Q:, A:, PAGE:, TAGS: lines.
-# Separate entries with ---
+# SOBHAKRITA FINTECH SOLUTIONS — CUSTOMER-CENTRIC CHAT KNOWLEDGE BASE
+# Version: 2.0 | Prepared: 17-Nov-2026
+# Purpose: Knowledge source for Sobhi, the Sobhakrita website assistant.
+#
+# FORMAT RULES:
+# Each FAQ must use Q:, A:, PAGE:, TAGS: and entries separated by ---.
+# Keep answers natural, clear, reassuring and customer-first.
+# PAGE should match the relevant site page/section where possible.
+#
+# IMPORTANT CONTENT GOVERNANCE:
+# 1. Sobhakrita is a loan facilitator / Direct Selling Agent, not a bank or NBFC.
+#    Never say that Sobhakrita itself sanctions, lends or disburses a loan.
+# 2. Final eligibility, rate, fees, sanction, repayment schedule and disbursement
+#    are decided by the relevant lender and must be confirmed from its documents.
+# 3. Do not promise approval, a specific interest rate, a fixed disbursement date,
+#    a credit-score improvement, a subsidy or a government benefit.
+# 4. Never ask customers to share OTP, UPI PIN, card PIN, internet-banking
+#    password or full card credentials in chat.
+# 5. Do not invent company history, founders' stories, awards, partner names,
+#    number of customers, approval rates or a formal mission/vision statement.
+# 6. The company incorporation date is 18-Aug-2023. The customer-first purpose
+#    wording below is a suggested brand narrative, not a claim of a separately
+#    published formal mission statement. Company should approve it before use.
+# 7. General financial explanations are educational, not personalised financial,
+#    tax or legal advice. For a specific loan, use the sanction letter, Key Fact
+#    Statement (KFS), loan agreement and lender's official support channel.
+#
+# SOBHI RESPONSE STYLE (apply when generating an answer):
+# - Understand the intent, including typos, short phrases and colloquial wording.
+# - Internally interpret/rephrase the question into clear language, but do not
+#   correct or embarrass the customer.
+# - Start with a direct answer. Then explain in simple terms and give the next
+#   practical step where useful.
+# - Use short paragraphs or bullets. Avoid jargon; define it when unavoidable.
+# - For company questions, say "At Sobhakrita..." and explain what the team can do.
+# - For general education, answer the concept directly before linking it to loans.
+# - Ask only one focused follow-up question when essential information is missing.
+# - Never dump several unrelated FAQ answers into one reply.
+# - If information is not in this knowledge base, say so honestly and offer a
+#   human hand-off. Do not guess.
+#
+# ---------------------------------------------------------------------------
+# A. ABOUT SOBHAKRITA — COMPANY STORY, TRUST AND ROLE
+# ---------------------------------------------------------------------------
 
-Q: Who is Sobhakrita Fintech Solutions?
-A: Sobhakrita Fintech Solutions Private Limited is a loan facilitator and Direct Selling Agent based in Chittoor, Andhra Pradesh. We help customers compare loan offers from partner banks and RBI-regulated NBFCs. We are not a bank or NBFC and do not lend in our own name.
+Q: What is Sobhakrita Fintech Solutions?
+A: Sobhakrita Fintech Solutions Private Limited is a loan facilitation and Direct Selling Agent (DSA) company based in Chittoor, Andhra Pradesh. We help individuals, families and businesses understand available loan options, prepare their applications and connect with suitable partner banks and RBI-regulated NBFCs. We are not a bank or NBFC, and we do not lend money in our own name. The lender makes the final decision on approval, interest rate, terms and disbursement.
 PAGE: about
-TAGS: company, about, sfs, fintech, loan facilitator
+TAGS: sobhakrita, company, about us, fintech, dsa, direct selling agent, loan facilitator, who are you
+
 ---
 
-Q: What loan products do you offer?
-A: We support personal loans, business loans, home loans, mortgage loans or loan against property, car loans, education loans, agriculture loans, and industrial or MSME loans. The exact product, amount, rate and eligibility depend on the lender and the applicant profile.
-PAGE: loans
-TAGS: loan products, personal loan, business loan, home loan, mortgage, car loan, education loan, agriculture loan, industrial loan
+Q: When was Sobhakrita established?
+A: Sobhakrita Fintech Solutions Private Limited was incorporated on 18 August 2023. We began with the intention of making the loan journey easier to understand and navigate by helping customers identify suitable lending options and get guidance through the application process.
+PAGE: about
+TAGS: founded, established, started, incorporated, 2023, company history, beginning
+
+---
+
+Q: Why was Sobhakrita started?
+A: Sobhakrita was created around a simple customer need: finding and applying for a suitable loan can be confusing. Customers may have questions about eligibility, documents, interest rates, charges and lender choices. Our role is to make that journey clearer by helping customers understand their options and coordinate with suitable lending partners. This is a suggested customer-facing description of our purpose; it should be approved by the company before publication as an official founding story.
+PAGE: about
+TAGS: why started, purpose, story, reason, customer problem, vision
+
+---
+
+Q: What is Sobhakrita's vision?
+A: Our proposed vision is to make access to formal credit simpler, clearer and more approachable by helping customers make informed choices and connect with suitable lending institutions. This is suggested brand wording, not a separately verified formal company statement.
+PAGE: about
+TAGS: vision, company vision, future, purpose
+
+---
+
+Q: What is Sobhakrita's mission?
+A: Our proposed mission is to understand each customer's financial requirement, explain relevant loan options in simple language, guide them through documentation and coordinate with suitable lending partners while keeping the customer's interests and transparency at the centre. This is suggested brand wording and should be confirmed by the company before being presented as its official mission.
+PAGE: about
+TAGS: mission, company mission, customer first, values
+
+---
+
+Q: What does Sobhakrita mean for customers?
+A: It means having a support team to help you understand the loan process rather than trying to navigate every step alone. We can explain common requirements, help organise documents and coordinate your application with a suitable partner lender. The lender remains responsible for the credit decision and loan.
+PAGE: about
+TAGS: customer benefit, why sobhakrita, support, assistance
+
+---
+
+Q: Is Sobhakrita a bank?
+A: No. Sobhakrita is not a bank. We are a loan facilitator and DSA that helps customers connect with partner banks and RBI-regulated NBFCs. Your loan agreement and repayment obligation are with the lender that sanctions your loan.
+PAGE: about
+TAGS: bank, not a bank, lender, dsa
+
+---
+
+Q: Is Sobhakrita an NBFC?
+A: No. Sobhakrita is not an NBFC and does not lend from its own balance sheet. We facilitate applications with partner banks and RBI-regulated NBFCs. The lending institution decides whether to approve the loan and on what terms.
+PAGE: about
+TAGS: nbfc, not nbfc, regulated, lender
+
 ---
 
 Q: What is a loan facilitator?
-A: A loan facilitator is a service provider who helps customers understand loan options, compare suitable lenders, and complete the application process with the relevant bank or NBFC. Sobhakrita does not issue loans in its own name.
+A: A loan facilitator helps customers understand loan products, compare possible lender options, prepare documents and coordinate the application process. A facilitator does not replace the lender. The bank or NBFC performs its own checks and decides whether to sanction and disburse the loan.
 PAGE: about
-TAGS: loan facilitator, dsa, direct selling agent, process
+TAGS: loan facilitator, meaning, role, intermediary
+
 ---
 
-Q: Do you give loans directly?
-A: No. Sobhakrita is not a bank or NBFC. We connect applicants with our partner banks and RBI-regulated NBFCs. Loan sanction, disbursement and final terms are decided by the lender.
+Q: What is a DSA?
+A: DSA stands for Direct Selling Agent. A DSA works with lending institutions to source and assist loan applications. Sobhakrita's role is to guide customers and coordinate with partner lenders; the lender independently assesses the application and makes the final credit decision.
 PAGE: about
-TAGS: direct loan, bank, nbfc, lender
+TAGS: dsa, direct selling agent, meaning, agent
+
 ---
 
-Q: How do I apply for a personal loan?
-A: Apply online at https://www.sobhakritafintech.com/apply.html, or speak with our team about eligibility and documents. We usually ask for basic KYC and income proof before matching you with suitable lenders.
-PAGE: apply
-TAGS: personal loan, apply, online application, documents
+Q: Who approves my loan — Sobhakrita or the bank?
+A: The partner bank or NBFC approves or declines your loan. Sobhakrita can help prepare and route your application, explain the process and coordinate updates, but we cannot guarantee or override a lender's decision.
+PAGE: about
+TAGS: approval, who approves, bank approval, sanction
+
 ---
 
-Q: What are the basic eligibility criteria for a loan?
-A: Typical criteria include age, income, employment or business continuity, KYC documents, repayment capacity, and a credit profile. The final eligibility is set by the partner lender. Many applicants are considered on a case-by-case basis.
-PAGE: eligibility
-TAGS: eligibility, documents, income, age, cibil, salary, self-employed
+Q: Who will disburse the loan amount?
+A: The bank or NBFC that sanctions your loan will disburse the funds according to its process and the terms of your loan agreement. Sobhakrita facilitates the process but does not disburse the loan in its own name.
+PAGE: about
+TAGS: disbursement, who pays, loan amount, lender
+
 ---
 
-Q: What is a CIBIL score?
-A: A CIBIL score is a credit history score used by lenders to assess repayment behaviour. In general, a score of 700 or above is considered healthier, but the final minimum score and approval decision depend on the lender and the loan product.
-PAGE: eligibility
-TAGS: cibil, credit score, credit history, score, eligibility
+Q: Does Sobhakrita work with banks and NBFCs?
+A: Yes. We connect customers with partner banks and RBI-regulated NBFCs, depending on the product and applicant profile. The available lender options can change, and we will explain the relevant lender details when discussing your application.
+PAGE: about
+TAGS: partner banks, nbfc partners, lending partners, lenders
+
 ---
 
-Q: What documents do I need to apply?
-A: Usually you need PAN and Aadhaar, address proof, recent income proof, bank statements, employment or business proof, and photographs. Salaried and self-employed borrowers may need different documentation. Final requirements are set by the lender.
-PAGE: apply
-TAGS: documents, pan, aadhaar, kyc, bank statement, income proof
+Q: Is my loan relationship with Sobhakrita?
+A: Sobhakrita helps facilitate your application. Your actual loan relationship is with the bank or NBFC named in your sanction letter and loan agreement. That lender's documents will specify your interest rate, EMI, tenure, charges and repayment terms.
+PAGE: about
+TAGS: loan agreement, borrower, relationship, lender
+
 ---
 
-Q: What documents are required for a salaried person?
-A: Salaried applicants usually need PAN, Aadhaar, address proof, last 3 months salary slips, 6 months bank statements, and employment details. Final requirements vary by lender.
-PAGE: documents
-TAGS: salaried, employment, documents, salary slip, bank statement
+Q: Does Sobhakrita guarantee loan approval?
+A: No. No facilitator can guarantee a lender's approval. We can help you understand likely eligibility and identify lenders that may fit your profile, but the lender must complete its checks and make the final decision.
+PAGE: about
+TAGS: guarantee, guaranteed loan, approval guarantee, assured loan
+
 ---
 
-Q: What documents are required for a self-employed person?
-A: Self-employed borrowers often need PAN, Aadhaar, address proof, 2 years ITR and computation, business proof, GST or trade proof if applicable, and 6 to 12 months bank statements.
-PAGE: documents
-TAGS: self-employed, business, itr, gst, documents
----
-
-Q: What is the process for getting a loan?
-A: The usual process starts with understanding your requirement, checking eligibility, collecting KYC and income documents, shortlisting suitable lenders, reviewing the sanction and Key Fact Statement, and then the lender disburses the loan if approved.
-PAGE: process
-TAGS: process, steps, application, sanction, kfs, approval
----
-
-Q: How long does it take to get a loan decision?
-A: Personal and business loans may receive an indicative decision in 48 to 72 working hours, while home and mortgage loans may take longer depending on the lender and property verification. Timelines vary by product and profile.
-PAGE: process
-TAGS: approval time, decision, turnaround, home loan, mortgage, business loan
----
-
-Q: What fees and charges do you charge?
-A: Sobhakrita does not charge an application, consultation, file, advance or security deposit in its own name. A minimal service fee may apply only after disbursal with written consent. Separate lender charges such as processing fee, legal fees, stamp duty, CERSAI charges, insurance premium and statutory charges are disclosed by the lender.
-PAGE: fees
-TAGS: fees, charges, hidden charges, processing fee, service fee
----
-
-Q: Are there any hidden charges?
-A: No hidden fee is charged by Sobhakrita in its own name. The lender may levy separate charges depending on the product, and these are typically disclosed in the sanction letter and Key Fact Statement before documentation.
-PAGE: fees
-TAGS: hidden fees, charges, processing, lender charges
----
-
-Q: How does EMI work?
-A: EMI is the fixed monthly repayment amount that includes both principal and interest. It depends on the loan amount, interest rate, tenure and any processing or related charges added by the lender.
-PAGE: emi-calculator
-TAGS: emi, monthly repayment, interest, tenure, repayment
----
-
-Q: Can I prepay or foreclose my loan?
-A: Prepayment and foreclosure policies vary by lender and loan type. Some lenders allow partial or full prepayment after a lock-in period, while others charge a fee or limit it based on the sanction terms.
-PAGE: fees
-TAGS: prepayment, foreclosure, part payment, repay early
----
-
-Q: What is the interest rate for a loan?
-A: Interest rates vary widely by loan type, lender, borrower profile, tenure, and current market conditions. We can help you compare indicative offers from partner lenders based on your requirements.
-PAGE: loans
-TAGS: rate of interest, roi, interest, personal loan, business loan, home loan
----
-
-Q: Which cities do you serve?
-A: Our registered office is in Chittoor, Andhra Pradesh. We regularly serve Chittoor, Tirupati, Madanapalle, Punganur, Palamaner, Kuppam, Nellore and nearby towns, and we can help with applications across India depending on the lender.
+Q: Does Sobhakrita help customers outside Chittoor?
+A: Our primary office is in Chittoor, Andhra Pradesh. We regularly serve Chittoor, Tirupati, Madanapalle, Punganur, Palamaner, Kuppam, Nellore and nearby towns. We may also coordinate applications from other parts of India where a partner lender supports the location and product.
 PAGE: contact
-TAGS: service area, cities, chittoor, tirupati, andhra pradesh
+TAGS: service area, cities, pan india, remote, chittoor, tirupati
+
 ---
 
-Q: Where is your office?
-A: Our office is located at #20-90B/1, Naidu Buildings, Behind Dominos, Mittoor, Chittoor, Andhra Pradesh 517001, India.
+Q: Where is Sobhakrita's office?
+A: Our office is at #20-90B/1, Naidu Buildings, Behind Domino's, Mittoor, Chittoor, Andhra Pradesh 517001, India. Please call before visiting if you need to meet a team member.
 PAGE: contact
-TAGS: office, address, location, chittoor
+TAGS: address, office, location, map, chittoor
+
 ---
 
-Q: What are your working hours?
-A: Our office hours are Monday to Saturday from 9:00 AM to 6:00 PM. Sunday is closed.
+Q: What are Sobhakrita's working hours?
+A: Our office hours are Monday to Saturday, 9:00 AM to 6:00 PM IST. We are closed on Sundays. If you submit a query outside office hours, our team will review it during the next working period.
 PAGE: contact
-TAGS: working hours, office time, monday to saturday
----
+TAGS: working hours, office time, opening, closing, sunday
 
-Q: When will your team acknowledge my query?
-A: Our team will acknowledge a submitted query within one working day during office hours, Monday to Saturday from 9:00 AM to 6:00 PM IST. Resolving the query may take longer depending on the request.
-PAGE: contact
-TAGS: acknowledgement, response time, query, support, sla
 ---
 
 Q: How can I contact Sobhakrita?
-A: You can call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or visit our office in Chittoor. You can also book a free consultation call through our website.
+A: You can call us on +91 88866 33119 or +91 88866 33118, or email services@sobhakrita.com. You can also submit an enquiry or book a free consultation through our website. Our office is in Mittoor, Chittoor, Andhra Pradesh.
 PAGE: contact
-TAGS: contact, call, email, whatsapp, support
+TAGS: phone, email, contact, whatsapp, support, customer care
+
 ---
 
-Q: How do I book a free call?
-A: Book a free consultation at https://www.sobhakritafintech.com/book-a-call.html. Our team will confirm the slot and guide you on the next steps.
+Q: When will someone respond to my enquiry?
+A: Our team aims to acknowledge a submitted enquiry within one working day during office hours, Monday to Saturday, 9:00 AM to 6:00 PM IST. The time needed to resolve your request may be longer if we need documents or an update from a lender.
+PAGE: contact
+TAGS: response time, callback, acknowledgement, query status
+
+---
+
+Q: Can I speak to a real person?
+A: Absolutely. You can call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or book a free consultation at https://www.sobhakritafintech.com/book-a-call.html. Our team can discuss your requirement and explain the next steps.
+PAGE: contact
+TAGS: human, real person, advisor, agent, talk to someone
+
+---
+
+Q: Is the first consultation free?
+A: You can book a free consultation call through https://www.sobhakritafintech.com/book-a-call.html. Our team will confirm the available slot. Any separate service fee, if applicable later, must be explained and agreed to in writing before it is charged.
 PAGE: book-a-call
-TAGS: free call, consultation, schedule, appointment, call back
+TAGS: free consultation, call, consultation fee, appointment
+
 ---
 
-Q: Can I call or WhatsApp you?
-A: Yes. You can reach us by phone at +91 88866 33119 or +91 88866 33118. You can also contact us through WhatsApp for quick assistance.
-PAGE: contact
-TAGS: whatsapp, phone, call, support
+# ---------------------------------------------------------------------------
+# B. LOAN PRODUCTS AND CHOOSING THE RIGHT LOAN
+# ---------------------------------------------------------------------------
+
+Q: What types of loans can Sobhakrita help me with?
+A: We assist with personal loans, business loans, home loans, loans against property (mortgage loans), car loans, education loans, agriculture loans and industrial or MSME loans. The options available to you depend on the lender, loan purpose, location, eligibility and documents.
+PAGE: loans
+TAGS: loan types, products, personal, business, home, mortgage, car, education, agriculture, industrial, msme
+
 ---
 
-Q: How do I apply online?
-A: Use the online form at https://www.sobhakritafintech.com/apply.html. Share your basic details and loan requirement, and our team will guide you to a suitable lender.
-PAGE: apply
-TAGS: apply, online, form, submit application
+Q: What is a personal loan?
+A: A personal loan is usually an unsecured loan taken by an individual for personal needs such as medical expenses, education costs, travel, a wedding or consolidating existing debt. It generally does not require property as collateral, but the lender checks income, credit history and repayment capacity. The interest rate and terms depend on the lender and your profile.
+PAGE: personal-loan
+TAGS: personal loan meaning, unsecured loan, individual loan, personal expenses
+
+---
+
+Q: What can I use a personal loan for?
+A: Depending on the lender's policy, a personal loan may be used for medical expenses, education, travel, home repairs, family needs or other permitted personal purposes. Some lenders restrict certain uses. Always provide the actual purpose in your application and check the lender's terms.
+PAGE: personal-loan
+TAGS: personal loan purpose, usage, medical, wedding, travel, home repair
+
+---
+
+Q: What is a secured loan?
+A: A secured loan is backed by an asset offered as collateral, such as a house, land or vehicle. If the borrower does not repay as agreed, the lender may take recovery action against the secured asset under applicable law and the loan agreement. Review the risks carefully before pledging an asset.
+PAGE: loans
+TAGS: secured loan, collateral, security, asset
+
+---
+
+Q: What is an unsecured loan?
+A: An unsecured loan does not require the borrower to pledge a specific asset as collateral. Personal loans are commonly unsecured. Since the lender does not have a pledged asset as security, it may place greater weight on income, credit history and repayment capacity.
+PAGE: personal-loan
+TAGS: unsecured, no collateral, personal loan
+
+---
+
+Q: What is a business loan?
+A: A business loan is financing used for business needs such as working capital, inventory, expansion, equipment or operational expenses. Lenders may assess business vintage, turnover, profitability, bank statements, tax filings, existing obligations and the owner's credit profile.
+PAGE: business-loan
+TAGS: business loan meaning, business finance, working capital, expansion
+
+---
+
+Q: What is working capital?
+A: Working capital is the money a business uses for day-to-day operations, such as buying stock, paying suppliers, wages and routine expenses. A working-capital loan may help manage a temporary cash-flow gap, but the repayment schedule should fit the business's expected cash flow.
+PAGE: business-loan
+TAGS: working capital, cash flow, business expenses, inventory
+
+---
+
+Q: What is a home loan?
+A: A home loan is financing used to purchase, construct or sometimes renovate a residential property, depending on the lender's product. The property is generally mortgaged to the lender until the loan is repaid. The lender checks income, credit history, property documents and legal or technical details.
+PAGE: home-loan
+TAGS: home loan meaning, housing loan, purchase house, construction
+
+---
+
+Q: What is a loan against property?
+A: A loan against property (LAP), also called a mortgage loan, allows an eligible property owner to borrow by offering a property as collateral. The lender assesses the property's value, ownership documents, legal status and the applicant's repayment capacity. If repayments are not made, the pledged property may be at risk.
+PAGE: mortgage-loan
+TAGS: lap, loan against property, mortgage, property loan
+
+---
+
+Q: What is the difference between a home loan and a loan against property?
+A: A home loan is generally used to buy, construct or improve a home. A loan against property uses an already-owned eligible property as collateral to raise funds for a permitted purpose. Both are secured loans, but the purpose, documentation, loan-to-value limits and lender terms can differ.
+PAGE: mortgage-loan
+TAGS: home loan vs lap, mortgage difference, property
+
+---
+
+Q: What is a car loan?
+A: A car loan is financing used to purchase a new or used vehicle, subject to the lender's policy. The vehicle is generally hypothecated to the lender until the loan is repaid. The lender considers the vehicle, down payment, income, credit profile and repayment capacity.
+PAGE: car-loan
+TAGS: car loan, vehicle finance, auto loan
+
+---
+
+Q: What is an education loan?
+A: An education loan helps fund eligible education-related costs such as tuition, examination fees, books, accommodation or other approved expenses. Lender requirements can depend on the course, institution, country, co-applicant, collateral and repayment capacity.
+PAGE: education-loan
+TAGS: education loan, student loan, study abroad, tuition
+
+---
+
+Q: What is an agriculture loan?
+A: An agriculture loan is financing for eligible farming and allied activities. Depending on the product, it may support crop expenses, equipment, irrigation, livestock or other agricultural needs. Eligibility, security, repayment timing and any applicable benefits are determined by the lender and scheme rules.
+PAGE: agriculture-loan
+TAGS: agriculture loan, crop loan, farm loan, kisan, farming
+
+---
+
+Q: What is an MSME loan?
+A: An MSME loan is financing for a micro, small or medium enterprise. It may be used for working capital, machinery, expansion or other business requirements. Lenders may assess business activity, registration, turnover, bank statements, financial records and repayment capacity.
+PAGE: industrial-loan
+TAGS: msme loan, micro small medium enterprise, small business finance
+
+---
+
+Q: What is the difference between a business loan and an MSME loan?
+A: A business loan is a broad term for finance provided for business purposes. An MSME loan is a business-finance product intended for eligible micro, small or medium enterprises. The categories can overlap; the exact product and eligibility depend on the lender.
+PAGE: industrial-loan
+TAGS: business loan vs msme, difference, enterprise
+
+---
+
+Q: What loan amount can I get?
+A: The amount depends on the loan product, your income or business cash flow, credit profile, existing EMIs, collateral if required and the lender's policy. We can discuss indicative options after understanding your requirement, but only the lender can confirm the eligible amount.
+PAGE: loans
+TAGS: loan amount, how much loan, maximum loan, eligibility amount
+
+---
+
+Q: What is the minimum and maximum loan amount available through Sobhakrita?
+A: Indicative product ranges shown in our internal website knowledge are: personal loan ₹50,000–₹50 lakh; business loan ₹1 lakh–₹75 lakh; home loan ₹5 lakh–₹2 crore; loan against property ₹5 lakh–₹5 crore; car loan ₹75,000–₹50 lakh; education loan ₹50,000–₹75 lakh; agriculture loan ₹50,000–₹50 lakh; and industrial/MSME loan ₹2 lakh–₹2 crore. These are indicative ranges, not a promise or an offer. Product availability and the amount a lender may approve must be confirmed for your profile.
+PAGE: loans
+TAGS: min loan, max loan, loan range, amount limits, personal, business, home, car, education, agriculture, msme
+
 ---
 
 Q: Which loan is best for me?
-A: The right loan depends on the purpose, amount, tenure, income and whether you are salaried or self-employed. We can help you compare the best lender match based on your requirement and profile.
+A: The right loan depends on what you need the money for, how much you need, how quickly you need it, your income, existing EMIs and whether you can or want to provide collateral. Tell us the purpose and approximate amount, and we can help you understand which loan category may fit. The lender will confirm the available product and terms.
 PAGE: loans
-TAGS: best loan, recommend, loan choice, comparison
+TAGS: best loan, recommend loan, which loan, choose loan
+
 ---
 
-Q: What is the difference between a bank loan and a loan facilitator?
-A: A bank or NBFC is the lender and final decision maker. A loan facilitator like Sobhakrita helps you compare offers, prepare documentation, and connect your file with suitable lenders. The lender decides sanction and rate.
-PAGE: about
-TAGS: bank, nbfc, facilitator, difference
+Q: Can I apply for more than one type of loan?
+A: You may be able to apply for different loan products if you meet each lender's criteria, but multiple applications can create multiple credit enquiries and increase your repayment commitments. It is better to first identify the actual requirement and compare suitable options before submitting applications.
+PAGE: loans
+TAGS: multiple loans, apply multiple, more than one loan
+
 ---
 
-Q: Do you help with home loans?
-A: Yes. We support home loans and loan against property. A home loan usually requires property details, income proof, KYC, and lender-specific documentation.
-PAGE: home-loan
-TAGS: home loan, mortgage, property, housing finance
----
+# ---------------------------------------------------------------------------
+# C. ELIGIBILITY, CREDIT SCORE AND APPLICATION OUTCOMES
+# ---------------------------------------------------------------------------
 
-Q: Do you help with business loans?
-A: Yes. We assist with business loans for working capital, expansion, equipment, and other business requirements. Eligibility depends on turnover, vintage, revenue stability, and lender policy.
-PAGE: business-loan
-TAGS: business loan, working capital, small business, turn over
----
-
-Q: Do you help with car loans?
-A: Yes. Car loan assistance is available for new or used vehicle purchases depending on the lender and eligibility. We can help match your profile to suitable lenders.
-PAGE: car-loan
-TAGS: car loan, vehicle loan, auto financing
----
-
-Q: Do you help with education loans?
-A: Yes. Education loans are available for recognized courses and institutions, subject to lender policies, eligibility, and required documentation. We can guide you through the process.
-PAGE: education-loan
-TAGS: education loan, study loan, student loan
----
-
-Q: Do you help with agriculture loans?
-A: Yes. Agriculture loans can support farming, working capital, equipment and allied activities depending on the lender and policy. We help identify suitable options and documentation requirements.
-PAGE: agriculture-loan
-TAGS: agriculture loan, farm loan, rural financing
----
-
-Q: Do you help with industrial and MSME loans?
-A: Yes. We support industrial and MSME loan requirements, including business expansion and capital expenditure, subject to lender policy and your business profile.
-PAGE: industrial-loan
-TAGS: industrial loan, msme, manufacturing, business expansion
----
-
-Q: What is the grievance redressal process?
-A: If you have a complaint or grievance, you can reach out through the contact page or email services@sobhakrita.com. We review concerns and route them to the appropriate team or lender process.
-PAGE: contact
-TAGS: grievance, complaint, support, redressal
----
-
-Q: Is my information secure?
-A: We ask for KYC and contact details only as needed to assess eligibility and route your application to suitable lenders. Information handling should follow lender and regulatory norms and is managed with caution and confidentiality.
-PAGE: privacy-policy
-TAGS: privacy, security, data, kyc, documents
----
-
-Q: Is there a fee to use your service?
-A: The service fee, if any, is only quoted and collected after disbursal and after written consent. It is not charged upfront for the application process.
-PAGE: fees
-TAGS: fee, consultant, service fee, advance payment
----
-
-Q: What happens after I submit my loan request?
-A: After submission, our team reviews your requirement and documents, suggests suitable lenders, and coordinates the next steps. The lender may request additional information before sanctioning the loan.
-PAGE: apply
-TAGS: submit, next steps, after application
----
-
-Q: Can I talk to a real person?
-A: Yes. Call +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or book a free call at https://www.sobhakritafintech.com/book-a-call.html. Our advisors can guide you on loan options and required documents.
-PAGE: contact
-TAGS: advisor, human support, call, consultation
----
-
-Q: How do I know if I am eligible?
-A: Eligibility depends on factors such as income, age, employment status, business profile, credit profile and other lender rules. We can help you understand the likely fit after reviewing your requirement and documents.
+Q: What are the basic eligibility criteria for a loan?
+A: Lenders commonly consider your age, income, employment or business stability, credit history, existing EMIs, repayment capacity, location and required documents. Secured loans may also involve property or asset checks. Each lender has its own policy, so eligibility is assessed case by case.
 PAGE: eligibility
-TAGS: eligibility check, likely fit, qualification
+TAGS: eligibility, qualify, criteria, age, income, employment, business
+
 ---
 
-Q: Do you charge any application fee?
-A: No. Sobhakrita does not charge an application fee in its own name. Any charges are disclosed separately by the lender, if applicable.
-PAGE: fees
-TAGS: application fee, upfront charge
+Q: What is a CIBIL score?
+A: A CIBIL score is a three-digit number that summarises information in your credit history maintained by TransUnion CIBIL. Lenders may use it, along with income and other details, when assessing a credit application. A higher score is generally viewed more favourably, but no single score guarantees approval.
+PAGE: eligibility
+TAGS: cibil, credit score, transunion cibil, credit history
+
 ---
 
-Q: Which lender is best for my profile?
-A: We match your requirement and profile to lenders most likely to approve your application. Final approval depends on the lender's policy, income, KYC and documentation.
+Q: What is considered a good CIBIL score?
+A: A score around 750 or above is commonly viewed as strong by many lenders, but their cut-offs differ by product and applicant. A lower score does not automatically mean every application will be rejected, and a high score does not guarantee approval. Lenders also assess income, existing debt and repayment history.
+PAGE: eligibility
+TAGS: good cibil, cibil range, 750, credit score range
+
+---
+
+Q: Can I get a loan with a low CIBIL score?
+A: It may be possible with some lenders or products, but the options may be limited and the terms may be less favourable. Approval depends on the full profile, including income, repayment history, existing obligations and lender policy. Be cautious of anyone promising guaranteed approval for a fee.
+PAGE: eligibility
+TAGS: low cibil, bad credit, poor score, loan with low score
+
+---
+
+Q: How can I improve my credit score?
+A: Pay EMIs and credit-card dues on time, keep credit-card utilisation under control, avoid unnecessary loan applications, review your credit report for errors and maintain a healthy mix of credit over time. Improvements are not instant; the bureau updates information as lenders report it. Sobhakrita cannot guarantee a particular score increase.
+PAGE: eligibility
+TAGS: improve cibil, improve credit score, credit repair, score increase
+
+---
+
+Q: What is a credit report?
+A: A credit report is a record of your borrowing and repayment history reported by lenders to credit information companies. It may include loan and credit-card accounts, balances, payment history, enquiries and account status. Review it periodically and raise disputes with the relevant credit bureau and lender if you find incorrect information.
+PAGE: eligibility
+TAGS: credit report, bureau report, loan history, credit file
+
+---
+
+Q: What is a hard enquiry on my credit report?
+A: A hard enquiry is generally recorded when a lender checks your credit report as part of a credit application. Several applications in a short period can affect how lenders view your credit profile and may affect your score. Ask which lender will access your report and why before authorising an application.
+PAGE: eligibility
+TAGS: hard enquiry, credit enquiry, cibil enquiry, bureau enquiry
+
+---
+
+Q: Does checking my own CIBIL score reduce it?
+A: Checking your own credit report through an authorised self-access facility is generally treated as a soft enquiry and does not reduce your score. A lender's credit check for a new application is generally a hard enquiry. Use official credit-bureau channels and avoid sharing your login credentials.
+PAGE: eligibility
+TAGS: self check cibil, soft enquiry, own credit score
+
+---
+
+Q: Can I get a loan if I already have EMIs?
+A: Possibly. Lenders consider your existing EMIs along with your income and other obligations to understand how much additional repayment you can manage. Share accurate details of your current loans and credit-card dues so the lender can assess your repayment capacity.
+PAGE: eligibility
+TAGS: existing emi, running loan, current obligations, debt
+
+---
+
+Q: What is FOIR?
+A: FOIR stands for Fixed Obligations to Income Ratio. It compares your regular fixed repayment obligations, such as existing EMIs, with your income. Lenders use it as one way to assess whether you can manage another EMI. The acceptable ratio differs by lender and applicant profile.
+PAGE: eligibility
+TAGS: foir, fixed obligations, income ratio, debt to income
+
+---
+
+Q: What is the age limit for a personal loan?
+A: Age limits vary by lender and product. Many lenders set a minimum age for applying and require the loan to be fully repaid before a specified maximum age. Please share your age and loan requirement so we can check which partner-lender criteria may apply; final confirmation comes from the lender.
+PAGE: eligibility
+TAGS: age limit, minimum age, maximum age, personal loan age
+
+---
+
+Q: Can a self-employed person get a personal loan?
+A: Yes, some lenders offer personal loans to self-employed applicants. They may review business continuity, income or ITR, bank statements, business proof and credit history. Requirements differ, so the lender will assess your documents and repayment capacity.
+PAGE: eligibility
+TAGS: self employed personal loan, business owner, professional
+
+---
+
+Q: Can I get a loan without salary slips?
+A: It depends on the lender and how you earn. Some lenders may accept alternative income evidence such as bank statements, ITR, employer records or other verifiable documents. Do not create or alter documents. We can help identify what legitimate proof may be accepted for your profile.
+PAGE: eligibility
+TAGS: no salary slip, alternative income proof, cash salary
+
+---
+
+Q: Can I get a loan without a CIBIL score?
+A: Some lenders may consider applicants with a limited or no credit history, but options can be restricted and additional checks may apply. A lender may assess income, employment, bank activity, co-applicant or collateral depending on the product. Approval is not guaranteed.
+PAGE: eligibility
+TAGS: no cibil, new to credit, no credit history
+
+---
+
+Q: Why was my loan rejected?
+A: A lender may decline an application because of its credit policy, income level, repayment obligations, credit history, employment or business profile, documentation gaps, property valuation or other risk checks. The lender's reason is the most reliable source. If you receive a decline, ask the lender for the reason before making repeated applications.
+PAGE: eligibility
+TAGS: rejection, rejected, declined, loan not approved, reason
+
+---
+
+Q: If one bank rejects my loan, can I try another lender?
+A: Possibly. Different lenders have different policies, but it is important to understand the reason for the first rejection before applying again. Multiple applications in a short period may create additional credit enquiries. We can review the broad reason and help identify whether another lender's criteria may be more suitable.
+PAGE: eligibility
+TAGS: another bank, rejection, apply again, different lender
+
+---
+
+Q: Does being a first-time borrower affect eligibility?
+A: It can. If you have never used credit, the lender may have limited repayment history to assess. Some lenders consider first-time borrowers using income, employment, bank activity and other checks. The available options depend on the product and lender.
+PAGE: eligibility
+TAGS: first time borrower, new borrower, no credit history
+
+---
+
+# ---------------------------------------------------------------------------
+# D. DOCUMENTS AND KYC
+# ---------------------------------------------------------------------------
+
+Q: What documents are generally required for a loan?
+A: Common documents include PAN, Aadhaar or other accepted identity and address proof, recent bank statements, income proof, employment or business proof and a photograph. The exact checklist depends on the loan type and lender. We will explain the documents needed for your specific application before you submit them.
+PAGE: documents
+TAGS: documents, paperwork, kyc, pan, aadhaar, bank statement, income proof
+
+---
+
+Q: What documents are required for a salaried applicant?
+A: A salaried applicant may be asked for PAN, Aadhaar, address proof, the latest three months' salary slips, around six months' bank statements, employment details and a photograph. Some lenders may ask for additional documents. Please wait for the lender-specific checklist before sharing anything unnecessary.
+PAGE: documents
+TAGS: salaried, salary slip, employment, payslip, bank statement
+
+---
+
+Q: What documents are required for a self-employed applicant?
+A: A self-employed applicant may be asked for PAN, Aadhaar, address proof, business proof, around two years of ITR and computation, and six to twelve months of bank statements. GST returns, financial statements or other business records may also be required depending on the lender and product.
+PAGE: documents
+TAGS: self employed, itr, business proof, gst, financial statements
+
+---
+
+Q: Why do you need my PAN card?
+A: PAN is commonly used for identity, tax and financial verification during a loan application. Share it only through the lender's or authorised service provider's approved channel. Never send PAN details along with OTPs, passwords or PINs.
+PAGE: documents
+TAGS: pan, pan card, tax identification, kyc
+
+---
+
+Q: Why is Aadhaar required?
+A: A lender may request Aadhaar or another officially accepted document for identity or address verification, subject to applicable rules and the lender's process. Share documents only through an approved secure channel and do not disclose an Aadhaar OTP to anyone.
+PAGE: documents
+TAGS: aadhaar, aadhar, identity proof, address proof, kyc
+
+---
+
+Q: Why are bank statements required?
+A: Bank statements help a lender understand income credits, business cash flow, existing EMIs, regular expenses and repayment capacity. The lender will specify the period and format required. Do not edit or alter a bank statement.
+PAGE: documents
+TAGS: bank statement, account statement, income credits, cash flow
+
+---
+
+Q: Why do lenders ask for ITR?
+A: Income Tax Returns can help lenders verify declared income and assess the financial position of a salaried or self-employed applicant. The number of years and supporting schedules required depend on the product and lender.
+PAGE: documents
+TAGS: itr, income tax return, tax return, computation
+
+---
+
+Q: What is KYC?
+A: KYC means Know Your Customer. It is the process a regulated financial institution uses to verify a customer's identity and, where required, address and other details. KYC helps prevent impersonation, fraud and misuse of financial services.
+PAGE: documents
+TAGS: kyc meaning, know your customer, verification, identity
+
+---
+
+Q: Can I submit documents through WhatsApp?
+A: Please use only the document-sharing channel specifically confirmed by our team or the lender. Before sending sensitive documents, verify that the number belongs to an authorised representative. Never share OTPs, PINs, passwords or card security codes.
+PAGE: documents
+TAGS: whatsapp documents, send documents, upload, security
+
+---
+
+Q: Do I need to submit original documents?
+A: Most initial loan assessments use copies or digital documents, but a lender may need to inspect originals for verification at a later stage. Do not hand over original documents unless the lender has clearly explained why they are required and provided an acknowledgement.
+PAGE: documents
+TAGS: original documents, photocopy, document verification
+
+---
+
+Q: What if I do not have one of the required documents?
+A: Tell us which document is unavailable and why. Depending on the lender and product, an alternative document may be accepted. We cannot promise an exception, but we can help you check the lender's approved alternatives.
+PAGE: documents
+TAGS: missing documents, alternative documents, paperwork problem
+
+---
+
+# ---------------------------------------------------------------------------
+# E. APPLICATION JOURNEY, SANCTION AND DISBURSEMENT
+# ---------------------------------------------------------------------------
+
+Q: How do I apply for a loan through Sobhakrita?
+A: You can submit your details at https://www.sobhakritafintech.com/apply.html or book a free consultation at https://www.sobhakritafintech.com/book-a-call.html. Tell us the loan purpose and approximate amount. Our team can then explain the likely documents and help identify suitable lender options.
 PAGE: apply
-TAGS: lender match, loan comparison, suitable lender
+TAGS: apply, application, online application, start loan, how to apply
+
 ---
 
-Q: Is Sobhakrita regulated?
-A: Sobhakrita is a loan facilitator offering services to customers in connection with partner banks and RBI-regulated NBFCs. The final credit relationship is between the borrower and the lending institution.
-PAGE: about
-TAGS: regulated, rbi, lender, compliance
+Q: What happens after I submit my enquiry?
+A: Our team reviews the requirement you shared and may contact you to clarify the loan purpose, amount and basic profile. If you wish to proceed, we explain the relevant documents and possible lender options. A lender then conducts its own checks and decides whether to sanction the loan.
+PAGE: apply
+TAGS: after enquiry, next step, submitted, what happens next
+
 ---
 
-Q: Do you have branches outside Chittoor?
-A: Our primary office is in Chittoor, but we support customers across multiple locations and can coordinate digital or phone-based support depending on the case.
-PAGE: contact
-TAGS: branches, remote support, pan india
+Q: What are the steps in the loan process?
+A: The usual journey is: (1) share your requirement, (2) understand the likely eligibility and documents, (3) identify suitable lender options, (4) submit the application and required documents, (5) complete the lender's verification, (6) review the sanction letter and Key Fact Statement, and (7) complete the lender's formalities before disbursement if approved. The exact sequence may vary by product.
+PAGE: process
+TAGS: process, steps, loan journey, application stages
+
 ---
 
-Q: What is the Key Fact Statement?
-A: The Key Fact Statement is a lender document that discloses the loan terms, charges, fees, tenure, interest rate, and important disclosures before final documentation. We advise borrowers to read it carefully.
+Q: How long does loan approval take?
+A: The timeline depends on the loan type, lender, completeness of documents and verification requirements. Personal and business loan decisions may receive an indicative update in 48–72 working hours in some cases. Home and mortgage loans can take longer because property and legal checks may be required. These are not guaranteed timelines.
+PAGE: process
+TAGS: approval time, turnaround time, how many days, status
+
+---
+
+Q: How long does loan disbursement take after approval?
+A: Disbursement timing depends on the lender's final checks, signed documents, mandate setup, conditions in the sanction letter and the product. Ask the lender or our team for the current status of your specific case. Approval does not always mean funds will be credited immediately.
+PAGE: process
+TAGS: disbursement time, when money credited, fund release
+
+---
+
+Q: What is a loan sanction letter?
+A: A sanction letter is a document issued by the lender when it approves a loan in principle or subject to stated conditions. It usually records key terms such as the sanctioned amount, interest rate, tenure, repayment conditions and any conditions to be completed. Read it carefully and clarify anything you do not understand before accepting.
+PAGE: process
+TAGS: sanction letter, loan sanction, approval letter
+
+---
+
+Q: Is a sanction letter the same as disbursement?
+A: No. A sanction letter communicates the lender's approval and terms, which may be subject to conditions. Disbursement is the actual release of loan funds. The lender may require additional documents, signatures, verification or other formalities before releasing the money.
+PAGE: process
+TAGS: sanction vs disbursement, approved but not credited
+
+---
+
+Q: What is a Key Fact Statement (KFS)?
+A: A Key Fact Statement is a standardised summary of important loan information provided by the lender. It can include the annual percentage rate, interest rate, repayment schedule, fees and other key terms. Read the KFS before accepting the loan and compare the total cost, not just the EMI.
 PAGE: fees
-TAGS: key fact statement, kfs, sanction, loan terms
+TAGS: kfs, key fact statement, loan disclosure, charges
+
 ---
 
-Q: Can you help with loan comparison?
-A: Yes. We help compare suitable lenders and loan options based on the amount, use case, tenure, income, documents and the risk profile of the application.
-PAGE: loans
-TAGS: compare, compare lenders, options, best fit
+Q: What should I check before accepting a loan?
+A: Check the lender's name, sanctioned amount, interest rate and whether it is fixed or floating, APR, EMI, tenure, total repayment, processing and other fees, late-payment charges, prepayment or foreclosure rules, security or collateral conditions and the repayment date. Compare the KFS and loan agreement, and ask for clarification before signing.
+PAGE: process
+TAGS: before signing, loan checklist, terms, agreement, compare
+
 ---
+
+Q: Can I cancel my loan after sanction?
+A: Cancellation rules depend on the lender, the stage of the application and whether funds have been disbursed. Contact the lender immediately and request the cancellation process and any applicable charges in writing. Do not assume that a sanctioned loan is automatically cancelled if you simply stop responding.
+PAGE: process
+TAGS: cancel loan, cancellation, after sanction, withdraw application
+
+---
+
+Q: My loan is approved but money is not credited. What should I do?
+A: Please check whether the lender has requested any pending documents, signatures, mandate registration or other conditions. The lender can confirm the exact disbursement status and expected timeline. If you share your application reference with our team through an approved channel, we can help coordinate an update.
+PAGE: process
+TAGS: approved not credited, pending disbursement, delay, money not received
+
+---
+
+Q: Can I track my loan application?
+A: Application tracking depends on the lender's system and the reference number provided. Keep your application or reference number available and contact our team or the lender through the verified contact channel for an update. Do not post your full identity or account details in a public chat.
+PAGE: apply
+TAGS: track application, loan status, application number, status update
+
+---
+
+Q: Will applying through Sobhakrita affect my CIBIL score?
+A: The effect depends on whether and when a lender makes a credit-bureau enquiry. A formal credit check for a loan application is generally recorded as a hard enquiry. Before proceeding, ask which lender will access your credit report and ensure you understand and authorise the process.
+PAGE: eligibility
+TAGS: cibil impact, credit enquiry, application effect
+
+---
+
+# ---------------------------------------------------------------------------
+# F. EMI, INTEREST, REPAYMENT AND LOAN COST
+# ---------------------------------------------------------------------------
+
+Q: What is EMI?
+A: EMI stands for Equated Monthly Instalment. It is the amount a borrower pays to the lender at regular monthly intervals to repay a loan. An EMI generally includes a principal component and an interest component. The amount depends mainly on the loan amount, interest rate and repayment tenure.
+PAGE: emi-calculator
+TAGS: emi, equated monthly instalment, monthly payment, meaning
+
+---
+
+Q: How is EMI calculated?
+A: For a standard reducing-balance loan, EMI is calculated using the loan principal, monthly interest rate and total number of monthly instalments. A longer tenure usually lowers the monthly EMI but can increase the total interest paid. The lender's repayment schedule is the final reference for your loan.
+PAGE: emi-calculator
+TAGS: emi calculation, formula, how calculated, monthly instalment
+
+---
+
+Q: What is the principal amount?
+A: The principal is the amount you borrow from the lender, excluding interest. As you pay your EMIs, part of each payment generally reduces the outstanding principal and the remaining part covers interest and any other amounts due under the loan terms.
+PAGE: emi-calculator
+TAGS: principal, loan amount, outstanding principal
+
+---
+
+Q: What is interest on a loan?
+A: Interest is the cost charged by the lender for allowing you to use the borrowed money. It is usually expressed as a percentage rate. The actual cost depends on the rate, calculation method, outstanding balance, tenure and applicable charges.
+PAGE: loans
+TAGS: interest, interest meaning, cost of borrowing
+
+---
+
+Q: What is the difference between a fixed and floating interest rate?
+A: A fixed rate generally remains unchanged for the agreed fixed-rate period, while a floating rate can change based on the benchmark or reset mechanism stated in the loan agreement. A rate change may affect the EMI, tenure or both. Check the lender's agreement for the exact reset rules.
+PAGE: loans
+TAGS: fixed rate, floating rate, variable interest
+
+---
+
+Q: What is reducing balance interest?
+A: Under a reducing-balance method, interest is calculated on the outstanding principal rather than the original loan amount throughout the tenure. As principal is repaid, the interest portion generally reduces over time. The lender's KFS and agreement should explain the method used.
+PAGE: emi-calculator
+TAGS: reducing balance, diminishing balance, interest method
+
+---
+
+Q: What is flat interest?
+A: Under a flat-rate method, interest is calculated on the original principal for the agreed period rather than on the reducing outstanding balance. The quoted flat rate can therefore look lower than a reducing-balance rate while producing a different total cost. Compare the APR and total repayment before deciding.
+PAGE: emi-calculator
+TAGS: flat rate, flat interest, flat vs reducing
+
+---
+
+Q: When will my EMI start?
+A: Your first EMI date is set by the lender and is mentioned in the repayment schedule or loan agreement. It commonly depends on the disbursement date, the lender's billing cycle and the product. Please check the first due date in your lender documents or confirm it with the lender; do not assume it starts exactly one month after approval.
+PAGE: emi-calculator
+TAGS: emi start date, first emi, when emi begins, after disbursement, repayment start
+
+---
+
+Q: Does EMI start from the date of loan approval?
+A: Usually, EMI commencement is linked to disbursement and the repayment schedule, not simply the approval date. The exact date is determined by the lender and stated in your loan documents. Check the first instalment due date before planning your payments.
+PAGE: emi-calculator
+TAGS: approval date, emi start, loan sanctioned
+
+---
+
+Q: When will my first EMI be deducted?
+A: The first deduction date should be shown in the repayment schedule, loan agreement or mandate confirmation from your lender. It can vary with the disbursement date and the lender's billing cycle. If the date is unclear, contact the lender before the due date so you can keep sufficient funds available.
+PAGE: emi-calculator
+TAGS: first emi deduction, auto debit date, due date
+
+---
+
+Q: What happens if my EMI date falls on a Sunday or bank holiday?
+A: The handling of a due date on a non-working day depends on the lender and the payment method. Some lenders may process it on the next working day, while others may expect funds to be available earlier. Follow the due-date instructions provided by your lender rather than assuming an automatic extension.
+PAGE: emi-calculator
+TAGS: sunday emi, holiday, bank holiday, due date
+
+---
+
+Q: What is an EMI repayment schedule?
+A: An EMI repayment schedule shows each instalment's due date, principal component, interest component and the remaining loan balance over time. It helps you understand how the loan is expected to be repaid. Ask the lender for the latest schedule if your rate, tenure or loan balance changes.
+PAGE: emi-calculator
+TAGS: amortisation, repayment schedule, loan schedule, outstanding balance
+
+---
+
+Q: What is loan tenure?
+A: Loan tenure is the period over which you agree to repay the loan. A longer tenure usually reduces the monthly EMI but may increase total interest. A shorter tenure usually means a higher EMI but can reduce the total interest cost, subject to the loan terms.
+PAGE: emi-calculator
+TAGS: tenure, loan period, repayment period, years
+
+---
+
+Q: Should I choose a shorter or longer tenure?
+A: Choose a tenure that keeps the EMI comfortably manageable while considering the total interest you will pay. A shorter tenure can reduce total interest but increases the monthly commitment. A longer tenure can ease monthly cash flow but may cost more overall. Compare both scenarios and keep room for essential expenses and emergencies.
+PAGE: emi-calculator
+TAGS: tenure choice, short tenure, long tenure, lower emi
+
+---
+
+Q: What is APR?
+A: APR stands for Annual Percentage Rate. It is intended to show the annualised cost of borrowing, taking account of the interest rate and certain applicable charges as defined by the relevant rules. Compare APR and total repayment along with the EMI when evaluating loan offers.
+PAGE: fees
+TAGS: apr, annual percentage rate, actual loan cost
+
+---
+
+Q: What is a processing fee?
+A: A processing fee is a charge that a lender may collect for processing a loan application. The amount and tax treatment depend on the lender and product. It should be disclosed before you accept the loan, including in the relevant KFS or sanction documents.
+PAGE: fees
+TAGS: processing fee, loan charges, bank fee
+
+---
+
+Q: What is the difference between EMI and interest?
+A: Interest is the cost of borrowing. EMI is the regular instalment you pay, which generally includes both principal repayment and interest. The interest portion and principal portion of an EMI can change over the repayment period.
+PAGE: emi-calculator
+TAGS: emi vs interest, principal, instalment
+
+---
+
+Q: What happens if I miss an EMI?
+A: A missed EMI may lead to late-payment or penal charges under the lender's terms, follow-up by the lender and negative reporting to credit bureaus. If you expect difficulty paying, contact the lender as early as possible and ask about the available options. Do not ignore reminders.
+PAGE: fees
+TAGS: missed emi, late payment, default, bounce
+
+---
+
+Q: What is an EMI bounce charge?
+A: An EMI bounce charge may be applied when an automatic debit or payment instruction fails, for example because of insufficient funds or an account issue. The lender's fee schedule explains the applicable charges. Your bank may also have separate charges, so check both institutions' terms.
+PAGE: fees
+TAGS: bounce charge, ecs bounce, nach return, failed debit
+
+---
+
+Q: What happens if I pay my EMI late?
+A: Late payment may result in charges, additional interest or negative credit reporting, depending on the lender's policy and applicable rules. Pay through the lender's authorised channel and keep the receipt. If you cannot pay on time, contact the lender before the due date.
+PAGE: fees
+TAGS: late emi, delayed payment, overdue, penalty
+
+---
+
+Q: Can I pay more than my EMI?
+A: You may be able to make a part-payment or prepayment, depending on the loan type and lender's rules. Ask the lender how the extra amount will be adjusted, whether a charge applies and whether it will reduce the EMI or shorten the tenure. Obtain confirmation of the revised schedule.
+PAGE: fees
+TAGS: extra payment, part payment, pay more, principal payment
+
+---
+
+Q: What is part-prepayment?
+A: Part-prepayment means paying an additional amount towards the outstanding principal before the scheduled end of the loan. It may reduce the outstanding balance, future interest or tenure, depending on the lender's rules and how the payment is applied.
+PAGE: fees
+TAGS: part prepayment, partial payment, prepay principal
+
+---
+
+Q: What is foreclosure of a loan?
+A: Foreclosure means repaying the entire outstanding loan before the scheduled end of the tenure. The lender will calculate the amount due and explain any applicable charges or conditions. Request a formal foreclosure statement before making the payment.
+PAGE: fees
+TAGS: foreclosure, close loan early, full repayment
+
+---
+
+Q: Can I close my loan early?
+A: Early closure may be possible, but the rules and charges depend on the lender, product, loan agreement and applicable regulations. Ask the lender for a written foreclosure or prepayment quote and confirm how the closure will be reported to the credit bureaus.
+PAGE: fees
+TAGS: early closure, close loan, prepayment, foreclosure
+
+---
+
+Q: What is an amortisation schedule?
+A: An amortisation schedule is a table showing how each instalment is split between principal and interest and how the outstanding balance reduces over time. It helps you understand the cost and progress of your loan.
+PAGE: emi-calculator
+TAGS: amortisation schedule, principal interest split, balance
+
+---
+
+Q: Can my EMI change during the loan?
+A: It can, particularly for a floating-rate loan or if the lender changes the tenure, rate or other terms under the agreement. The lender should communicate applicable changes. Check the revised repayment schedule and ask how the change affects total interest.
+PAGE: emi-calculator
+TAGS: emi increase, emi decrease, rate change, floating rate
+
+---
+
+Q: Does a lower EMI always mean a cheaper loan?
+A: No. A lower EMI may simply result from a longer tenure, which can increase the total interest paid. Compare the interest rate, APR, tenure, fees and total repayment rather than choosing based only on the monthly instalment.
+PAGE: emi-calculator
+TAGS: low emi, cheaper loan, total interest, compare
+
+---
+
+# ---------------------------------------------------------------------------
+# G. NACH, ECS, AUTO-DEBIT AND BANKING TERMS
+# ---------------------------------------------------------------------------
+
+Q: What is NACH?
+A: NACH stands for National Automated Clearing House. It is an electronic system operated by NPCI that supports recurring and bulk payments between banks. In lending, a borrower may authorise a NACH mandate so the lender can collect scheduled EMIs from the specified bank account, subject to the mandate and bank processing.
+PAGE: emi-calculator
+TAGS: nach, nache, nach meaning, national automated clearing house, auto debit, emi debit, npci
+
+---
+
+Q: What is a NACH mandate?
+A: A NACH mandate is an authorisation you give for recurring debits from a specified bank account, commonly used for EMI collection. It records details such as the account, mandate reference and permitted debit conditions. Read the mandate carefully and verify the lender and amount before approving it.
+PAGE: emi-calculator
+TAGS: nach mandate, e mandate, auto debit authorisation, repayment mandate
+
+---
+
+Q: Why is NACH required for my loan?
+A: A lender may use NACH to collect your monthly EMI automatically on the scheduled due date. It helps make recurring repayments easier, but you must keep sufficient funds in the linked account and monitor the debit. The exact repayment method is set by the lender.
+PAGE: emi-calculator
+TAGS: why nach, loan nach, emi auto debit
+
+---
+
+Q: How do I register a NACH mandate?
+A: The lender will explain its approved mandate registration process. Depending on the lender, it may be completed electronically or through a physical mandate. Follow only the lender's official instructions, verify the account and mandate details, and never share your OTP or banking password with anyone.
+PAGE: emi-calculator
+TAGS: nach registration, mandate setup, e nach, register
+
+---
+
+Q: What happens if my NACH debit fails?
+A: If a NACH debit fails, the EMI may remain unpaid and the lender may apply charges or report the delay according to the loan terms. Check the reason for failure, ensure the account has sufficient funds and contact the lender promptly to arrange payment through an authorised method.
+PAGE: emi-calculator
+TAGS: nach failed, nach bounce, debit failed, auto debit failure
+
+---
+
+Q: Can I change the bank account linked to NACH?
+A: It may be possible, but the lender must approve and register a replacement mandate. Contact the lender before the next EMI date and follow its official process. Do not assume that changing your salary account or moving money will automatically update the repayment mandate.
+PAGE: emi-calculator
+TAGS: change nach account, change bank account, mandate update
+
+---
+
+Q: Can I cancel my NACH mandate?
+A: A mandate may be cancellable through the lender and bank process, but cancelling the mandate does not cancel your loan or EMI obligation. Speak to the lender and arrange an approved alternative repayment method before cancelling anything, so you do not miss an instalment.
+PAGE: emi-calculator
+TAGS: cancel nach, stop auto debit, revoke mandate
+
+---
+
+Q: What is the difference between NACH and ECS?
+A: ECS is an older electronic clearing arrangement used for recurring payments. NACH is a centralised system introduced by NPCI to streamline recurring and bulk payments. Customers may still hear both terms, but the actual mandate and process used depend on the lender and bank.
+PAGE: emi-calculator
+TAGS: nach vs ecs, ecs, electronic clearing service
+
+---
+
+Q: What is e-NACH?
+A: e-NACH is an electronic way to create and authenticate a NACH mandate. Depending on the bank and lender, authentication may use an approved digital process. Always check the mandate details on the official screen before authorising it.
+PAGE: emi-calculator
+TAGS: enach, e nach, digital mandate, online nach
+
+---
+
+Q: What is an ACH debit?
+A: ACH is a general term for an automated clearing-house payment system. In India, customers may see ACH-related wording in bank statements for recurring electronic debits. If you do not recognise a debit, check the mandate and contact your bank and lender using official contact details.
+PAGE: emi-calculator
+TAGS: ach, ach debit, automated clearing house
+
+---
+
+Q: What should I do if I do not recognise an EMI debit?
+A: Check the narration, mandate reference and loan account details in your bank statement. If you still do not recognise it, contact your bank and the lender immediately through their official channels and raise a dispute. Do not share OTPs or PINs with anyone offering to reverse the debit.
+PAGE: contact
+TAGS: unknown debit, unauthorised debit, emi deduction, dispute
+
+---
+
+# ---------------------------------------------------------------------------
+# H. UDYAM, MSME AND BUSINESS REGISTRATION
+# ---------------------------------------------------------------------------
+
+Q: What is an Udyam certificate?
+A: The Udyam Registration Certificate is the government-issued recognition of a business as a Micro, Small or Medium Enterprise (MSME), when it meets the applicable classification criteria. It is generated through the official Udyam Registration portal. It can help establish MSME status, but it does not itself guarantee a loan or subsidy.
+PAGE: industrial-loan
+TAGS: udyam, udayam, udyam certificate, msme certificate, registration
+
+---
+
+Q: How can I get an Udyam certificate?
+A: Udyam registration is completed online through the Government of India's official portal: https://udyamregistration.gov.in. Use the official website and enter accurate business details. Be cautious of unofficial websites or agents that charge for a registration that may be available free through the government portal.
+PAGE: industrial-loan
+TAGS: udyam registration, apply udyam, official portal, msme registration
+
+---
+
+Q: Is Udyam registration free?
+A: The official Udyam Registration process on the Government of India's portal is free. Avoid look-alike websites that may charge unnecessary service fees. If you need help, use the official portal and read its instructions carefully.
+PAGE: industrial-loan
+TAGS: udyam free, registration fee, free msme certificate
+
+---
+
+Q: Is an Udyam certificate mandatory for a business loan?
+A: Not for every business loan. Some lenders or schemes may ask for Udyam registration or use it as supporting business information, while others accept different business proofs. The lender's product checklist determines what is required.
+PAGE: industrial-loan
+TAGS: udyam mandatory, business loan documents, msme eligibility
+
+---
+
+Q: Does an Udyam certificate guarantee an MSME loan?
+A: No. Udyam registration identifies an eligible enterprise as an MSME; it is not a loan approval. Lenders still assess the business, income, bank activity, credit history, repayment capacity and their own policies.
+PAGE: industrial-loan
+TAGS: udyam loan guarantee, loan approval, msme certificate
+
+---
+
+Q: What are the MSME classification categories?
+A: MSMEs are classified as micro, small or medium enterprises using investment and turnover criteria notified by the Government of India. The applicable limits can change, so customers should verify the current classification on the official Udyam portal or government notification before relying on a threshold.
+PAGE: industrial-loan
+TAGS: micro enterprise, small enterprise, medium enterprise, classification
+
+---
+
+Q: What is GST?
+A: GST stands for Goods and Services Tax. It is an indirect tax system in India that applies to the supply of goods and services under the relevant GST laws. For a business-loan application, GST registration or returns may be requested by a lender as evidence of business activity or turnover, depending on the case.
+PAGE: business-loan
+TAGS: gst, goods and services tax, gst returns, business
+
+---
+
+Q: Is GST registration compulsory for every business?
+A: GST registration requirements depend on the type of business, turnover, nature of supply, location and applicable exemptions or special rules. Not every business has the same requirement. For a specific tax position, check the GST portal or consult a qualified tax professional.
+PAGE: business-loan
+TAGS: gst compulsory, gst registration, turnover threshold
+
+---
+
+Q: What is an ITR?
+A: ITR stands for Income Tax Return. It is the return filed with the Income Tax Department to report income and relevant tax details for a financial year. Lenders may request ITR acknowledgements and computations to understand an applicant's income, particularly for self-employed or business borrowers.
+PAGE: documents
+TAGS: itr meaning, income tax return, tax filing
+
+---
+
+Q: What is a balance sheet?
+A: A balance sheet is a financial statement showing a business's assets, liabilities and owners' equity as of a particular date. Lenders may review it, along with profit-and-loss statements and bank statements, to understand the financial position of a business.
+PAGE: business-loan
+TAGS: balance sheet, financial statement, assets, liabilities
+
+---
+
+Q: What is a profit and loss statement?
+A: A profit and loss statement summarises a business's income, expenses and profit or loss over a period. A lender may use it to assess business performance and repayment capacity, along with other financial records.
+PAGE: business-loan
+TAGS: p and l, profit loss, income statement, business accounts
+
+---
+
+Q: What is a cash credit limit?
+A: Cash Credit (CC) is a working-capital facility that allows an eligible business to draw funds up to an approved limit, usually against specified security such as stock or receivables. Interest is generally charged on the amount used, subject to the facility terms. The lender sets the drawing and renewal conditions.
+PAGE: business-loan
+TAGS: cash credit, cc limit, working capital facility
+
+---
+
+Q: What is an overdraft?
+A: An overdraft is a facility that allows an account holder to withdraw or use more money than the available account balance, up to an approved limit. Interest and charges depend on the amount used and the bank's terms. It is different from a standard term loan with a fixed EMI.
+PAGE: business-loan
+TAGS: overdraft, od, bank limit, working capital
+
+---
+
+# ---------------------------------------------------------------------------
+# I. FEES, CHARGES, TRANSPARENCY AND CUSTOMER PROTECTION
+# ---------------------------------------------------------------------------
+
+Q: Does Sobhakrita charge an application fee?
+A: Sobhakrita does not charge an application fee in its own name. A service fee, if applicable, is discussed separately and is payable only after disbursement with your written consent. The lender may have its own disclosed charges, which should be reviewed before accepting the loan.
+PAGE: fees
+TAGS: application fee, upfront fee, charges, advance
+
+---
+
+Q: Do I need to pay money to get my loan approved?
+A: Be cautious of anyone asking for an advance payment in exchange for guaranteed approval or faster disbursement. Sobhakrita does not charge an upfront application, consultation, file or security-deposit fee in its own name. Any legitimate lender charge should be disclosed through the lender's official process and documents.
+PAGE: fees
+TAGS: advance payment, pay before approval, upfront money, fraud
+
+---
+
+Q: Are there hidden charges?
+A: Sobhakrita does not intend to charge hidden fees in its own name. A lender may apply processing, legal, technical, stamp-duty, insurance or other permitted charges depending on the product. Review the KFS and sanction documents, and ask for a written explanation of every charge before proceeding.
+PAGE: fees
+TAGS: hidden charges, extra charges, transparency, fee
+
+---
+
+Q: What fees can a lender charge?
+A: Depending on the loan and lender, charges may include processing fees, documentation or legal fees, property valuation or technical verification, stamp duty, insurance, CERSAI-related charges, taxes and applicable late-payment or bounce charges. Not every charge applies to every loan. The lender should disclose the applicable charges before you accept.
+PAGE: fees
+TAGS: lender fees, processing, legal, technical, stamp duty, insurance, cersai
+
+---
+
+Q: What is CERSAI?
+A: CERSAI stands for the Central Registry of Securitisation Asset Reconstruction and Security Interest of India. It maintains a central registry of security interests and related records under applicable law. A lender may include a CERSAI-related charge in certain secured-loan transactions. Ask the lender to explain any amount shown in your KFS.
+PAGE: fees
+TAGS: cersai, central registry, mortgage charge, security interest
+
+---
+
+Q: What is a foreclosure charge?
+A: A foreclosure charge is an amount a lender may apply when a borrower closes a loan before the agreed tenure, where permitted by the applicable rules and loan terms. The exact treatment depends on the loan type, lender and current regulations. Request a written foreclosure quote from the lender.
+PAGE: fees
+TAGS: foreclosure charge, early closure fee, prepayment charge
+
+---
+
+Q: What is penal charge?
+A: A penal charge is a charge a lender may impose for specified non-compliance with loan terms, such as delayed payment, subject to applicable rules and disclosure. It should be explained in the lender's documents. Ask the lender to clarify the reason and calculation if you see a charge you do not understand.
+PAGE: fees
+TAGS: penal charge, penalty, overdue charge, late fee
+
+---
+
+Q: Can Sobhakrita change the interest rate offered by a bank?
+A: No. The lender sets the interest rate based on its policy and your profile. Sobhakrita can help you understand and compare available offers, but we cannot change or override a lender's pricing decision.
+PAGE: fees
+TAGS: change rate, negotiate interest, lender rate
+
+---
+
+Q: How do I compare two loan offers?
+A: Compare the lender, loan amount, interest type and rate, APR, EMI, tenure, total repayment, processing and other fees, prepayment rules and any collateral requirement. A lower EMI is not necessarily a lower-cost loan. Read both KFS documents and compare the total cost over the period you expect to keep the loan.
+PAGE: fees
+TAGS: compare offers, two loans, interest comparison, total cost
+
+---
+
+# ---------------------------------------------------------------------------
+# J. CUSTOMER SUPPORT, EXISTING LOAN ISSUES AND GRIEVANCES
+# ---------------------------------------------------------------------------
+
+Q: I already have a loan. Can Sobhakrita help me?
+A: We may be able to explain general loan terms or discuss a new financing requirement. For account-specific matters such as EMI debit, outstanding balance, statement, NOC, repayment correction or closure, the lender servicing your existing loan is the authoritative contact. We can help direct you to the appropriate channel where possible.
+PAGE: contact
+TAGS: existing loan, current customer, servicing, support
+
+---
+
+Q: How can I get my loan statement?
+A: Your loan statement is issued by the bank or NBFC that manages your loan. You can usually request it through the lender's official app, website, branch or customer-care channel. Sobhakrita does not maintain the lender's live loan account ledger.
+PAGE: contact
+TAGS: loan statement, account statement, repayment statement
+
+---
+
+Q: How can I check my outstanding loan balance?
+A: The lender's official app, portal, statement or customer-care team can provide your current outstanding balance. The figure may change after payments, interest postings or charges. Use the latest lender-issued statement for an accurate amount.
+PAGE: contact
+TAGS: outstanding balance, loan balance, principal outstanding
+
+---
+
+Q: How do I get a No Objection Certificate (NOC) after closing my loan?
+A: After the lender confirms that all dues are cleared and the account is closed, request the NOC or loan-closure letter from the lender. For a secured loan, also ask about release of original property documents and removal of the lender's charge or lien, where applicable.
+PAGE: contact
+TAGS: noc, no objection certificate, loan closure letter, release documents
+
+---
+
+Q: My EMI was deducted twice. What should I do?
+A: Contact your lender and bank promptly with the dates, amounts and transaction references. Ask the lender to verify whether both debits were received and explain the reversal or adjustment process. Keep the bank statement and complaint reference. Do not share OTPs or PINs with anyone.
+PAGE: contact
+TAGS: double emi, double debit, duplicate deduction, refund
+
+---
+
+Q: My EMI was deducted but the loan account still shows overdue. What should I do?
+A: Keep the debit confirmation and bank statement, then contact the lender through its official channel and request reconciliation of the payment. Processing or posting may take time, but only the lender can confirm the account status and correct its records.
+PAGE: contact
+TAGS: emi paid overdue, payment not updated, receipt, reconciliation
+
+---
+
+Q: I am unable to pay my EMI this month. What should I do?
+A: Please contact your lender as early as possible, explain the situation and ask what options are available under your loan agreement. Do not ignore the due date or rely on an informal promise that a payment delay will be waived. Any restructuring, deferment or settlement must be approved by the lender in writing.
+PAGE: contact
+TAGS: cannot pay emi, financial difficulty, missed payment, repayment help
+
+---
+
+Q: Can I request a lower EMI?
+A: You can ask the lender whether a tenure extension, restructuring or another permitted option is available. A lower EMI may increase total interest or change other loan terms, and approval is not guaranteed. Request a written comparison before agreeing to a change.
+PAGE: contact
+TAGS: reduce emi, lower emi, restructure, tenure extension
+
+---
+
+Q: How do I raise a complaint about Sobhakrita?
+A: Please email your concern to services@sobhakrita.com or contact us on +91 88866 33119 or +91 88866 33118. Include a brief description and any relevant reference number, but do not send passwords, OTPs or PINs. Our team will review the concern and route it to the appropriate person.
+PAGE: contact
+TAGS: complaint, grievance, issue, escalation, customer support
+
+---
+
+Q: How do I complain about a bank or NBFC?
+A: First raise the complaint with the lender through its official grievance channel and keep the complaint reference. If the issue is not resolved, follow the lender's published escalation process and the applicable RBI complaint mechanism, where eligible. Sobhakrita can help clarify its facilitation role, but the lender is responsible for its loan account and service decisions.
+PAGE: contact
+TAGS: lender complaint, bank grievance, nbfc complaint, rbi complaint
+
+---
+
+# ---------------------------------------------------------------------------
+# K. PRIVACY, DIGITAL SAFETY AND FRAUD PREVENTION
+# ---------------------------------------------------------------------------
+
+Q: Is my personal information safe?
+A: We request personal and financial information only when it is needed to understand or process an enquiry or application. Information should be shared only through the channels confirmed by our team or the lender and handled according to applicable privacy and regulatory requirements. If you are unsure whether a request is genuine, contact us using the phone number or email published on our website.
+PAGE: privacy-policy
+TAGS: privacy, data security, personal information, confidentiality
+
+---
+
+Q: Should I share my OTP with Sobhakrita?
+A: No. Never share an OTP with anyone, including someone claiming to be from Sobhakrita, a bank or an NBFC. Enter an OTP only on the official website or app when you have initiated and understand the transaction. Our team will never need your UPI PIN, card PIN or banking password.
+PAGE: privacy-policy
+TAGS: otp, one time password, security, fraud, scam
+
+---
+
+Q: Should I pay a person who promises guaranteed loan approval?
+A: No one should ask you to trust an unofficial promise of guaranteed approval. Sobhakrita does not charge an upfront application, consultation, file or security-deposit fee in its own name. Verify any payment request directly with the lender through its official website or customer-care number before paying.
+PAGE: privacy-policy
+TAGS: fraud, scam, guaranteed loan, advance fee, fake agent
+
+---
+
+Q: How can I identify a fake loan agent?
+A: Be cautious if someone promises guaranteed approval, pressures you to pay immediately, asks for an OTP or PIN, uses an unofficial email address or refuses to provide lender details and written charges. Verify the person's identity using Sobhakrita's published contact details and confirm all lender communications independently.
+PAGE: privacy-policy
+TAGS: fake agent, fraud prevention, loan scam, impersonation
+
+---
+
+Q: What should I do if someone misuses my documents?
+A: Contact the relevant bank or financial institution and report the suspected misuse. Consider reporting the incident through the appropriate official cybercrime or law-enforcement channel and monitor your bank and credit accounts. Do not share additional OTPs or credentials with anyone offering to fix the issue.
+PAGE: privacy-policy
+TAGS: document misuse, identity theft, cyber fraud, report fraud
+
+---
+
+# ---------------------------------------------------------------------------
+# L. GENERAL FINANCIAL TERMS CUSTOMERS MAY ASK ABOUT
+# ---------------------------------------------------------------------------
+
+Q: What is a loan?
+A: A loan is money borrowed from a lender that must be repaid according to agreed terms. The borrower usually repays the principal along with interest and any applicable charges over a specified period. Before accepting a loan, understand the EMI, interest rate, tenure, fees and consequences of missed payments.
+PAGE: general-finance
+TAGS: loan meaning, borrowing, what is a loan
+
+---
+
+Q: What is the difference between a loan and a credit card?
+A: A term loan usually provides a fixed amount that is repaid over an agreed schedule. A credit card provides a revolving credit limit that can be reused as you repay, subject to the card terms. Interest, fees, minimum payments and repayment rules differ, so compare the total cost and avoid paying only the minimum due for long periods.
+PAGE: general-finance
+TAGS: loan vs credit card, credit card, revolving credit
+
+---
+
+Q: What is a lender?
+A: A lender is a bank, NBFC or other authorised institution that provides money under a credit agreement. It assesses the application, sets the terms, disburses the loan and collects repayments. In a Sobhakrita-facilitated application, the lender is the institution named in your loan documents.
+PAGE: general-finance
+TAGS: lender meaning, bank, nbfc, creditor
+
+---
+
+Q: What is an NBFC?
+A: NBFC stands for Non-Banking Financial Company. It is a financial company regulated under the applicable Indian regulatory framework and may provide services such as loans and asset finance. An NBFC is not the same as a bank and may not offer every service that a bank does.
+PAGE: general-finance
+TAGS: nbfc meaning, non banking financial company
+
+---
+
+Q: What is collateral?
+A: Collateral is an asset offered as security for a loan. It may be property, a vehicle, a deposit or another asset accepted by the lender. If the borrower does not repay as agreed, the lender may enforce its rights over the collateral under the agreement and applicable law.
+PAGE: general-finance
+TAGS: collateral meaning, security, pledged asset
+
+---
+
+Q: What is a guarantor?
+A: A guarantor is a person who agrees to be responsible for repayment if the borrower does not meet the loan obligations, according to the guarantee terms. Becoming a guarantor can have financial and credit consequences, so read the guarantee document carefully before signing.
+PAGE: general-finance
+TAGS: guarantor, co signer, guarantee, loan responsibility
+
+---
+
+Q: What is a co-applicant?
+A: A co-applicant applies for a loan together with the main applicant. The lender may consider both applicants' income and credit profiles, and both may have repayment responsibilities under the agreement. The exact legal obligations depend on the loan documents.
+PAGE: general-finance
+TAGS: co applicant, joint applicant, joint loan
+
+---
+
+Q: What is a down payment?
+A: A down payment is the amount the buyer pays from their own funds towards a purchase, with the remaining eligible amount financed by a lender. It is common in vehicle and property purchases. A larger down payment may reduce the amount borrowed, but the lender sets its own margin and funding rules.
+PAGE: general-finance
+TAGS: down payment, margin money, own contribution
+
+---
+
+Q: What is LTV?
+A: LTV stands for Loan-to-Value ratio. It compares the loan amount with the value of the asset being financed or pledged. Lenders use it to manage risk, and the permitted ratio depends on the product, asset, valuation and applicable rules.
+PAGE: general-finance
+TAGS: ltv, loan to value, property value, margin
+
+---
+
+Q: What is a credit limit?
+A: A credit limit is the maximum amount a lender allows a customer to borrow or use under a credit facility, subject to its terms. It is not necessarily the amount currently outstanding or the amount that must be repaid immediately.
+PAGE: general-finance
+TAGS: credit limit, sanctioned limit, available limit
+
+---
+
+Q: What is a moratorium?
+A: A moratorium is a period during which certain repayments may be deferred under the terms approved by a lender or applicable scheme. It does not automatically mean that interest stops accruing or that the loan is waived. Check the written terms to understand how the deferred amount is treated.
+PAGE: general-finance
+TAGS: moratorium, payment holiday, repayment pause
+
+---
+
+Q: What is loan restructuring?
+A: Loan restructuring is a change to agreed loan terms, such as tenure, repayment schedule or other conditions, made with the lender's approval. It may help address repayment difficulty, but it can affect total interest, credit reporting and other terms. Ask the lender for a written explanation before agreeing.
+PAGE: general-finance
+TAGS: restructuring, reschedule loan, change repayment terms
+
+---
+
+Q: What is a loan write-off?
+A: A write-off is an accounting action taken by a lender when it removes a loan or part of it from certain books for accounting purposes. It does not automatically mean the borrower's repayment obligation is cancelled. Ask the lender for the current legal and account status if you see this term in a report.
+PAGE: general-finance
+TAGS: write off, loan written off, debt, credit report
+
+---
+
+Q: What is a loan settlement?
+A: A settlement generally means the lender agrees to accept an amount different from the full contractual dues to resolve an account, subject to written terms. A settled status may affect future credit assessments. Do not agree to a settlement without understanding the amount, written confirmation and credit-reporting consequences.
+PAGE: general-finance
+TAGS: loan settlement, one time settlement, ots, debt settlement
+
+---
+
+Q: What is the difference between settled and closed in a credit report?
+A: A closed account generally indicates the loan was repaid according to the lender's closure records. A settled account may indicate that the lender accepted less than the full amount due under an agreed settlement. The status can matter to future lenders; check the report and lender records if you believe it is incorrect.
+PAGE: general-finance
+TAGS: settled vs closed, loan closed, credit report status
+
+---
+
+Q: What is a bank statement?
+A: A bank statement is a record of transactions in a bank account over a selected period. It shows deposits, withdrawals, transfers, charges and balances. Lenders may review it to understand income, cash flow and existing financial commitments.
+PAGE: general-finance
+TAGS: bank statement meaning, account statement, transactions
+
+---
+
+Q: What is NEFT?
+A: NEFT stands for National Electronic Funds Transfer. It is an electronic system used to transfer money between participating bank accounts in India. Use your bank's official app, website or branch and verify the beneficiary details before making a transfer.
+PAGE: general-finance
+TAGS: neft, national electronic funds transfer, bank transfer
+
+---
+
+Q: What is RTGS?
+A: RTGS stands for Real Time Gross Settlement. It is an electronic funds-transfer system generally used for high-value transfers, with each transaction settled individually in real time during the system's operating availability. Check your bank's current limits, charges and instructions before transferring funds.
+PAGE: general-finance
+TAGS: rtgs, real time gross settlement, high value transfer
+
+---
+
+Q: What is IMPS?
+A: IMPS stands for Immediate Payment Service. It enables near-real-time interbank transfers through participating banks, subject to bank limits and availability. Always verify the beneficiary details and use your bank's official channel.
+PAGE: general-finance
+TAGS: imps, immediate payment service, instant transfer
+
+---
+
+Q: What is UPI?
+A: UPI stands for Unified Payments Interface. It allows users to make digital payments and transfers through supported banking apps using a UPI ID, mobile number or other supported method. Never share your UPI PIN; you generally enter it only to authorise a payment you are making.
+PAGE: general-finance
+TAGS: upi, unified payments interface, digital payment
+
+---
+
+Q: What is the difference between NEFT, RTGS, IMPS and UPI?
+A: They are different electronic payment systems. NEFT processes bank transfers in batches at frequent intervals, RTGS settles eligible transfers individually in real time, IMPS supports near-real-time transfers and UPI enables app-based payments using a UPI ID or supported details. Limits, availability and charges depend on the bank and payment system rules.
+PAGE: general-finance
+TAGS: neft vs rtgs, imps vs upi, transfer types
+
+---
+
+Q: What is a cheque bounce?
+A: A cheque bounce occurs when a bank does not honour a cheque, for example because of insufficient funds, a signature mismatch or another issue. It may lead to bank charges and, in some circumstances, legal consequences. Contact your bank to understand the reason and resolve it promptly.
+PAGE: general-finance
+TAGS: cheque bounce, dishonoured cheque, cheque return
+
+---
+
+Q: What is a financial year?
+A: In India, the financial year generally runs from 1 April to 31 March of the following year. Income, expenses and tax reporting are commonly organised around this period. The assessment year is the year in which income from the preceding financial year is assessed for tax purposes.
+PAGE: general-finance
+TAGS: financial year, fy, assessment year, ay
+
+---
+
+Q: What is a subsidy?
+A: A subsidy is financial support provided by a government or authorised body under a specific scheme, subject to eligibility and conditions. Not every loan qualifies for a subsidy, and a subsidy is not the same as a loan waiver. Check the current official scheme guidelines before relying on a benefit.
+PAGE: general-finance
+TAGS: subsidy, government benefit, scheme
+
+---
+
+Q: What is a government-backed loan scheme?
+A: It is a lending or support programme created or supported by a government body for eligible borrowers or sectors. Each scheme has its own purpose, eligibility, limits, application process and conditions. Availability and benefits must be verified from the official scheme authority or participating lender.
+PAGE: general-finance
+TAGS: government loan scheme, scheme, supported loan
+
+---
+
+# ---------------------------------------------------------------------------
+# M. COMMON CUSTOMER SITUATIONS AND NATURAL-LANGUAGE QUESTIONS
+# ---------------------------------------------------------------------------
+
+Q: I need money urgently. Can you help?
+A: We can help you understand which loan options may be relevant and what information a lender may need. The time required depends on the product, your documents and the lender's checks. Please tell us the approximate amount and purpose; we will not promise instant or guaranteed approval.
+PAGE: apply
+TAGS: urgent loan, need money, emergency loan, quick loan
+
+---
+
+Q: I need a loan but I do not know which type to choose.
+A: That's okay. Let's start with the purpose of the money. A personal loan may suit certain personal expenses, a business loan may suit business needs, and a home or vehicle loan is linked to a specific purchase. What do you need the funds for?
+PAGE: loans
+TAGS: don't know loan type, help choose, confused, loan guidance
+
+---
+
+Q: I am salaried and need a personal loan. What should I do?
+A: We can help you understand the likely personal-loan requirements. To begin, it is useful to know your approximate monthly take-home income, employment stability, existing EMIs and required loan amount. Please do not share sensitive account numbers or OTPs in chat.
+PAGE: personal-loan
+TAGS: salaried, personal loan, employee, take home salary
+
+---
+
+Q: I run a small business and need funds. Can you help?
+A: Yes, we can discuss business-finance options for needs such as working capital, stock, equipment or expansion. Lenders may review your business vintage, turnover, bank statements, ITR and existing obligations. What is the approximate amount and purpose?
+PAGE: business-loan
+TAGS: small business, shop owner, trader, entrepreneur, business funding
+
+---
+
+Q: I own a property. Can I get a loan against it?
+A: You may be able to explore a loan against property if the property and your profile meet a lender's criteria. The lender will check ownership, title, valuation, legal status and repayment capacity. Remember that the property is at risk if the loan is not repaid as agreed.
+PAGE: mortgage-loan
+TAGS: property owner, lap, mortgage, property loan
+
+---
+
+Q: I want to buy a house. Can you help me with a home loan?
+A: Yes. We can help you understand home-loan options and the documents lenders commonly request. The lender will assess your income, existing obligations, credit history and property documents. The amount and terms will depend on the lender's valuation and eligibility checks.
+PAGE: home-loan
+TAGS: buy house, home purchase, housing loan
+
+---
+
+Q: I want to buy a car. Can you arrange a car loan?
+A: We can help you explore car-finance options for a new or used vehicle, subject to lender availability. The lender may consider the vehicle price, down payment, income, credit profile and loan tenure. The final offer comes from the lender.
+PAGE: car-loan
+TAGS: buy car, vehicle purchase, car finance
+
+---
+
+Q: I need funds for my child's education. What are my options?
+A: An education loan may help cover eligible course-related expenses, depending on the lender and institution. The lender may ask for admission details, course fees, academic records, co-applicant income and other documents. We can help you understand the likely checklist.
+PAGE: education-loan
+TAGS: child education, college fee, study loan, education finance
+
+---
+
+Q: I am a farmer and need finance. Can you help?
+A: We can help you understand agriculture-finance options that may be available for eligible farming or allied activities. The lender may ask about the activity, land or lease details where relevant, crop or equipment requirement and repayment source. Scheme eligibility must be confirmed with the lender or official authority.
+PAGE: agriculture-loan
+TAGS: farmer, crop, agriculture, farming finance
+
+---
+
+Q: I have a low CIBIL score. Should I still contact you?
+A: Yes, you can still ask us to review the broad situation. A low score may limit options, but the full profile matters and lender policies differ. It helps to understand why the score is low and whether there are overdue or incorrect entries before making another application.
+PAGE: eligibility
+TAGS: low score, bad cibil, still apply, poor credit
+
+---
+
+Q: I am not sure how much EMI I can afford.
+A: A sensible starting point is to review your monthly take-home income, essential household expenses, existing EMIs and savings needs. The lender will assess repayment capacity, but you should also leave room for emergencies. You can use the EMI calculator to compare different amounts, rates and tenures; the result is an estimate, not a loan offer.
+PAGE: emi-calculator
+TAGS: affordability, emi afford, monthly budget, how much can i borrow
+
+---
+
+Q: Can you tell me my exact EMI?
+A: I can help estimate it if you provide the loan amount, annual interest rate and tenure. The actual EMI may differ because the lender's final rate, fees, disbursement date and repayment method may differ. Your sanction documents and repayment schedule are authoritative.
+PAGE: emi-calculator
+TAGS: exact emi, calculate emi, monthly amount
+
+---
+
+Q: I do not understand the terms in my sanction letter. Can you explain them?
+A: Yes. You can share the specific term or a redacted excerpt, and we can explain its general meaning in simple language. Please hide your PAN, Aadhaar, account number, address, phone number, signatures and other personal information before sharing. For a binding interpretation, confirm with the lender.
+PAGE: process
+TAGS: sanction letter explanation, confusing terms, explain document
+
+---
+
+Q: Someone called me saying my loan is approved and asked for an OTP. Is this genuine?
+A: Do not share the OTP. End the call and verify the status directly with the lender using the contact details on its official website or your application documents. You can also contact Sobhakrita through our published phone numbers. Never rely on an incoming caller's number alone.
+PAGE: privacy-policy
+TAGS: suspicious call, otp scam, fake approval, fraud call
+
+---
+
+Q: I have submitted documents but have not received an update.
+A: Thank you for your patience. The application may still be under lender review or awaiting verification. Please contact our team with your application reference through an approved channel, and we can help check whether an update is available. The lender controls the final processing timeline.
+PAGE: apply
+TAGS: no update, documents submitted, application pending, delay
+
+---
+
+Q: I want to know the interest rate before applying.
+A: The rate depends on the lender, loan type, amount, tenure, credit profile and current policy. We can help you understand indicative options, but a confirmed rate is available only after the lender assesses your application and issues its offer or KFS.
+PAGE: loans
+TAGS: rate before apply, interest rate, roi, quote
+
+---
+
+Q: Can I get a loan without collateral?
+A: Some products, such as many personal loans, are unsecured and do not require property collateral. Other products, such as home loans and loans against property, are secured. The available option depends on your purpose, profile and lender policy.
+PAGE: loans
+TAGS: no collateral, without security, unsecured loan
+
+---
+
+Q: Can I get a loan if I am retired?
+A: Some lenders may offer products to pensioners or retired applicants, subject to age limits, pension income, co-applicant requirements and repayment tenure. The options depend on the lender and loan type. We can help check what may be relevant to your situation.
+PAGE: eligibility
+TAGS: retired, pensioner, senior citizen loan
+
+---
+
+Q: Can a homemaker apply for a loan?
+A: Some lenders may consider a homemaker with eligible income sources, a co-applicant or other acceptable repayment support, depending on the product. The lender will explain whose income and documents can be considered. Approval is not guaranteed.
+PAGE: eligibility
+TAGS: homemaker, housewife, co applicant
+
+---
+
+Q: Can I apply if I work on contract?
+A: Some lenders may consider contract employees, depending on income continuity, employer details, work history and bank credits. Requirements vary. Share accurate employment information so we can check which lender criteria may fit.
+PAGE: eligibility
+TAGS: contract employee, temporary job, employment type
+
+---
+
+Q: Can I transfer my existing loan to another bank?
+A: A balance transfer may be possible if another lender is willing to take over the outstanding loan and your profile meets its criteria. Compare the new rate, fees, remaining tenure, foreclosure charges and total savings before deciding. The new lender makes the final decision.
+PAGE: loans
+TAGS: balance transfer, transfer loan, refinance, takeover
+
+---
+
+Q: What is a top-up loan?
+A: A top-up loan is an additional amount offered by a lender to an existing borrower over and above an eligible current loan, subject to the lender's policy and repayment history. It may be available only after certain conditions are met. Ask the lender to compare the revised EMI and total cost.
+PAGE: loans
+TAGS: top up, additional loan, extra funds, existing borrower
+
+---
+
+Q: Can I get a loan to consolidate other loans?
+A: Some lenders offer personal loans or other products that may be used to consolidate eligible debts. Compare the total cost, fees, tenure and impact on your monthly repayment. Consolidation does not remove the debt; it changes how it is repaid.
+PAGE: personal-loan
+TAGS: debt consolidation, combine loans, multiple emi
+
+---
+
+Q: What happens if I provide incorrect information in my application?
+A: Incorrect or inconsistent information can delay processing or lead to rejection, and intentional misrepresentation can have serious consequences. Please provide accurate details and tell the team promptly if you notice a mistake so the lender can advise whether it can be corrected.
+PAGE: apply
+TAGS: wrong details, mistake in application, incorrect information
+
+---
+
+# ---------------------------------------------------------------------------
+# N. WEBSITE NAVIGATION AND SELF-SERVICE
+# ---------------------------------------------------------------------------
+
+Q: Where can I apply online?
+A: You can submit a loan enquiry through https://www.sobhakritafintech.com/apply.html. Share only the information requested in the form. Our team can then guide you on the next steps.
+PAGE: apply
+TAGS: apply link, application form, online form
+
+---
+
+Q: Where can I calculate my EMI?
+A: You can use the EMI calculator on the Sobhakrita website. Enter the loan amount, annual interest rate and tenure to estimate the monthly EMI, total interest and total repayment. The calculator is for illustration; the lender's final repayment schedule may differ.
+PAGE: emi-calculator
+TAGS: emi calculator, calculator link, estimate emi
+
+---
+
+Q: Where can I book a call?
+A: You can book a free consultation at https://www.sobhakritafintech.com/book-a-call.html. Our team will confirm the slot and guide you on the information needed for the discussion.
+PAGE: book-a-call
+TAGS: book call, callback, appointment link, consultation
+
+---
+
+Q: Where can I read about Sobhakrita's loan products?
+A: Visit the Loans section of our website to explore the loan categories we support, including personal, business, home, mortgage, car, education, agriculture and industrial/MSME loans. You can also contact our team if you are unsure which category fits your requirement.
+PAGE: loans
+TAGS: loan pages, product page, website navigation
+
+---
+
+# ---------------------------------------------------------------------------
+# O. FALLBACK AND HAND-OFF RESPONSES
+# ---------------------------------------------------------------------------
+
+Q: What if Sobhi does not know the answer?
+A: I don't want to give you an incorrect answer. I don't have enough verified information to answer that confidently. Please contact our team at +91 88866 33119 or +91 88866 33118, email services@sobhakrita.com, or book a call at https://www.sobhakritafintech.com/book-a-call.html. Our team aims to acknowledge enquiries within one working day.
+PAGE: contact
+TAGS: unknown answer, not in knowledge base, human help, escalation
+
+---
+
+Q: Can Sobhi give me financial or investment advice?
+A: I can explain common loan and banking terms and help you understand the information in a loan offer. I cannot provide personalised investment, tax, legal or regulated financial advice. For a decision involving your personal finances, review the lender's documents and consult an appropriately qualified professional.
+PAGE: disclaimer
+TAGS: financial advice, investment advice, tax advice, legal advice
+
+---
+
+Q: Can Sobhi confirm whether my loan is approved?
+A: I can explain the general process, but I cannot access or confirm a live lender decision unless an authorised application-status service is connected. Please check with the lender or contact our team with your application reference through an approved channel.
+PAGE: apply
+TAGS: live status, approval status, application check
+
+---
+
+Q: Can Sobhi tell me the exact interest rate or charges for my application?
+A: I can explain how rates and charges work, but I cannot confirm a personalised offer without the lender's current assessment and written disclosure. Please rely on the lender's KFS, sanction letter and loan agreement for the final rate and charges.
+PAGE: fees
+TAGS: exact rate, exact charges, personalised offer
+
+---
+
+Q: Can I share my Aadhaar, PAN, bank account number or OTP in this chat?
+A: Please do not share OTPs, PINs, passwords, full card details or unnecessary sensitive information in chat. If a document is required for an application, our team will guide you to the approved submission channel. You may share a general question without posting identity or account numbers.
+PAGE: privacy-policy
+TAGS: sensitive information, aadhaar number, pan number, otp, privacy
+
+---
+
+
+# ---------------------------------------------------------------------------
+# P. OTHER SITE SECTIONS IDENTIFIED IN SOBHI'S ROUTE CONFIGURATION
+# ---------------------------------------------------------------------------
+
+Q: Does Sobhakrita provide insurance services?
+A: The website assistant's page configuration includes an Insurance Services page, but the supplied FAQ and JavaScript files do not describe the insurance products, insurer partners, coverage, exclusions or claims process. I don't want to give you incomplete or incorrect information. Please contact our team at +91 88866 33119 or services@sobhakrita.com for the current details.
+PAGE: insurance-services
+TAGS: insurance, insurance services, policy, coverage, claim
+
+---
+
+Q: Does Sobhakrita have job openings?
+A: You can check the Careers section of our website for current opportunities. The information provided to this assistant does not include a verified list of active vacancies, so please contact our team if you need help with a specific role.
+PAGE: careers
+TAGS: careers, jobs, vacancies, employment, recruitment
+
+---
+
+Q: Where can I read Sobhakrita's terms and conditions?
+A: Please refer to the Terms and Conditions page on the Sobhakrita website. The terms displayed there, together with the relevant lender's own documents, govern the applicable service and loan arrangements. If a clause is unclear, contact our team for help locating the relevant information.
+PAGE: terms-conditions
+TAGS: terms, conditions, terms and conditions, legal
+
+---
+
+Q: Where can I read the privacy policy?
+A: Please refer to the Privacy Policy page on the Sobhakrita website for information about how personal information is collected, used and handled. If you have a question about a specific data request, contact us at services@sobhakrita.com.
+PAGE: privacy-policy
+TAGS: privacy policy, personal data, data handling, privacy
+
+---
+
+Q: Where can I read the disclaimer?
+A: Please refer to the Disclaimer page on the Sobhakrita website. Loan information shared by Sobhi is general guidance; lender-specific terms and decisions are governed by the lender's official documents. Please contact our team if you need help understanding which information applies to your enquiry.
+PAGE: disclaimer
+TAGS: disclaimer, limitations, general information, legal notice
+
+---
+
+# END OF KNOWLEDGE BASE

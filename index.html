@@ -32,6 +32,53 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="/css/special-days.css?v=1.5">
   <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+  <style id="sobhi-header-layout-fix">
+    /* Keep the identity and controls in separate, non-overlapping flex regions. */
+    .sobhi-panel .sobhi-head {
+      display:flex !important; align-items:center !important; gap:10px !important;
+      min-width:0; box-sizing:border-box;
+    }
+    .sobhi-panel .sobhi-avatar { flex:0 0 40px; }
+    .sobhi-panel .sobhi-head-copy {
+      display:flex; flex:1 1 auto; flex-direction:column; justify-content:center;
+      min-width:0; gap:3px; overflow:hidden;
+    }
+    .sobhi-panel .sobhi-head-copy strong { display:block; line-height:1.2; }
+    .sobhi-panel .sobhi-head-copy small {
+      display:flex; align-items:center; gap:6px; min-width:0;
+      white-space:nowrap; line-height:1.25;
+    }
+    .sobhi-panel .sobhi-status-dot {
+      width:7px; height:7px; flex:0 0 7px; border-radius:50%;
+      background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,.13);
+    }
+    .sobhi-panel .sobhi-head-actions {
+      display:flex; align-items:center; justify-content:flex-end; gap:7px;
+      flex:0 0 auto; min-width:max-content;
+    }
+    .sobhi-panel .sobhi-new-chat {
+      display:inline-flex; align-items:center; justify-content:center; gap:5px;
+      min-height:36px; padding:0 10px; border:1px solid rgba(255,255,255,.22);
+      border-radius:10px; background:rgba(255,255,255,.09); color:inherit;
+      font:inherit; font-size:12px; font-weight:600; line-height:1; white-space:nowrap; cursor:pointer;
+      transition:background .18s ease, border-color .18s ease;
+    }
+    .sobhi-panel .sobhi-new-chat:hover { background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.38); }
+    .sobhi-panel .sobhi-new-chat:focus-visible,
+    .sobhi-panel .sobhi-icon-btn:focus-visible { outline:2px solid #f4b36d; outline-offset:2px; }
+    @media (max-width:420px) {
+      .sobhi-panel .sobhi-head { gap:7px !important; }
+      .sobhi-panel .sobhi-avatar { flex-basis:34px; width:34px; height:34px; }
+      .sobhi-panel .sobhi-head-actions { gap:5px; }
+      .sobhi-panel .sobhi-new-chat { width:36px; min-width:36px; padding:0; }
+      .sobhi-panel .sobhi-new-chat-label {
+        position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+        overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+      }
+      .sobhi-panel .sobhi-head-copy small { font-size:10px; }
+    }
+  </style>
+
 
   <script type="application/ld+json">
   {
@@ -1324,20 +1371,33 @@
       <span class="sobhi-avatar" aria-hidden="true">S</span>
       <span class="sobhi-head-copy">
         <strong id="sobhi-title">sobhi</strong>
-        <small>Virtual assistant · Online</small>
+        <small><span class="sobhi-status-dot" aria-hidden="true"></span>Virtual assistant</small>
       </span>
-      <button class="sobhi-icon-btn" type="button" data-sobhi-lang aria-label="Change language">
-        <svg width="16" height="16" aria-hidden="true"><use href="#i-globe"/></svg>
-        <span data-sobhi-lang-label>EN</span>
-      </button>
-      <button class="sobhi-icon-btn" type="button" data-sobhi-close aria-label="Close chat">
-        <svg width="18" height="18" aria-hidden="true"><use href="#i-close"/></svg>
-      </button>
+      <div class="sobhi-head-actions">
+        <button class="sobhi-new-chat" type="button" data-sobhi-new-chat aria-label="Start a new chat" title="Start a new chat">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span class="sobhi-new-chat-label">New chat</span>
+        </button>
+        <button class="sobhi-icon-btn" type="button" data-sobhi-lang aria-label="Change language">
+          <svg width="16" height="16" aria-hidden="true"><use href="#i-globe"/></svg>
+          <span data-sobhi-lang-label>EN</span>
+        </button>
+        <button class="sobhi-icon-btn" type="button" data-sobhi-close aria-label="Close chat">
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </div>
     </header>
     <div class="sobhi-messages" data-sobhi-messages role="log" aria-live="polite" aria-relevant="additions"></div>
     <div class="sobhi-chips" data-sobhi-chips hidden></div>
     <form class="sobhi-compose" data-sobhi-form novalidate>
       <label class="sr-only" for="sobhi-input">Type your message</label>
+      <input data-sobhi-file-input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" hidden>
+      <button class="sobhi-tool-btn" data-sobhi-attach type="button" aria-label="Upload an image or PDF" title="Upload an image or PDF">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-8.9 8.9a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+      </button>
+      <button class="sobhi-tool-btn" data-sobhi-mic type="button" aria-label="Record a voice question" title="Record a voice question">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></svg>
+      </button>
       <input id="sobhi-input" data-sobhi-input type="text" placeholder="Type your message…" autocomplete="off" maxlength="500">
       <button class="sobhi-send" type="submit" aria-label="Send message">
         <svg width="18" height="18" aria-hidden="true"><use href="#i-send"/></svg>
@@ -1348,6 +1408,6 @@
 </div>
 
 <script src="assets/js/main.js" defer></script>
-<script src="assets/js/sobhi-boot.js?v=20261114c" defer></script>
+<script src="assets/js/sobhi-boot.js?v=20261117m" defer></script>
 </body>
 </html>

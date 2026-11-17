@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var CHAT_SRC = "assets/js/sobhi-chat.js?v=20261114c";
+  var CHAT_SRC = "assets/js/sobhi-chat.js?v=20261117n";
   var loading = false;
   var loaded = false;
   var pendingOpen = false;
