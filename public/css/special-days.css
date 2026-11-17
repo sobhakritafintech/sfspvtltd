@@ -1,0 +1,373 @@
+/* ==========================================================================
+   Special Days — illustrated greeting banner
+   A cream paper card with a deep arch panel, marigold garland, hanging
+   lanterns, a firework sky either side and diyas on the arch base.
+   All artwork is inline SVG/CSS: no raster assets, copy stays dynamic.
+   ========================================================================== */
+
+#special-day-root {
+  display: none;
+}
+
+#special-day-root[data-active="true"] {
+  display: block;
+  padding-inline: var(--gutter);
+}
+
+/* ---------- card shell: cream paper + double gold hairline ---------- */
+.sd-card {
+  position: relative;
+  box-sizing: border-box;
+  max-width: 1240px;
+  margin: 14px auto 2px;
+  padding: 11px;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 170% at 50% -40%, #fffdf7 0%, #fbf3e4 54%, #f3e6cf 100%);
+  border: 1px solid rgba(176, 132, 64, 0.34);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 18px 34px -26px rgba(12, 31, 51, 0.5),
+    0 4px 12px -9px rgba(12, 31, 51, 0.22);
+  isolation: isolate;
+  animation: sdRise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sd-card::before,
+.sd-card::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 15px;
+}
+.sd-card::before {
+  inset: 5px;
+  border: 1px solid rgba(200, 154, 75, 0.5);
+}
+.sd-card::after {
+  inset: 8px;
+  border: 1px solid rgba(200, 154, 75, 0.22);
+  border-radius: 13px;
+}
+
+/* ---------- firework sky in the cream margins ---------- */
+.sd-fireworks {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 19%;
+  z-index: 0;
+  opacity: 0.9;
+  pointer-events: none;
+}
+.sd-fireworks--left { left: 8px; }
+.sd-fireworks--right { right: 8px; transform: scaleX(-1); }
+.sd-fireworks svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------- arch panel ---------- */
+.sd-panel {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  margin-inline: 19%;
+  padding: 22px 78px 38px;
+  border-radius: 50% 50% 0 0;
+  color: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgba(253, 230, 138, 0.34),
+    inset 0 -20px 40px -28px rgba(0, 0, 0, 0.85),
+    0 10px 26px -18px rgba(12, 31, 51, 0.6);
+}
+
+/* 6 theme gradients (exact palette) */
+.sd-card.theme-emerald  .sd-panel { background: linear-gradient(110deg, #064E3B 0%, #0F766E 65%, #115E59 100%); }
+.sd-card.theme-royal    .sd-panel { background: linear-gradient(110deg, #3B0764 0%, #6B21A8 55%, #9A3412 100%); }
+.sd-card.theme-harvest  .sd-panel { background: linear-gradient(110deg, #7C2D12 0%, #C2410C 60%, #B45309 100%); }
+.sd-card.theme-tricolor .sd-panel { background: linear-gradient(110deg, #0F172A 0%, #1E3A8A 55%, #065F46 100%); }
+.sd-card.theme-sapphire .sd-panel { background: linear-gradient(110deg, #0F172A 0%, #1E3A8A 60%, #1D4ED8 100%); }
+.sd-card.theme-gratitude .sd-panel { background: linear-gradient(110deg, #134E4A 0%, #0F766E 50%, #B45309 100%); }
+
+/* warm wash from the garland, dark pool behind the copy */
+.sd-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 78% at 50% 84%, rgba(5, 16, 15, 0.42), rgba(5, 16, 15, 0) 74%),
+    radial-gradient(88% 74% at 50% 0%, rgba(255, 236, 190, 0.22), rgba(255, 236, 190, 0) 64%);
+}
+
+/* ---------- arch artwork ---------- */
+.sd-archart {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+.sd-archart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sd-lantern {
+  position: absolute;
+  top: 26%;
+  width: 36px;
+  height: 58px;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 5px 9px rgba(9, 3, 10, 0.42));
+}
+.sd-lantern--left { left: 12%; }
+.sd-lantern--right { right: 12%; }
+.sd-lantern svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform-origin: top center;
+  animation: sdSwing 7s ease-in-out infinite;
+}
+.sd-lantern--right svg { animation-delay: -3.2s; }
+
+/* ---------- greeting copy ---------- */
+.sd-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 470px;
+  text-align: center;
+  transition: opacity 0.25s ease;
+}
+.sd-content.is-fading { opacity: 0; }
+
+.sd-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-bottom: 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: #FBE3A6;
+  text-shadow: 0 1px 6px rgba(30, 8, 0, 0.5);
+}
+.sd-eyebrow::before,
+.sd-eyebrow::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(253, 230, 138, 0), rgba(253, 230, 138, 0.75));
+}
+.sd-eyebrow::after {
+  background: linear-gradient(90deg, rgba(253, 230, 138, 0.75), rgba(253, 230, 138, 0));
+}
+
+.sd-title {
+  margin: 0 0 5px;
+  font-family: var(--ff-display);
+  font-size: clamp(16px, 1.36vw, 19px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: #F8CB7B;
+  text-wrap: balance;
+  text-shadow: 0 1px 10px rgba(22, 6, 0, 0.55), 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.sd-subtitle {
+  margin: 0 auto;
+  max-width: 48ch;
+  font-family: "Noto Sans Telugu", var(--ff-body);
+  font-size: clamp(10px, 0.8vw, 11.5px);
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(255, 248, 235, 0.86);
+  text-shadow: 0 1px 8px rgba(22, 6, 0, 0.45);
+}
+
+/* ---------- the day's ornament on the arch base ---------- */
+.sd-decor {
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 200px;
+  height: 40px;
+  transform: translateX(-50%);
+  z-index: 2;
+  opacity: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 9px rgba(9, 3, 10, 0.42));
+}
+.sd-decor svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.sd-decor .sd-spark { animation: sdGlow 3.8s ease-in-out infinite; }
+
+/* ---------- controls ---------- */
+.sd-close {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(176, 132, 64, 0.55);
+  background: rgba(253, 248, 238, 0.96);
+  color: #6b4517;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 3px 9px rgba(12, 31, 51, 0.22);
+  transition: background 0.2s ease, transform 0.25s var(--ease), color 0.2s ease;
+}
+.sd-close:hover {
+  background: #fffdf6;
+  color: #3f2707;
+  transform: rotate(90deg);
+}
+.sd-close:focus-visible,
+.sd-dots button:focus-visible {
+  outline: 2px solid #c89a4b;
+  outline-offset: 3px;
+}
+
+.sd-dots {
+  position: absolute;
+  right: 14px;
+  bottom: 11px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(253, 230, 138, 0.28);
+  background: rgba(8, 4, 10, 0.34);
+  backdrop-filter: blur(6px);
+}
+.sd-dots:empty { display: none; }
+.sd-dots button {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 99px;
+  background: rgba(255, 244, 219, 0.5);
+  cursor: pointer;
+  transition: width 0.3s var(--ease), background 0.3s ease;
+}
+/* generous invisible hit area for touch */
+.sd-dots button::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+}
+.sd-dots button[aria-selected="true"] {
+  width: 18px;
+  background: #FDE68A;
+}
+
+/* ---------- dismissal ---------- */
+#special-day-root.sd-leaving .sd-card {
+  animation: sdLeave 0.3s ease forwards;
+}
+
+/* ---------- animations ---------- */
+@keyframes sdRise {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes sdLeave {
+  to { opacity: 0; transform: translateY(-6px) scale(0.996); }
+}
+@keyframes sdSwing {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+@keyframes sdGlow {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1240px) {
+  #special-day-root[data-active="true"] { padding-inline: 18px; }
+}
+
+@media (max-width: 1100px) {
+  .sd-panel { margin-inline: 15%; padding: 26px 56px 22px; }
+  .sd-content { max-width: 400px; }
+}
+
+@media (max-width: 900px) {
+  .sd-panel { margin-inline: 10%; padding: 24px 40px 24px; }
+  .sd-fireworks { width: 13%; opacity: 0.75; }
+  .sd-lantern { display: none; }
+  .sd-content { max-width: 100%; }
+}
+
+@media (max-width: 720px) {
+  .sd-card { padding: 9px; border-radius: 18px; margin-top: 12px; }
+  .sd-card::before { inset: 4px; border-radius: 14px; }
+  .sd-card::after { inset: 7px; border-radius: 12px; }
+  .sd-panel { margin-inline: 0; min-height: 152px; padding: 22px 26px 26px; border-radius: 46% 46% 0 0; }
+  .sd-fireworks { display: none; }
+  .sd-title { font-size: clamp(16px, 4.2vw, 19px); }
+  .sd-subtitle { font-size: 11px; max-width: 40ch; }
+  .sd-eyebrow { font-size: 9px; letter-spacing: 0.1em; gap: 7px; }
+  .sd-eyebrow::before, .sd-eyebrow::after { width: 12px; }
+  .sd-decor { width: 180px; height: 38px; bottom: -8px; }
+  .sd-dots { right: 11px; bottom: 9px; }
+  .sd-close { top: 7px; right: 7px; width: 26px; height: 26px; }
+}
+
+@media (max-width: 480px) {
+  #special-day-root[data-active="true"] { padding-inline: 12px; }
+  .sd-card { padding: 8px; }
+  .sd-panel { min-height: 158px; padding: 22px 18px 22px; }
+  .sd-lantern { width: 24px; height: 38px; }
+  .sd-title { font-size: 16.5px; }
+  .sd-subtitle { font-size: 10.5px; }
+  .sd-decor { width: 170px; height: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-card,
+  .sd-lantern svg,
+  .sd-decor .sd-spark {
+    animation: none !important;
+  }
+  .sd-content { transition: none; }
+}
+
+@media print {
+  #special-day-root { display: none !important; }
+}

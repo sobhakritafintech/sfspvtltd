@@ -1,4 +1,4 @@
-﻿const http = require("node:http");
+const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
 const nodemailer = require("nodemailer");
@@ -70,6 +70,46 @@ function readJsonBody(req, limit = 96 * 1024) {
   });
 }
 
+const LOGO_PNG_PATH = path.join(ROOT, "assets", "img", "logo-mark.png");
+// The watermark is the same lotus mark with ~10% alpha baked into the PNG.
+// Baking the transparency in (instead of relying on CSS `opacity`) is what makes the
+// watermark survive Outlook's Word rendering engine, which ignores CSS opacity.
+const WATERMARK_PNG_PATH = path.join(ROOT, "assets", "img", "logo-watermark.png");
+
+// CID inline attachment for logo — the ONLY method that works reliably in Gmail, Outlook, Apple Mail, and all major clients.
+// Gmail blocks base64 data URIs in <img src>; external URLs require the domain to be reachable at send time.
+// CID attachments embed the image directly in the email MIME payload and are universally supported.
+const LOGO_CID = "sobhakrita-logo@sfspvtltd";
+const WATERMARK_CID = "sobhakrita-watermark@sfspvtltd";
+
+const INLINE_IMAGE_ASSETS = [
+  { path: LOGO_PNG_PATH, cid: LOGO_CID, filename: "logo-mark.png" },
+  { path: WATERMARK_PNG_PATH, cid: WATERMARK_CID, filename: "logo-watermark.png" }
+];
+
+function hasInlineAsset(filePath) {
+  return fs.existsSync(filePath);
+}
+
+// Returns every inline image that exists on disk. Missing files are skipped (and logged)
+// so a missing asset degrades to the hosted logoUrl instead of silently rendering a broken image.
+function getLogoAttachments() {
+  const attachments = [];
+  for (const asset of INLINE_IMAGE_ASSETS) {
+    if (hasInlineAsset(asset.path)) {
+      attachments.push({
+        filename: asset.filename,
+        path: asset.path,
+        cid: asset.cid,
+        contentDisposition: "inline"
+      });
+    } else {
+      console.warn("[email] Inline email image missing:", asset.path);
+    }
+  }
+  return attachments;
+}
+
 function cleanText(value, maxLength) {
   return String(value == null ? "" : value)
     .replace(/\s+/g, " ")
@@ -119,7 +159,7 @@ function escapeEmailHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function renderBrandedEmail({ title, intro, details, submittedAt }) {
+function renderBrandedEmail({ title, intro, introHtml, details, submittedAt, customerGreeting, slaText, contactBlock, footerNote, isCustomerCopy }) {
   const accent = CONFIG.emailBrand.accent;
   const rows = details.split("\n").filter(Boolean).map((line, index) => {
     const separator = line.indexOf(":");
@@ -128,11 +168,156 @@ function renderBrandedEmail({ title, intro, details, submittedAt }) {
     const border = index ? "border-top:1px solid #e6ece8;" : "";
     return "<tr><td style=\"" + border + "padding:11px 14px;color:#52635d;font-size:13px;width:34%;vertical-align:top;background:transparent\"><strong>" + escapeEmailHtml(label) + "</strong></td><td style=\"" + border + "padding:11px 14px;color:#1b2b26;font-size:13px;line-height:1.55;word-break:break-word;background:transparent\">" + escapeEmailHtml(value) + "</td></tr>";
   }).join("");
-  const logoUrl = escapeEmailHtml(CONFIG.emailBrand.logoUrl);
-  const watermarkOpacity = Math.max(0, Math.min(1, Number(CONFIG.emailBrand.watermarkOpacity) || 0.1));
-  const whiteOverlayOpacity = (1 - watermarkOpacity).toFixed(2);
 
-  return "<!doctype html><html><body style=\"margin:0;padding:24px 12px;background:#f1f5f3;font-family:Arial,Helvetica,sans-serif;color:#1b2b26\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #dfe8e3;border-radius:12px;overflow:hidden\"><tr><td style=\"padding:22px 26px;background:" + accent + ";color:#ffffff\"><table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\"><tr><td style=\"vertical-align:middle;padding-right:14px\"><img src=\"" + logoUrl + "\" width=\"48\" height=\"48\" alt=\"\" style=\"display:block;width:48px;height:48px;border:0\"></td><td style=\"vertical-align:middle\"><div style=\"font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85\">" + escapeEmailHtml(CONFIG.emailBrand.name) + "</div><div style=\"font-size:21px;font-weight:700;margin-top:4px;color:#ffffff\">" + escapeEmailHtml(title) + "</div></td></tr></table></td></tr><tr><td style=\"background-color:#ffffff;background-image:linear-gradient(rgba(255,255,255," + whiteOverlayOpacity + "),rgba(255,255,255," + whiteOverlayOpacity + ")),url('" + logoUrl + "');background-repeat:no-repeat,no-repeat;background-position:center center,center center;background-size:100% 100%,160px 160px;padding:24px 18px 20px\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td style=\"padding:0 8px 16px;font-size:14px;line-height:1.6;color:#41534c;background:transparent\">" + escapeEmailHtml(intro) + "</td></tr><tr><td style=\"padding:0;background:transparent\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">" + rows + "</table></td></tr></table></td></tr><tr><td style=\"padding:15px 26px;background:#f7faf8;border-top:1px solid #e4ebe7;color:#66766f;font-size:11px;line-height:1.5\">Received " + escapeEmailHtml(submittedAt) + " · This message contains information submitted through the Sobhakrita website.</td></tr></table></body></html>";
+  // Use CID inline attachment reference — this is the ONLY method supported by Gmail, Outlook, Apple Mail simultaneously.
+  // The actual logo file is passed as an inline attachment by sendConfiguredEmail() automatically.
+  // If the file is missing on disk we fall back to the hosted URL so the header never renders a broken image.
+  const logoSrc = hasInlineAsset(LOGO_PNG_PATH) ? "cid:" + LOGO_CID : CONFIG.emailBrand.logoUrl;
+  // The watermark PNG already has its alpha baked in (Outlook ignores CSS `opacity`, and the value is
+  // kept in config.js as `emailBrand.watermarkOpacity`), so it is safe to use as a background. If the
+  // file is missing, skip the watermark instead of painting the full-colour logo behind the text.
+  const watermarkSrc = hasInlineAsset(WATERMARK_PNG_PATH) ? "cid:" + WATERMARK_CID : "";
+
+  const greetingHtml = customerGreeting
+    ? "<div style=\"font-size:16px;font-weight:700;color:#1b2b26;margin-bottom:12px;\">" + escapeEmailHtml(customerGreeting) + "</div>"
+    : "";
+
+  const slaHtml = slaText
+    ? "<div style=\"margin:20px 0;padding:14px 18px;background:#eef7f4;border-left:4px solid " + accent + ";border-radius:6px;\"><div style=\"font-size:12px;font-weight:700;color:" + accent + ";letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;\">Expected Response SLA</div><div style=\"font-size:13px;line-height:1.6;color:#1b2b26;\">" + escapeEmailHtml(slaText) + "</div></div>"
+    : "";
+
+  const contactsHtml = contactBlock
+    ? "<div style=\"margin:20px 0 10px 0;padding:16px 18px;background:#f7faf8;border:1px solid #dfe8e3;border-radius:8px;\"><div style=\"font-size:14px;font-weight:700;color:#1b2b26;margin-bottom:8px;\">Questions or Need Immediate Assistance?</div><div style=\"font-size:13px;line-height:1.75;color:#41534c;\">In the meantime, feel free to reach our team directly:<br>&#128222; <strong>Phone:</strong> <a href=\"tel:+918886633118\" style=\"color:" + accent + ";text-decoration:none;\">+91 88866 33118</a> / <a href=\"tel:+918886633119\" style=\"color:" + accent + ";text-decoration:none;\">+91 88866 33119</a><br>&#128172; <strong>WhatsApp:</strong> <a href=\"https://wa.me/918886633118\" style=\"color:" + accent + ";text-decoration:none;\">+91 88866 33118</a><br>&#9993; <strong>Email:</strong> <a href=\"mailto:" + escapeEmailHtml(contactBlock.email || CONFIG.contactEmail) + "\" style=\"color:" + accent + ";text-decoration:none;\">" + escapeEmailHtml(contactBlock.email || CONFIG.contactEmail) + "</a><br>&#128205; <strong>Office Address:</strong> #20-90B/1, Naidu Buildings, Behind Dominos, Mittoor, Chittoor, Andhra Pradesh, 517001<br>&#128344; <strong>Business Hours:</strong> Monday – Saturday: 9:00 AM – 6:00 PM IST (Closed Sundays & Public Holidays)<br>&#127760; <strong>Website:</strong> <a href=\"https://www.sobhakritafintech.com\" style=\"color:" + accent + ";text-decoration:none;\">www.sobhakritafintech.com</a></div></div>"
+    : "";
+
+  const footerText = footerNote || (isCustomerCopy
+    ? "Submitted on " + escapeEmailHtml(submittedAt) + " · Sobhakrita Fintech Solutions Private Limited · Chittoor, Andhra Pradesh. This is an automated acknowledgement."
+    : "Received " + escapeEmailHtml(submittedAt) + " · This message contains information submitted through the Sobhakrita website.");
+
+  // Watermark: painted as the *background* of the submitted-details card, so the detail rows sit on
+  // top of the faint emblem (the intended look). No positioning/negative margins are involved, so a
+  // client that strips CSS cannot drop it into the flow or leave a gap. The emblem is applied twice:
+  //   - the legacy `background="..."` attribute, which Outlook's Word rendering engine honours;
+  //   - CSS `background-image`, used by Gmail, Apple Mail, Windows Mail and other modern clients.
+  // The PNG is a card-sized canvas (640x340) with the emblem centred, so clients that ignore
+  // `background-size` (Outlook) do not tile it across the table.
+  const detailsBgAttr = watermarkSrc ? " background=\"" + watermarkSrc + "\"" : "";
+  const detailsBgStyle = watermarkSrc
+    ? "background-color:#ffffff;background-image:url('" + watermarkSrc + "');background-repeat:no-repeat;background-position:center center;background-size:cover;"
+    : "background-color:#ffffff;";
+
+  const headerHtml =
+    "<tr><td style=\"padding:22px 26px;background:" + accent + ";color:#ffffff\">" +
+      "<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\"><tr>" +
+        "<td style=\"vertical-align:middle;padding-right:14px\">" +
+          "<img src=\"" + logoSrc + "\" width=\"61\" height=\"48\" alt=\"Sobhakrita Logo\" style=\"display:block;width:61px;height:48px;border:0\">" +
+        "</td>" +
+        "<td style=\"vertical-align:middle\">" +
+          "<div style=\"font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85;color:#ffffff\">" + escapeEmailHtml(CONFIG.emailBrand.name) + "</div>" +
+          "<div style=\"font-size:21px;font-weight:700;margin-top:4px;color:#ffffff\">" + escapeEmailHtml(title) + "</div>" +
+        "</td>" +
+      "</tr></table>" +
+    "</td></tr>";
+
+  // Intro copy is plain text by default and escaped. Callers that need a link can pass
+  // pre-sanitised `introHtml` (trusted, server-authored markup only).
+  const introBlock = introHtml || escapeEmailHtml(intro);
+
+  const contentHtml =
+    "<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"background:transparent\">" +
+      "<tr><td style=\"padding:0 4px 14px;font-size:14px;line-height:1.65;color:#41534c;background:transparent\">" + greetingHtml + "<div>" + introBlock + "</div></td></tr>" +
+      "<tr><td style=\"padding:6px 0 16px;background:transparent\">" +
+        "<div style=\"font-size:12px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#52635d;margin-bottom:8px\">Submitted Details</div>" +
+        "<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"" + detailsBgAttr + " style=\"border:1px solid #e4ebe7;border-radius:8px;" + detailsBgStyle + "\">" + rows + "</table>" +
+      "</td></tr>" +
+      (slaHtml ? "<tr><td style=\"padding:0;background:transparent\">" + slaHtml + "</td></tr>" : "") +
+      (contactsHtml ? "<tr><td style=\"padding:0;background:transparent\">" + contactsHtml + "</td></tr>" : "") +
+    "</table>";
+
+  const footerHtml =
+    "<tr><td style=\"padding:15px 26px;background:#f7faf8;border-top:1px solid #e4ebe7;color:#66766f;font-size:11px;line-height:1.5\">" + footerText + "</td></tr>";
+
+  return "<!doctype html><html><body style=\"margin:0;padding:24px 12px;background:#f1f5f3;font-family:Arial,Helvetica,sans-serif;color:#1b2b26\">" +
+    "<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #dfe8e3;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.04)\">" +
+      headerHtml +
+      "<tr><td style=\"background-color:#ffffff;padding:24px 22px 20px;position:relative\">" + contentHtml + "</td></tr>" +
+      footerHtml +
+    "</table></body></html>";
+}
+
+async function sendCustomerConfirmationEmail({ to, name, formType, details, submittedAt }) {
+  const isCareers = formType === "careers";
+  const title = isCareers
+    ? "Careers Application Submitted"
+    : "Enquiry Submitted to Sobhakrita";
+  const subject = isCareers
+    ? "Application received | Sobhakrita Careers — " + (name || "Candidate")
+    : "We received your enquiry | Sobhakrita Fintech Solutions";
+  const intro = isCareers
+    ? "Thank you for your interest in Sobhakrita. Our hiring team will review your details and contact within 5–7 working days if your application is shortlisted. For any future queries, write to hr@sobhakrita.com."
+    : "Your enquiry with following details are submitted to Sobhakrita, we will review your request and get back to you with SLA and in meantime give contacts for them to reach for any other queries.";
+  // Trusted, server-authored HTML for the HTML part only (plain text above is used for the text part).
+  const introHtml = isCareers
+    ? "Thank you for your interest in Sobhakrita. Our hiring team will review your details and contact within 5–7 working days if your application is shortlisted. For any future queries, write to <a href=\"mailto:hr@sobhakrita.com\" style=\"color:" + CONFIG.emailBrand.accent + ";text-decoration:underline\">hr@sobhakrita.com</a>."
+    : null;
+  const customerGreeting = "Dear " + (name || "Customer") + ",";
+  const slaText = (CONFIG.customerAutoReply && CONFIG.customerAutoReply.sla && CONFIG.customerAutoReply.sla[formType]) ||
+    (CONFIG.customerAutoReply && CONFIG.customerAutoReply.sla && CONFIG.customerAutoReply.sla.default) ||
+    "Our team will review your enquiry and get back to you within 24 business hours (Monday – Saturday, 9:00 AM – 6:00 PM IST).";
+  const contactInfo = (CONFIG.customerAutoReply && CONFIG.customerAutoReply.contacts) || {};
+  const supportEmail = isCareers ? (contactInfo.hrEmail || "hr@sobhakrita.com") : (contactInfo.email || CONFIG.contactEmail);
+
+  const contactBlock = {
+    email: supportEmail,
+    phone: contactInfo.phone,
+    whatsapp: contactInfo.whatsapp,
+    address: contactInfo.address,
+    hours: contactInfo.hours
+  };
+
+  const textLines = [
+    customerGreeting,
+    "",
+    "Thank you for contacting Sobhakrita Fintech Solutions Private Limited.",
+    intro,
+    "",
+    "--- SUBMITTED DETAILS ---",
+    details,
+    "",
+    "--- ESTIMATED RESPONSE SLA ---",
+    slaText,
+    "",
+    "--- CONTACT INFORMATION ---",
+    "Phone: " + (contactInfo.phone || "+91 88866 33118 / +91 88866 33119"),
+    "WhatsApp: " + (contactInfo.whatsapp || "+91 88866 33118"),
+    "Email: " + supportEmail,
+    "Address: #20-90B/1, Naidu Buildings, Behind Dominos, Mittoor, Chittoor, Andhra Pradesh, 517001",
+    "Office Hours: Monday to Saturday, 9:00 AM to 6:00 PM IST",
+    "Website: https://www.sobhakritafintech.com",
+    "",
+    "Received: " + submittedAt
+  ];
+
+  const html = renderBrandedEmail({
+    title,
+    intro,
+    introHtml,
+    details,
+    submittedAt,
+    customerGreeting,
+    slaText,
+    contactBlock,
+    isCustomerCopy: true
+  });
+
+  return sendConfiguredEmail({
+    to,
+    subject,
+    text: textLines.join("\n"),
+    html,
+    replyTo: supportEmail,
+    payload: { customerConfirmation: true, formType, name, email: to, submittedAt }
+  });
 }
 
 function toWebhookAttachment(attachment) {
@@ -146,7 +331,10 @@ function toWebhookAttachment(attachment) {
 }
 
 async function sendConfiguredEmail({ to, subject, text, html, replyTo, payload, attachments = [] }) {
-  const allAttachments = attachments;
+  // Always inject the logo (and watermark) as CID inline attachments when sending HTML email.
+  // This is the ONLY method that makes the logo appear reliably in Gmail, Outlook, and Apple Mail.
+  const inlineAttachments = html ? getLogoAttachments() : [];
+  const allAttachments = [...inlineAttachments, ...attachments];
   const webhook = process.env.LEAD_EMAIL_WEBHOOK;
   if (webhook) {
     const response = await fetch(webhook, {
@@ -239,9 +427,9 @@ async function sendLeadEmail(lead) {
     lead.question
   ].join("\n");
 
-  return sendConfiguredEmail({
+  const leadResult = await sendConfiguredEmail({
     to: CONTACT_EMAIL,
-    subject: "Website enquiry | " + lead.name,
+    subject: "General enquiry | " + lead.name,
     text,
     html: renderBrandedEmail({
       title,
@@ -258,6 +446,28 @@ async function sendLeadEmail(lead) {
     replyTo: lead.email,
     payload: lead
   });
+
+  if (lead.email) {
+    try {
+      await sendCustomerConfirmationEmail({
+        to: lead.email,
+        name: lead.name,
+        formType: "contact",
+        details: [
+          "Full name: " + lead.name,
+          "Mobile number: " + lead.phone,
+          "Email address: " + lead.email,
+          "Preferred language: " + lead.language,
+          "Question: " + lead.question
+        ].join("\n"),
+        submittedAt
+      });
+    } catch (custError) {
+      console.warn("Chat customer confirmation email could not be sent:", custError.message);
+    }
+  }
+
+  return leadResult;
 }
 
 function renderEmailTemplate(template, values) {
@@ -390,6 +600,22 @@ async function handleFormSubmission(req, res) {
       payload: { formType, submittedAt, fields },
       attachments: resumeAttachment ? [resumeAttachment] : []
     });
+
+    if (fields.email) {
+      try {
+        await sendCustomerConfirmationEmail({
+          to: fields.email,
+          name: fields.name,
+          formType,
+          fields,
+          details,
+          submittedAt
+        });
+      } catch (custError) {
+        console.warn("Customer confirmation email could not be sent:", custError.message);
+      }
+    }
+
     return sendJson(res, 200, { ok: true, emailSent: true });
   } catch (error) {
     console.error("Website form email failed:", error.message);
@@ -1073,9 +1299,34 @@ const server = http.createServer((req, res) => {
 
   if (pathname === "/") pathname = "/index.html";
 
-  const filePath = path.resolve(ROOT, "." + pathname);
+  // `/index.html/` (or any `page.html/` URL) breaks every relative asset path.
+  // Redirect to the canonical file URL, keeping the query string.
+  if (/\.html\/+$/i.test(pathname) || /\/\.html$/i.test(pathname)) {
+    res.writeHead(301, { Location: pathname.replace(/\/+$/, "") + url.search });
+    return res.end();
+  }
 
-  if (!filePath.startsWith(ROOT + path.sep) || filePath === ROOT) {
+  // Resolve safely inside a base directory. Returns null when escaping the base.
+  const resolveInside = (base, target) => {
+    const resolved = path.resolve(base, "." + target);
+    if (!resolved.startsWith(base + path.sep) || resolved === base) return null;
+    return resolved;
+  };
+
+  // `public/` mirrors the GoDaddy `public_html/` root, so versioned
+  // /css/*.css and /js/*.js assets fall back there when not in the project root.
+  const PUBLIC_ROOT = path.join(ROOT, "public");
+  let filePath = resolveInside(ROOT, pathname);
+
+  if (
+    filePath &&
+    !fs.existsSync(filePath) &&
+    (pathname.startsWith("/css/") || pathname.startsWith("/js/"))
+  ) {
+    filePath = resolveInside(PUBLIC_ROOT, pathname) || filePath;
+  }
+
+  if (!filePath) {
     res.writeHead(403);
     return res.end("Forbidden");
   }
@@ -1140,7 +1391,18 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Sobha Krita website: http://localhost:${PORT}`);
-  console.log("Press Ctrl+C to stop.");
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Sobha Krita website: http://localhost:${PORT}`);
+    console.log("Press Ctrl+C to stop.");
+  });
+}
+
+module.exports = {
+  server,
+  renderBrandedEmail,
+  sendCustomerConfirmationEmail,
+  getLogoAttachments,
+  LOGO_CID,
+  WATERMARK_CID
+};

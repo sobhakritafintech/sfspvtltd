@@ -75,11 +75,11 @@ $g.DrawLine($goldPen, 96, 212, 300, 212)
 $goldPen.Dispose()
 
 # --- Logo mark ------------------------------------------------------------
-$logoPath = Join-Path $brandDir "logo-mark.png"
+$logoPath = Join-Path $outDir "logo-mark.png"
 $logo = [System.Drawing.Image]::FromFile($logoPath)
-$logoH = 92
+$logoH = 84
 $logoW = [int]($logo.Width * $logoH / $logo.Height)
-$g.DrawImage($logo, 96, 74, $logoW, $logoH)
+$g.DrawImage($logo, 96, 80, $logoW, $logoH)
 $logo.Dispose()
 
 # --- Brand ----------------------------------------------------------------

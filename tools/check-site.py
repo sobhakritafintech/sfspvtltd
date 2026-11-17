@@ -101,6 +101,9 @@ def check_page(path: str) -> list[str]:
         if not target:
             continue
         candidate = os.path.normpath(os.path.join(ROOT, target))
+        if not os.path.exists(candidate) and target.startswith(("/css/", "/js/")):
+            # `public/` mirrors the GoDaddy `public_html/` root.
+            candidate = os.path.normpath(os.path.join(ROOT, "public", target.lstrip("/")))
         if not os.path.exists(candidate):
             problems.append(f"{tag} target missing: {target}")
 

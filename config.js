@@ -77,8 +77,26 @@ module.exports = {
     location: "Current location",
     resume_link: "CV, LinkedIn, or portfolio link",
     resume_file: "CV attachment",
-    resume_file: "CV attachment",
     cover_note: "Why this role",
     consent: "Contact or data-use consent"
+  },
+  customerAutoReply: {
+    enabled: true,
+    sla: {
+      default: "Our loan advisory team will review your enquiry and get back to you within 24 business hours (Monday – Saturday, 9:00 AM – 6:00 PM IST).",
+      careers: "Our Talent Acquisition team will review your application and get back to you within 2 to 3 business days if your profile matches our requirements.",
+      booking: "Our advisor will confirm your consultation slot and reach out within 24 business hours.",
+      callback: "Our advisor will call you back within 24 business hours.",
+      contact: "Our team will review your query and respond within 24 business hours."
+    },
+    contacts: {
+      phone: "+91 88866 33118 / +91 88866 33119",
+      whatsapp: "+91 88866 33118",
+      email: "services@sobhakrita.com",
+      hrEmail: "hr@sobhakrita.com",
+      address: "#20-90B/1, Naidu Buildings, Behind Dominos, Mittoor, Chittoor, Andhra Pradesh, 517001",
+      hours: "Monday – Saturday: 9:00 AM – 6:00 PM IST (Closed Sundays & Public Holidays)",
+      website: "https://www.sobhakritafintech.com"
+    }
   }
 };

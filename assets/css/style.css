@@ -332,12 +332,22 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
   position: sticky;
   top: 0;
   z-index: 70;
-  background: rgba(255, 255, 255, 0.92);
+  background: linear-gradient(180deg, #fffcf4 0%, #fdf5e5 58%, #f9efd9 100%);
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(200, 154, 75, 0.34);
   transition: box-shadow 0.3s var(--ease);
 }
-.site-header.is-stuck { box-shadow: 0 12px 30px -18px rgba(12, 31, 51, 0.5); }
+.site-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(200, 154, 75, 0.55) 24%, rgba(200, 154, 75, 0.55) 76%, transparent);
+}
+.site-header.is-stuck { box-shadow: 0 14px 32px -22px rgba(12, 31, 51, 0.55); }
 
 .nav-in {
   display: flex;
@@ -347,9 +357,21 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
   min-height: 76px;
 }
 
-.brand { display: inline-flex; align-items: center; gap: 13px; color: var(--ink); flex: 0 0 auto; }
+.brand { display: inline-flex; align-items: center; gap: 14px; color: var(--ink); flex: 0 0 auto; }
 .brand:hover { color: var(--ink); }
-.brand-mark { height: 64px; width: auto; flex: none; filter: brightness(1.06) saturate(1.12) drop-shadow(0 3px 8px rgba(12, 31, 51, 0.16)); }
+.brand-logo-wrap {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 84px;
+  height: 68px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgba(200, 154, 75, 0.28),
+    0 2px 10px -3px rgba(12, 31, 51, 0.2);
+}
+.brand-mark { height: 50px; width: auto; flex: none; filter: saturate(1.06); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.05; white-space: nowrap; }
 .brand-name {
   font-family: var(--ff-display);
@@ -537,7 +559,14 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
   gap: 12px;
   padding: 18px 20px;
   border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #fffdf8 0%, #fbf3e2 100%);
+}
+.drawer-head .brand-mark {
+  height: 40px;
+  padding: 4px;
+  border-radius: 9px;
   background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(200, 154, 75, 0.25);
 }
 .drawer-body { padding: 14px 20px 24px; }
 .drawer-nav { list-style: none; margin: 0; padding: 0; }
@@ -2023,10 +2052,12 @@ table.data b { color: var(--ink); }
   .topbar-social { display: none !important; }
   .topbar-in { justify-content: center; font-size: 0.72rem; }
   .topbar-group { gap: 14px; justify-content: center; }
-  .brand-mark { height: 54px; width: auto; }
+  .brand { gap: 12px; }
+  .brand-logo-wrap { width: 66px; height: 56px; border-radius: 13px; }
+  .brand-mark { height: 40px; width: auto; }
   .brand-name { font-size: 0.92rem; }
   .brand-sub { font-size: 0.52rem; letter-spacing: 0.14em; }
-  .brand-tagline { max-width: 215px; }
+  .brand-tagline { max-width: 190px; }
   .hero-badge { font-size: 0.68rem; }
   .float-card { padding: 9px 12px; }
   .float-card strong { font-size: 0.83rem; }
@@ -2044,6 +2075,9 @@ table.data b { color: var(--ink); }
   .footer-main { grid-template-columns: 1fr 1fr; }
   .footer-main .footer-col:last-child { grid-column: 1 / -1; }
   .footer-brand { grid-column: 1 / -1; }
+  .footer-bottom { flex-wrap: wrap; row-gap: 10px; white-space: normal; }
+  .footer-bottom > span { min-width: 0; flex: 1 1 100%; white-space: normal; }
+  .footer-bottom-links { flex-wrap: wrap; white-space: normal; gap: 8px 18px; }
   .cta-in { flex-direction: column; align-items: flex-start; }
   .cta-actions { width: 100%; }
   .cta-actions .btn { flex: 1; min-width: 150px; }
@@ -2449,7 +2483,7 @@ table.data b { color: var(--ink); }
 
 /* ---------- 29. Print (EMI calculator) ---------- */
 @media print {
-  .topbar, .site-header, .site-footer, .float-actions, .sobhi-panel, .fab-chat, .cta-band, .no-print, .hero-mandala { display: none !important; }
+  .topbar, .site-header, .site-footer, .float-actions, .sobhi-panel, .fab-chat, .cta-band, .no-print, .hero-mandala, #special-day-root { display: none !important; }
   body { background: #fff; color: #000; }
   .section { padding: 10px 0; }
   .reveal { opacity: 1 !important; transform: none !important; }

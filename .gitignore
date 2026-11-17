@@ -13,6 +13,9 @@ build/
 *.log
 npm-debug.log*
 
+# Generated email preview
+tools/preview-email.html
+
 # Chat data (leads are personal data; FAQ knowledge files are shipped)
 data/*
 !data/chat-faqs.txt

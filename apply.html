@@ -28,8 +28,9 @@
   <link rel="manifest" href="site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Noto+Sans+Telugu:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="/css/special-days.css?v=1.5">
   <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 
   <script type="application/ld+json">
@@ -40,7 +41,7 @@
     "name": "Sobhakrita Fintech Solutions Private Limited",
     "alternateName": "Sobhakrita Fintech",
     "url": "https://www.sobhakritafintech.com/",
-    "logo": "https://www.sobhakritafintech.com/assets/img/logo-mark.png",
+    "logo": "https://www.sobhakritafintech.com/assets/img/logo-full.png",
     "image": "https://www.sobhakritafintech.com/assets/img/og-image.png",
     "description": "Loan facilitator and financial services company based in Chittoor, Andhra Pradesh, connecting individuals and businesses with personal, business, home, mortgage, car, education, agriculture and industrial loans from leading banks and RBI-regulated NBFCs.",
     "telephone": "+91-88866-33119",
@@ -166,7 +167,9 @@
 <header class="site-header">
   <div class="container nav-in">
     <a class="brand" href="index.html" aria-label="Sobhakrita Fintech Solutions Private Limited — home">
-      <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="46" height="46">
+      <span class="brand-logo-wrap">
+        <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="58" height="46">
+      </span>
       <span class="brand-text">
         <span class="brand-name">Sobhakrita Fintech Solutions</span>
         <span class="brand-sub brand-tagline">One stop solution for all your financial needs</span>
@@ -233,13 +236,18 @@
   </div>
 </header>
 
+<!-- Special day greeting: resolved from ?festival=<slug> or today's IST date -->
+<div id="special-day-root"></div>
+<script src="/js/special-days-data.js?v=1.1"></script>
+<script src="/js/special-days-engine.js?v=1.1"></script>
+
 <!-- Mobile drawer -->
 <div class="drawer" id="mobileNav">
   <div class="drawer-scrim" data-close-nav></div>
   <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Site navigation">
     <div class="drawer-head">
       <a class="brand" href="index.html">
-        <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="40" height="40">
+        <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="51" height="40">
         <span class="brand-text">
           <span class="brand-name" style="font-size:0.9rem">Sobhakrita Fintech Solutions</span>
           <span class="brand-sub">Loan facilitator &middot; Chittoor</span>
@@ -450,7 +458,7 @@
           <div class="form-success" role="status" aria-live="polite">
             <span class="ico" aria-hidden="true"><svg width="28" height="28"><use href="#i-check"/></svg></span>
             <h3>Application received.</h3>
-            <p>Thank you. A Sobhakrita advisor will call you within one working day on the number you shared. Keep your PAN, Aadhaar and latest bank statement handy. For anything urgent, call <a href="tel:+918886633119">+91 88866 33119</a>.</p>
+            <p>Thank you. A Sobhakrita advisor will call you within one working day on the number you shared. Keep your PAN, Aadhaar and latest bank statement handy. For immediate support, call <a href="tel:+918886633119">+91 88866 33119</a>.</p>
           </div>
         </div>
       </div>
@@ -674,7 +682,7 @@
     <div class="footer-main">
       <div class="footer-brand">
         <a class="brand" href="index.html" aria-label="Sobhakrita Fintech Solutions — home">
-          <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="44" height="44">
+          <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="56" height="44">
           <span class="brand-text">
             <span class="brand-name">Sobhakrita Fintech Solutions</span>
             <span class="brand-sub">Loan facilitator &middot; Chittoor</span>
