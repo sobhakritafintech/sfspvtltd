@@ -12,8 +12,22 @@ node server.js
 
 ## Editing the site
 
-- Page sources live in `src/pages/*.html`.
-- Shared head, header and footer live in `src/partials/`.
+- Page sources live in `src/pages/*.html`. Each page contains only its `<main>`
+  content plus `<!--@title: ...-->`-style metadata; the shared shell is added at
+  build time.
+- Shared markup lives in `src/partials/`:
+  - `head.html` — doctype, meta, fonts and stylesheet links
+  - `header.html` — icon sprite, brand, navigation, phone/CTA, social links, special-day card, mobile drawer
+  - `footer.html` — CTA band, partner logos and site footer
+  - `float-actions.html` — WhatsApp, call, chat launcher and back-to-top buttons
+  - `sobhi.html` — the sobhi chat panel
+  - `scripts.html` — shared page scripts
+  - `tail.html` — combines the floating actions, Sobhi panel and scripts, and closes the document
+- Any page or partial can include another partial with a `{{>partial-name}}` token,
+  for example `{{>sobhi}}`. Tokens are expanded recursively by `build.ps1`.
+- Sobhi's panel styles live in `assets/css/style.css`, so every page gets the same
+  chat header layout. Bump the `?v=` value on the stylesheet link in
+  `src/partials/head.html` after changing it.
 - Root `*.html` files are generated. After editing a source file run:
 
 ```powershell
@@ -179,8 +193,11 @@ public_html/js/special-days-data.js
 public_html/js/special-days-engine.js
 ```
 
-Bump the `?v=` query string in `src/partials/header.html` after changing the
-card CSS/JS or data, then rebuild. It is currently `?v=1.0`.
+Bump the `?v=` query strings after changing the card CSS/JS or data, then
+rebuild. The stylesheet link is in `src/partials/head.html`
+(`/css/special-days.css?v=1.5`) and the scripts are in
+`src/partials/header.html` (`special-days-data.js` and
+`special-days-engine.js`, both `?v=1.1`).
 
 For local PowerShell testing, enter the mailbox password at the hidden prompt
 and start the server in the same terminal:

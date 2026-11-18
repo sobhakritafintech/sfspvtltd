@@ -58,7 +58,8 @@
     recordingTimer: null,
     recordingStartedAt: 0,
     voiceSubmitRequested: false,
-    recordingStatus: null
+    recordingStatus: null,
+    recordingRequestId: 0
   };
 
   var LANGUAGES = [
@@ -1148,6 +1149,9 @@
       ".sobhi-compose [data-sobhi-input]{flex:1;min-width:0}",
       ".sobhi-recording-status{display:none;position:absolute;left:44px;right:48px;top:-34px;align-items:center;gap:7px;padding:6px 10px;border:1px solid #b9d8c4;border-radius:18px;background:#f0faf3;color:#176b3a;font-size:12px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.06)}",
       ".sobhi-recording-status.is-active{display:flex}",
+      ".sobhi-recording-cancel{width:22px;height:22px;min-width:22px;margin-left:auto;padding:0;border:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:transparent;color:#b42318;font:600 17px/1 Arial,sans-serif;cursor:pointer}",
+      ".sobhi-recording-cancel:hover{background:#fee4e2}",
+      ".sobhi-recording-cancel:focus-visible{outline:2px solid #b42318;outline-offset:2px}",
       ".sobhi-recording-dot{width:7px;height:7px;border-radius:50%;background:#dc4545;box-shadow:0 0 0 4px rgba(220,69,69,.13);animation:sobhi-record-pulse 1.2s infinite}",
       "@keyframes sobhi-record-pulse{50%{opacity:.35;box-shadow:0 0 0 7px rgba(220,69,69,0)}}",
       ".sobhi-tool-btn.is-recording{background:#fff1f1;border-color:#e7a0a0;color:#b42318}",
@@ -1361,12 +1365,15 @@
   }
 
   function ensureRecordingStatus() {
+    installFeedbackStyles();
     if (state.recordingStatus && state.recordingStatus.isConnected) return state.recordingStatus;
     var status = document.createElement('div');
     status.className = 'sobhi-recording-status';
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
-    status.innerHTML = '<span class="sobhi-recording-dot" aria-hidden="true"></span><span>Sobhi is listening</span><strong data-sobhi-record-time>00:00</strong>';
+    status.innerHTML = '<span class="sobhi-recording-dot" aria-hidden="true"></span><span>Sobhi is listening</span><strong data-sobhi-record-time>00:00</strong><button type="button" class="sobhi-recording-cancel" data-sobhi-cancel-recording aria-label="Cancel voice recording" title="Cancel recording">&times;</button>';
+    var cancelBtn = status.querySelector('[data-sobhi-cancel-recording]');
+    if (cancelBtn) cancelBtn.addEventListener('click', cancelVoiceRecording);
     if (form) form.insertBefore(status, form.firstChild);
     state.recordingStatus = status;
     return status;
@@ -1391,13 +1398,35 @@
     }
   }
 
+  function cancelVoiceRecording() {
+    // Invalidate a pending getUserMedia request as well as any active recording.
+    state.recordingRequestId += 1;
+    state.voiceSubmitRequested = false;
+    if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
+      state.mediaRecorder.stop();
+    } else {
+      if (state.recordingStream) {
+        state.recordingStream.getTracks().forEach(function (track) { track.stop(); });
+      }
+      state.recordingStream = null;
+      state.mediaRecorder = null;
+      resetRecordingUi();
+    }
+  }
+
   function startVoiceRecording() {
     if (state.busy || (state.mediaRecorder && state.mediaRecorder.state === 'recording')) return;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
       showVoiceNotice('Voice recording is not supported in this browser. Please type your question instead.');
       return;
     }
+    var requestId = ++state.recordingRequestId;
     navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).then(function (stream) {
+      // The user may have cancelled while the browser permission prompt was open.
+      if (requestId !== state.recordingRequestId) {
+        stream.getTracks().forEach(function (track) { track.stop(); });
+        return;
+      }
       state.recordingStream = stream;
       var mimeCandidates = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'];
       var mime = mimeCandidates.filter(function (candidate) { return MediaRecorder.isTypeSupported(candidate); })[0] || '';
@@ -1418,7 +1447,11 @@
         stream.getTracks().forEach(function (track) { track.stop(); });
         state.recordingStream = null; state.mediaRecorder = null;
         state.voiceSubmitRequested = false;
-        if (!shouldSubmit) return;
+        if (!shouldSubmit) {
+          // Discard the captured audio locally; never transcribe a cancelled recording.
+          chunks.length = 0;
+          return;
+        }
         var blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
         if (!blob.size) { showVoiceNotice('No audio was captured. Please try recording again.'); return; }
         if (blob.size > 8 * 1024 * 1024) { showVoiceNotice('That recording is too large. Please record a shorter question.'); return; }
@@ -1471,6 +1504,8 @@
         }
       }, 60000);
     }).catch(function () {
+      if (requestId !== state.recordingRequestId) return;
+      resetRecordingUi();
       showVoiceNotice('Microphone access was blocked. Please allow microphone permission or type your question.');
     });
   }
@@ -2679,6 +2714,7 @@
 
   function closeChat() {
     if (state.mediaRecorder && state.mediaRecorder.state === 'recording') { state.voiceSubmitRequested = false; state.mediaRecorder.stop(); }
+    else if (!state.mediaRecorder) { state.recordingRequestId += 1; } // Cancel a pending microphone permission request.
     if (state.audioPlayer) { state.audioPlayer.pause(); state.audioPlayer = null; }
     panel.hidden = true;
     root.classList.remove("is-open");

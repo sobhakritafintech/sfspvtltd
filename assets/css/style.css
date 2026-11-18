@@ -297,64 +297,40 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
 
 /* ---------- 6. Header ---------- */
-.topbar {
-  background: var(--ink);
-  color: rgba(255, 255, 255, 0.74);
-  font-size: 0.78rem;
-  position: relative;
-  z-index: 60;
-}
-.topbar::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
-  background-size: 14px 14px;
-  opacity: 0.5;
-  pointer-events: none;
-}
-.topbar-in {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  min-height: 38px;
-  position: relative;
-  z-index: 1;
-}
-.topbar-group { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
-.topbar a { color: rgba(255, 255, 255, 0.78); display: inline-flex; align-items: center; gap: 7px; }
-.topbar a:hover { color: var(--saffron-2); }
-.topbar svg { opacity: 0.8; }
-.topbar-note { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-soft); letter-spacing: 0.02em; }
-
 .site-header {
   position: sticky;
   top: 0;
   z-index: 70;
-  background: linear-gradient(180deg, #fffcf4 0%, #fdf5e5 58%, #f9efd9 100%);
+  background:
+    radial-gradient(900px 300px at 8% -30%, rgba(221, 117, 23, 0.24), transparent 65%),
+    radial-gradient(700px 260px at 100% 0%, rgba(18, 134, 106, 0.18), transparent 62%),
+    linear-gradient(120deg, #14314c 0%, #0c1f33 55%, #0e2b42 100%);
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(200, 154, 75, 0.34);
+  border-bottom: 1px solid rgba(200, 154, 75, 0.5);
   transition: box-shadow 0.3s var(--ease);
 }
+/* Give the header a little more room than body content so the brand, nav,
+   contact details and social icons sit on one balanced row. */
+.site-header .container { max-width: 1600px; }
 .site-header::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: -1px;
-  height: 1px;
+  height: 2px;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(200, 154, 75, 0.55) 24%, rgba(200, 154, 75, 0.55) 76%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(221, 117, 23, 0.9) 16%, rgba(239, 220, 184, 0.95) 50%, rgba(221, 117, 23, 0.9) 84%, transparent);
+  opacity: 0.9;
 }
-.site-header.is-stuck { box-shadow: 0 14px 32px -22px rgba(12, 31, 51, 0.55); }
+.site-header.is-stuck { box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.75); }
 
 .nav-in {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  min-height: 76px;
+  min-height: 86px;
 }
 
 .brand { display: inline-flex; align-items: center; gap: 14px; color: var(--ink); flex: 0 0 auto; }
@@ -363,19 +339,13 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
   display: grid;
   place-items: center;
   flex: none;
-  width: 110px;
-  height: 68px;
-  border-radius: 16px;
-  background: #000000;
-  box-shadow:
-    inset 0 0 0 1px rgba(200, 154, 75, 0.28),
-    0 2px 10px -3px rgba(12, 31, 51, 0.2);
+  background: transparent;
 }
-.brand-mark { height: 50px; width: auto; flex: none; filter: saturate(1.06); }
+.brand-mark { height: 64px; width: auto; flex: none; filter: saturate(1.06); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.05; white-space: nowrap; }
 .brand-name {
   font-family: var(--ff-display);
-  font-size: 1.06rem;
+  font-size: 1.12rem;
   font-weight: 600;
   letter-spacing: -0.012em;
 }
@@ -388,7 +358,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
   margin-top: 4px;
 }
 .brand-tagline {
-  font-size: 0.54rem;
+  font-size: 0.56rem;
   letter-spacing: 0.015em;
   line-height: 1.3;
   max-width: 230px;
@@ -522,6 +492,51 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
 .nav-open .nav-toggle .close-ico { display: block; }
 .nav-open .nav-toggle .open-ico { display: none; }
 
+/* Dark header treatment: the logo sits directly on the panel, while the
+   brand and navigation switch to light colours so they read on navy. */
+.site-header .brand,
+.site-header .brand:hover { color: #fff; }
+.site-header .brand-name { color: #fff; }
+.site-header .brand-tagline { color: rgba(255, 255, 255, 0.66); }
+.site-header .nav-link { color: rgba(255, 255, 255, 0.82); }
+.site-header .nav-link:hover { color: var(--gold-soft); background: rgba(255, 255, 255, 0.08); }
+.site-header .nav-link.is-active { color: var(--saffron-2); }
+.site-header .nav-phone { color: var(--cream); }
+.site-header .nav-phone svg { color: var(--saffron-2); }
+/* Social icons sit at the far right of the header on desktop. */
+.header-socials { display: none; align-items: center; gap: 8px; }
+.header-social {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.84);
+  transition: color 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.header-social:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.42);
+}
+.header-social svg { width: 14px; height: 14px; }
+@media (min-width: 1280px) {
+  .header-socials { display: inline-flex; }
+}
+/* The phone number joins the main header only when there is room for it. */
+@media (min-width: 1600px) {
+  .site-header .nav-phone { display: inline-flex; }
+}
+.site-header .nav-toggle {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.site-header .nav-toggle:hover { background: rgba(255, 255, 255, 0.15); }
+
 /* Mobile drawer */
 .drawer {
   position: fixed;
@@ -562,11 +577,11 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
   background: linear-gradient(180deg, #fffdf8 0%, #fbf3e2 100%);
 }
 .drawer-head .brand-mark {
-  height: 40px;
-  padding: 4px;
-  border-radius: 9px;
-  background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(200, 154, 75, 0.25);
+  height: 44px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .drawer-body { padding: 14px 20px 24px; }
 .drawer-nav { list-style: none; margin: 0; padding: 0; }
@@ -2012,8 +2027,13 @@ table.data b { color: var(--ink); }
 /* ---------- 27. Responsive ---------- */
 @media (max-width: 1400px) {
   .nav-in { gap: 16px; }
-  .brand-name { font-size: 0.97rem; }
+  .brand-name { font-size: 1rem; }
   .nav-link { padding: 11px 6px; font-size: 0.82rem; }
+}
+
+@media (min-width: 1201px) and (max-width: 1300px) {
+  .site-header .container { padding-inline: 32px; }
+  .nav-link { padding: 11px 4px; }
 }
 
 @media (max-width: 1200px) {
@@ -2048,13 +2068,9 @@ table.data b { color: var(--ink); }
 }
 
 @media (max-width: 720px) {
-  .topbar-note { display: none; }
-  .topbar-social { display: none !important; }
-  .topbar-in { justify-content: center; font-size: 0.72rem; }
-  .topbar-group { gap: 14px; justify-content: center; }
+  .nav-in { min-height: 76px; }
   .brand { gap: 12px; }
-  .brand-logo-wrap { width: 66px; height: 56px; border-radius: 13px; }
-  .brand-mark { height: 40px; width: auto; }
+  .brand-mark { height: 46px; width: auto; }
   .brand-name { font-size: 0.92rem; }
   .brand-sub { font-size: 0.52rem; letter-spacing: 0.14em; }
   .brand-tagline { max-width: 190px; }
@@ -2222,13 +2238,15 @@ table.data b { color: var(--ink); }
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 12px 14px;
   background: linear-gradient(135deg, var(--ink), var(--ink-3));
   color: #fff;
 }
 .sobhi-avatar {
   width: 34px; height: 34px;
-  flex: 0 0 auto;
+  flex: 0 0 40px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -2237,9 +2255,64 @@ table.data b { color: var(--ink); }
   font-size: 1rem;
   font-weight: 700;
 }
-.sobhi-head-copy { display: flex; flex-direction: column; line-height: 1.25; margin-right: auto; min-width: 0; }
-.sobhi-head-copy strong { font-size: 0.92rem; }
-.sobhi-head-copy small { font-size: 0.68rem; color: rgba(255, 255, 255, 0.78); white-space: nowrap; }
+.sobhi-head-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.25;
+  min-width: 0;
+  gap: 3px;
+  overflow: hidden;
+}
+.sobhi-head-copy strong { display: block; font-size: 0.92rem; line-height: 1.2; }
+.sobhi-head-copy small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.78);
+  white-space: nowrap;
+  line-height: 1.25;
+}
+.sobhi-status-dot {
+  width: 7px; height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.13);
+}
+.sobhi-head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+.sobhi-new-chat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.09);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.sobhi-new-chat:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.38); }
+.sobhi-new-chat:focus-visible,
+.sobhi-icon-btn:focus-visible { outline: 2px solid #f4b36d; outline-offset: 2px; }
 .sobhi-icon-btn {
   display: inline-flex;
   align-items: center;
@@ -2255,7 +2328,6 @@ table.data b { color: var(--ink); }
   cursor: pointer;
 }
 .sobhi-icon-btn:hover { background: rgba(255, 255, 255, 0.2); }
-.sobhi-icon-btn:focus-visible { outline: 2px solid var(--saffron-2); outline-offset: 2px; }
 
 .sobhi-messages {
   flex: 1 1 auto;
@@ -2471,6 +2543,18 @@ table.data b { color: var(--ink); }
   .sobhi-field textarea { font-size: 16px; }
 }
 
+@media (max-width: 420px) {
+  .sobhi-head { gap: 7px; }
+  .sobhi-avatar { flex-basis: 34px; width: 34px; height: 34px; }
+  .sobhi-head-actions { gap: 5px; }
+  .sobhi-new-chat { width: 36px; min-width: 36px; padding: 0; }
+  .sobhi-new-chat-label {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .sobhi-head-copy small { font-size: 10px; }
+}
+
 @media (max-height: 560px) {
   .sobhi-panel { bottom: 12px; max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); }
 }
@@ -2483,7 +2567,7 @@ table.data b { color: var(--ink); }
 
 /* ---------- 29. Print (EMI calculator) ---------- */
 @media print {
-  .topbar, .site-header, .site-footer, .float-actions, .sobhi-panel, .fab-chat, .cta-band, .no-print, .hero-mandala, #special-day-root { display: none !important; }
+  .site-header, .site-footer, .float-actions, .sobhi-panel, .fab-chat, .cta-band, .no-print, .hero-mandala, #special-day-root { display: none !important; }
   body { background: #fff; color: #000; }
   .section { padding: 10px 0; }
   .reveal { opacity: 1 !important; transform: none !important; }
